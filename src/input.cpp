@@ -508,6 +508,11 @@ void pollController(device* dev, SDL_GameController* controller) {
 				getStick(controller, padbinds.movement, &(dev->controlData[6]), &(dev->controlData[7]));
 			}
 		}
+		else if (!ParkEd) { // Only needed to be able to skip intro movies manually. The ParkEd instance isn't initialized yet when movies are displayed
+			if (getButton(controller, padbinds.ollie)) {
+				dev->controlData[2] |= 0x01 << 3;
+			}
+		}
 	}
 }
 
