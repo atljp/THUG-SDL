@@ -1,0 +1,73 @@
+cmake_minimum_required(VERSION 3.10)
+
+set(PROJECT_NAME_VAR "THUG_SDL")
+project(${PROJECT_NAME_VAR})
+
+set(SRC "${CMAKE_SOURCE_DIR}/src")
+
+set(SOURCE_FILES
+	"${SRC}/main.cpp"
+	"${SRC}/exports.def"
+	"${SRC}/Resources/MyResources.rc"
+	"${SRC}/patch.cpp"
+	"${SRC}/config.cpp"
+	"${SRC}/input.cpp"
+	"${SRC}/script.cpp"
+	"${SRC}/displayconfig.cpp"
+	"${SRC}/Logger/Logger.cpp"
+	"${SRC}/QB/LazyStruct.cpp"
+	"${SRC}/QB/LazyArray.cpp"
+	"${SRC}/QB/QB.cpp"
+	"${SRC}/QB/CFuncs.cpp"
+	"${SRC}/Mod/mod_template.cpp"
+	"${SRC}/modloader.cpp"
+)
+
+set(HEADER_FILES
+	"${SRC}/Resources/MyResources.h"
+	"${SRC}/d3d9.h"
+	"${SRC}/patch.h"
+	"${SRC}/config.h"
+	"${SRC}/input.h"
+	"${SRC}/displayconfig.h"
+	"${SRC}/script.h"
+	"${SRC}/keycodes.h"
+	"${SRC}/Logger/Logger.h"
+	"${SRC}/QB/LazyStruct.h"
+	"${SRC}/QB/LazyArray.h"
+	"${SRC}/QB/malloc.h"
+	"${SRC}/QB/QB.h"
+	"${SRC}/QB/CFuncs.h"
+	"${SRC}/QB/scriptcontent.h"
+	"${SRC}/Mod/mod_template.h"
+	"${SRC}/modloader.h"
+)
+
+find_package(SDL2 REQUIRED)
+list(APPEND LIBS
+	SDL2::SDL2
+	SDL2::SDL2main
+)
+list(APPEND INCLUDES ${SDL2_INCLUDE_DIRS})
+
+add_library(${PROJECT_NAME_VAR} SHARED)
+
+target_sources(${PROJECT_NAME_VAR} PRIVATE
+	${SOURCE_FILES}
+	${HEADER_FILES}
+)
+
+target_link_libraries(${PROJECT_NAME_VAR} PUBLIC ${LIBS})
+
+target_include_directories(${PROJECT_NAME_VAR} PUBLIC
+	"${PROJECT_SOURCE_DIR}/src"
+	${INCLUDES}
+)
+
+set_source_files_properties(exports.def PROPERTIES HEADER_FILE_ONLY TRUE)
+
+set_target_properties(
+    ${PROJECT_NAME_VAR} 
+    PROPERTIES 
+        OUTPUT_NAME "d3d9"
+)

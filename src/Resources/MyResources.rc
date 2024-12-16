@@ -1,0 +1,3 @@
+#include "MyResources.h"
+
+IDR_OSLOGO RCDATA "oslogo.img"

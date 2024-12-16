@@ -1,0 +1,4 @@
+LIBRARY	"THUG SDL"
+
+    EXPORTS
+            Direct3DCreate9 @1
