@@ -728,6 +728,11 @@ void pollKeyboard(device* dev) {
 			}
 		}
 	}
+	else if (!ParkEd) { // Only needed to be able to skip intro movies manually. The ParkEd instance isn't initialized yet when movies are displayed
+		if (keyboardState[keybinds.ollie] || keyboardState[SDL_SCANCODE_ESCAPE]) {
+			dev->controlData[2] |= 0x01 << 3;
+		}
+	}
 }
 
 

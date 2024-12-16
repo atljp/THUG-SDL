@@ -154,7 +154,7 @@ void InitPatch() {
 	Log::TypedLog(CHN_DLL, "Player 1 camera Y axis (right stick)\t\t%s\n", disableRYplayer1 ? "Disabled" : "Enabled");
 	Log::TypedLog(CHN_DLL, "Chat size\t\t\t\t\t\t%s\n", (chatsize == 2) ? "Small" : ((chatsize == 3) ? "Default" : ((chatsize == 4) ? "Big" : "Extra small")));
 	Log::TypedLog(CHN_DLL, "Chat message time\t\t\t\t\t%d seconds\n", consolewaittime);
-	
+	Log::TypedLog(CHN_DLL, "MenuButtons\t\t\t\t\t%s\n", (menubuttons == 2) ? "Ps2" : "PC (default)");
 	if (savewindowposition)
 		Log::TypedLog(CHN_DLL, "Found saved window position\t\t\t%d x %d\n", windowposx, windowposy);
 	else
