@@ -183,9 +183,11 @@ void InitPatch() {
 	/*Button font*/
 	patch_button_font(buttonfont);
 
-	/*Gross hack, patch button lookup for Ps2 menu prompts*/
-	if (menubuttons == 2)
-		patchByte((void*)((uint32_t)&patchButtonLookup + 48), 0x30);
+	/*Patch button lookup for Ps2 menu prompts (triangle = back). This goes along with redirecting CFunc::SetButtonEventMappings*/
+	if (menubuttons == 2) {
+		patchByte((void*)0x005AD537, 0x03);
+		patchByte((void*)0x005AD539, 0x01);
+	}
 
 	/*Ledge warp fix*/
 	patchCall((void*)0x00569081, (void*)&fix_floating_precision);
@@ -204,7 +206,7 @@ void InitPatch() {
 void patchStaticValues() {
 
 	patchByte((void*)0x004C2A84, 0xEB);
-	patchByte((void*)0x004C2B88, 0x75); //0xEB
+	patchByte((void*)0x004C2B88, 0x75);
 	patchDWord((void*)(0x005CB714 + 1), 0x00001388);
 	patchNop((void*)0x005C5AF3, 6);
 	patchNop((void*)0x005C5B35, 6);

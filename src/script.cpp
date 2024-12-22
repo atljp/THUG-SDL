@@ -57,6 +57,7 @@ void patchCFuncs() {
 		if (pResource_oslogo = getResource(IDR_OSLOGO)) CFuncs::RedirectFunction("IsXBOX", IsXBOX_Patched);
 	}
 	if (mSettings.menubuttons == 2)
+		/*Actually change the button actions when ps2 style menu navigation is selected*/
 		CFuncs::RedirectFunction("SetButtonEventMappings", SetButtonEventMappings_Patched);
 
 	Log::TypedLog(CHN_DLL, "Initializing CFuncs\n");
@@ -70,6 +71,7 @@ void initScriptPatch() {
 	setDropDownKeys();
 	setCavemanKeys();
 	setLadderGrabKeys();
+	setButtonPrompts();
 }
 
 
@@ -338,8 +340,9 @@ bool SetButtonEventMappings_Patched(Script::LazyStruct* pParams, DummyScript* pS
 
 		ButtonMap = ButtonEventMap_xbox->GetArray(6); //edit first entry inside array: [ b pad_back ] => [ y pad_back ]
 		ButtonMap->SetChecksum(0, 0x0424D9EA /*y*/);
-		ButtonMap = ButtonEventMap_xbox->GetArray(7); //[ b pad_circle ] => [ y pad_circle ]
-		ButtonMap->SetChecksum(0, 0x0424D9EA /*y*/);
+		//This makes speech bubbles react to triangle
+		//ButtonMap = ButtonEventMap_xbox->GetArray(7); //[ b pad_circle ] => [ y pad_circle ]
+		//ButtonMap->SetChecksum(0, 0x0424D9EA /*y*/);
 		ButtonMap = ButtonEventMap_xbox->GetArray(12); //[ y pad_triangle2 ] => [ b pad_triangle2 ]
 		ButtonMap->SetChecksum(0, 0x8E411006 /*b*/);
 		ButtonMap = ButtonEventMap_xbox->GetArray(14); //[ y pad_space ] => [ b pad_space ]
@@ -692,4 +695,92 @@ void setLadderGrabKeys() {
 		patchBytesM((BYTE*)(0x00469A89 + 2), (BYTE*)"\xE0\x00", 2); /* default R1  */
 	else if (mSettings.laddergrabcontrol == 2)
 		patchBytesM((BYTE*)(0x00469A89 + 2), (BYTE*)"\x80\x00", 2); /* L1 */
+}
+
+void setButtonPrompts() {
+
+	if (!mSettings.isPs2Controls) {
+		//Adjust ps2 button prompts to match xbox controls
+		patchByte((void*)0x005AD53A, 0x07);
+		patchByte((void*)0x005AD53B, 0x06);
+		patchByte((void*)0x005AD53C, 0x04);
+		patchByte((void*)0x005AD53D, 0x05);
+		patchByte((void*)0x005AD532, 0x07); //L1+R1 => R2
+		patchByte((void*)0x005AD530, 0x04); //patch bg -> be (L2 => L1)
+		patchByte((void*)0x005AD52E, 0x06); //patch be -> bg (L1 => L2)
+
+		setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 3, "\\bg/\\bf = Lower/Raise"); //Set L2 in helper text to be displayed as L1
+		setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 4, "\\be/\\bh =Zoom"); //Set L1 in helper text to be displayed as L2
+		
+	}
+	else {
+		setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 3, "\\be/\\bg =Raise/Lower");
+		setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 4, "\\bf/\\bh =Zoom");
+		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text_xbox*/, 4, "\\be/\\bg =Raise/Lower");
+		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text_xbox*/, 5, "\\bf/\\bh =Zoom");
+
+		//TODO adjust cas texts
+	}
+	setHelperText(0xDDCF8C99/*gap_adjust_helper_text_xbox*/, 1, "\\b1/\\b2 = Rotate");
+
+	/*
+		fonts match the controls of their console
+
+		ps2 Helper text CAP / in level / speechboxes:
+		\\b0 FFFFFFE3 GRIND
+		\\b1 FFFFFFE4 FLIP
+		\\b2 FFFFFFE5 GRAB
+		\\b3 FFFFFFE6 OLLIE
+		\\b4 FFFFFFE7 arrowdown
+		\\b5 FFFFFFE8 arrowright
+		\\b6 FFFFFFE9 arrowleft
+		\\b7 FFFFFFEA arrowup
+		\\be 18 L1
+		\\bf 19 R1
+		\\bg 1A L2
+		\\bh 1B R2
+		\\bi 1C L1+R1
+
+		ps2 Helper text mainmenu/CAG:
+		\\bm 20 ollie
+		\\bn 21 grab
+		\\bo 22 flip
+		\\bp 23 grind
+		\\bq 24 R2
+		\\br 25 L2 white
+		\\bs 26 L1
+		\\bt 27 R1
+		\\b4 FFFFFFE7 arrowdown
+		\\b5 FFFFFFE8 arrowright
+		\\b6 FFFFFFE9 arrowleft
+		\\b7 FFFFFFEA arrowup
+		\\b8 FFFFFFEB ESC
+
+		xbox Helper text CAP / in level / speechboxes:
+		\\bh 1B black
+		[...]
+
+		xbox Helper text mainmenu/CAG:
+		[...]
+	*/
+
+
+	//pc and xbox prompts correct for xbox (PC) controls
+	//then change l2 -> l1 for ps2 buttons ONLY FOR XBOX CONTROLS. This changes cap helper so fix again with: L1->L2
+	//also add ps2 layout for menu navigation
+	//remove s_create() from buttonlookup cfunc
+	//change help texts depending on ps2controls y/n
+}
+
+void setHelperText(uint32_t struct_checksum, int index, char* text) {
+
+	//scripts/engine/menu/helper_text.q
+	Script::LazyArray* helper_text_elements = nullptr;
+
+	Script::LazyStruct* helper_text = GlobalGetStructure_Native(struct_checksum);
+	if (helper_text) {
+		helper_text->GetArray(0xE954A378, &helper_text_elements); /*helper_text_elements*/
+		if (helper_text_elements)
+			helper_text_elements->GetStructure(index)->AddString(0xC4745838, text); /*text*/
+	}
 }
