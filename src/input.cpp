@@ -367,17 +367,49 @@ void pollController(device* dev, SDL_GameController* controller) {
 				if (getButton(controller, padbinds.kick)) {
 					dev->controlData[3] |= 0x01 << 7;
 				}
-				if (getButton(controller, padbinds.leftSpin)) {
-					dev->controlData[3] |= 0x01 << 2;
+				if (*isCAG) {
+					if (inputsettings.isPs2Controls) {
+						if (getButton(controller, padbinds.leftSpin)) {
+							dev->controlData[3] |= 0x01 << 3;
+						}
+						if (getButton(controller, padbinds.rightSpin)) {
+							dev->controlData[20] |= 0x01 << 0;
+						}
+						if (getButton(controller, padbinds.nollie)) {
+							dev->controlData[3] |= 0x01 << 2;
+						}
+						if (getButton(controller, padbinds.switchRevert)) {
+							dev->controlData[20] |= 0x01 << 1;
+						}
+					}
+					else {
+						if (getButton(controller, padbinds.leftSpin)) {
+							dev->controlData[3] |= 0x01 << 2;
+						}
+						if (getButton(controller, padbinds.rightSpin)) {
+							dev->controlData[3] |= 0x01 << 3;
+						}
+						if (getButton(controller, padbinds.nollie)) {
+							dev->controlData[20] |= 0x01 << 1;
+						}
+						if (getButton(controller, padbinds.switchRevert)) {
+							dev->controlData[20] |= 0x01 << 0;
+						}
+					}
 				}
-				if (getButton(controller, padbinds.rightSpin)) {
-					dev->controlData[3] |= 0x01 << 3;
-				}
-				if (getButton(controller, padbinds.nollie)) {
-					dev->controlData[20] |= 0x01 << 1;
-				}
-				if (getButton(controller, padbinds.switchRevert)) {
-					dev->controlData[20] |= 0x01 << 0;
+				else {
+					if (getButton(controller, padbinds.leftSpin)) {
+						dev->controlData[3] |= 0x01 << 2;
+					}
+					if (getButton(controller, padbinds.rightSpin)) {
+						dev->controlData[3] |= 0x01 << 3;
+					}
+					if (getButton(controller, padbinds.nollie)) {
+						dev->controlData[20] |= 0x01 << 1;
+					}
+					if (getButton(controller, padbinds.switchRevert)) {
+						dev->controlData[20] |= 0x01 << 0;
+					}
 				}
 				if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)padbinds.up)) {
 					dev->controlData[2] |= 0x01 << 4;

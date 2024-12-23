@@ -739,10 +739,10 @@ void setButtonPrompts() {
 		setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 2, "\\bs=Reset");
 		setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 3, "\\bt=Zoom");
 		setHelperText(0xE6AD8FF7/*generic_helper_text_color_menu_reset_cad*/, 1, "\\bs=Reset");
-		
-		//TODO CAG buttons and controls
-		//setHelperText(0xA3E41086/*cag_helper_text*/,
-		//cag_helper_text_xbox
+		setHelperText(0xA65EC4BA/*cag_helper_text_xbox*/, 3, "\\be/\\bg=Raise/Lower");
+		setHelperText(0xA65EC4BA/*cag_helper_text_xbox*/, 4, "\\bf/\\bh=Zoom");
+		setHelperText(0xE827750F/*cag_helper_text_no_back_xbox*/, 2, "\\be/\\bg = Raise/Lower");
+		setHelperText(0xE827750F/*cag_helper_text_no_back_xbox*/, 3, "\\bf/\\bh = Zoom");	
 	}
 	setHelperText(0xDDCF8C99/*gap_adjust_helper_text_xbox*/, 1, "\\b1/\\b2 = Rotate");
 
