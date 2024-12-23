@@ -156,6 +156,11 @@ struct modsettings {
 	uint8_t menubuttons;
 };
 
+struct logsettings {
+	bool writefile;
+	bool appendlog;
+};
+
 
 void InitPatch();
 void patchStaticValues();
@@ -177,6 +182,7 @@ uint32_t patchMetaButtonMap();
 uint32_t patchButtonLookup(char* p_button);
 void loadSettings(struct modsettings* settingsOut);
 void loadModSettings(struct extmodsettings* modsettingsOut);
+void loadLogSettings(struct logsettings* settingsOut);
 void loadKeyBinds(struct keybinds* bindsOut);
 void loadControllerBinds(struct controllerbinds* bindsOut);
 void patchScripts();

@@ -37,6 +37,8 @@ uint8_t consolewaittime;
 uint8_t noadditionalscriptmods;
 uint8_t savewindowposition;
 uint8_t menubuttons;
+bool writefile;
+bool appendlog;
 int windowposx;
 int windowposy;
 int usemod;
@@ -71,6 +73,8 @@ void InitPatch() {
 	patchCall((void*)0x0052CDE2, (void*)CFuncs::Pointer_FunctionCount());
 
 	console = GetPrivateProfileInt(MISC_SECTION, "Console", 0, configFile);
+	writefile = getIniBool(MISC_SECTION, "WriteFile", 0, configFile);
+	appendlog = getIniBool(MISC_SECTION, "AppendLog", 0, configFile);
 	language = GetPrivateProfileInt(MISC_SECTION, "Language", 1, configFile);
 	buttonfont = GetPrivateProfileInt(MISC_SECTION, "ButtonFont", 1, configFile);
 	intromovies = getIniBool(MISC_SECTION, "IntroMovies", 1, configFile);
@@ -554,7 +558,6 @@ void patch_button_font(uint8_t sel) {
 	}
 }
 
-/* provide info about input settings for input.cpp */
 void loadSettings(struct modsettings* settingsOut) {
 	if (settingsOut) {
 		settingsOut->isPs2Controls = Ps2Controls;
@@ -577,6 +580,11 @@ void loadSettings(struct modsettings* settingsOut) {
 		settingsOut->menubuttons = menubuttons;
 		settingsOut->consolewaittime = consolewaittime;
 	}
+}
+
+void loadLogSettings(struct logsettings* settingsOut) {
+	settingsOut->writefile = writefile;
+	settingsOut->appendlog = appendlog;
 }
 
 /* called from initMod */

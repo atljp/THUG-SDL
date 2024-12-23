@@ -9,6 +9,7 @@
 
 #include <QB/LazyStruct.h>
 #include <patch.h>
+#include <config.h>
 
 #define CHN_MEMORY	"Mem"
 #define CHN_DLL		"DLL"

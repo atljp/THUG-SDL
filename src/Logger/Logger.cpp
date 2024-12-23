@@ -4,11 +4,13 @@ bool l_ExitOnAssert = true;
 bool l_UseConsole, l_DebugOutput;
 FILE* CON, * f_tracer, * f_logger;
 HANDLE consoleHandle;
+struct logsettings mLogSettings;
 
 namespace Log {
 
 	bool ConsoleAllowed() { return l_UseConsole; }
-	bool OutputAllowed() { return l_DebugOutput; }
+	bool OutputAllowed() { return mLogSettings.writefile; }
+	bool AppendAllowed() { return mLogSettings.appendlog; }
 
 	//------------------------
 	// Prepare the logger
@@ -17,6 +19,7 @@ namespace Log {
 	void Initialize() {
 		char logpath[MAX_PATH];
 		char tracepath[MAX_PATH];
+		loadLogSettings(&mLogSettings);
 
 		//if (GameConfig::GetValue("Logger", "Console", 0))
 			l_UseConsole = true;
@@ -40,11 +43,14 @@ namespace Log {
 		}
 
 		// Write to debug file?
-		if (l_DebugOutput)
+		if (OutputAllowed())
 		{
 			//Log("Logger file output initialized.\n");
-			fopen_s(&f_logger, "debug.txt", "w");
-			fopen_s(&f_tracer, "trace.txt", "w");
+			if (AppendAllowed())
+				fopen_s(&f_logger, "debug.txt", "a");
+			else
+				fopen_s(&f_logger, "debug.txt", "w");
+			//fopen_s(&f_tracer, "trace.txt", "w");
 
 			if (!f_logger)
 				PrintLog("Failed to create debug.txt file.\n");

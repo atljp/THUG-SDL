@@ -27,8 +27,6 @@ namespace Script {
 
 	// --------------------------------------------
 
-	
-
 	typedef void (__thiscall* Free_NativeCall)(LazyStruct* struc);
 	Free_NativeCall Free_Native = (Free_NativeCall)(0x00411790);
 

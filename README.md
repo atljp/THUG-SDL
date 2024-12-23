@@ -56,10 +56,9 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Create-A-Skater: Board scaling
 
 ## TODO
-- Fix window focus issues which prevents fullscreen mode from working correctly (hangs after alt-tabbing)
-- Finish the Modloader
-- Crash error manager with stack trace
-- Console text logging (append / overwrite)
+- Window in fullscreen mode hangs after alt-tabbing
+- Modloader
+- Crash logs
 
 ## BUILDING
 

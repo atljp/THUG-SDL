@@ -123,6 +123,7 @@ LoadTextureFromBuffer_NativeCall LoadTextureFromBuffer_Native = (LoadTextureFrom
 /* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 bool IsPS2_Patched(void* pParams, DummyScript* pScript) {
+
 	if (pScript) {
 		if (pScript->mScriptNameChecksum == 0x255ED86F /*grind*/ || 
 			pScript->mScriptNameChecksum == 0x6AEC78DA /*check_for_neversoft_skaters*/ ||
@@ -133,6 +134,7 @@ bool IsPS2_Patched(void* pParams, DummyScript* pScript) {
 }
 
 bool IsXBOX_Patched(void* pParams, DummyScript* pScript) {
+
 	if (pScript->mScriptNameChecksum == 0xEF384924 /*load_textures_to_main_memory*/) {
 			LoadTextureFromBuffer_Native(*(int*)0x00707840, (uint8_t*)pResource_oslogo, 0x4000, 0x2074BEAE /*gslogo*/, true, true, true);
 			return false;
@@ -141,14 +143,14 @@ bool IsXBOX_Patched(void* pParams, DummyScript* pScript) {
 }
 
 bool GetMemCardSpaceAvailable_Patched(void* pParams, /*ebp + 0x8*/
-	DummyScript* pScript, /*ebp+0xC*/
-	uint32_t a, /*ebp+0x10*/
-	ULARGE_INTEGER b, /*ebp+0x14*/
-	ULARGE_INTEGER c, /*ebp+0x1C*/
-	ULARGE_INTEGER d, /*ebp+0x24*/
-	ULARGE_INTEGER e, /*ebp+0x2C*/
-	ULARGE_INTEGER f, /*epc+0x34*/
-	uint8_t p_card) { /*ebp+0x3C*/
+										DummyScript* pScript, /*ebp+0xC*/
+										uint32_t a, /*ebp+0x10*/
+										ULARGE_INTEGER b, /*ebp+0x14*/
+										ULARGE_INTEGER c, /*ebp+0x1C*/
+										ULARGE_INTEGER d, /*ebp+0x24*/
+										ULARGE_INTEGER e, /*ebp+0x2C*/
+										ULARGE_INTEGER f, /*epc+0x34*/
+										uint8_t p_card) { /*ebp+0x3C*/
 
 	ULARGE_INTEGER mlpFreeBytesAvailableToCaller;
 	ULARGE_INTEGER mlpTotalNumberOfBytes;
@@ -223,7 +225,6 @@ bool CreateScreenElement_Patched(Script::LazyStruct* pParams, DummyScript* pScri
 			}
 		}
 	}
-	
 	if (!mSettings.noadditionalscriptmods && pScript->mScriptNameChecksum == 0x85E146D5) { /*create_snazzy_dialog_box*/
 
 		pParams->GetChecksum(0x7321A8D6, &p_checksum, false);  /*type*/
@@ -360,6 +361,7 @@ bool SetScreenElementProps_Patched(Script::LazyStruct* pParams, DummyScript* pSc
 }
 
 bool SetButtonEventMappings_Patched(Script::LazyStruct* pParams, DummyScript* pScript) {
+
 	if (pScript->mScriptNameChecksum == 0xE2602BAC /*setup_main_button_event_mappings*/) {
 
 		Script::LazyArray* ButtonEventMap_xbox = nullptr;
@@ -388,8 +390,6 @@ bool SetButtonEventMappings_Patched(Script::LazyStruct* pParams, DummyScript* pS
 /* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 void editScriptsInMemory() {
-
-	if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
 
 	if (!mSettings.noadditionalscriptmods) {
 
@@ -483,6 +483,8 @@ void editScriptsInMemory() {
 		removeScript(0x39C58EA1); /*change_level*/
 		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)change_level_new);
 		sCreateScriptSymbol_Wrapper(sizeof(change_level_new), 0x39C58EA1, contentsChecksum, (uint8_t*)change_level_new, "game\\skutils.qb");
+
+		if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
 	}
 }
 
@@ -720,6 +722,7 @@ void setCavemanKeys() {
 }
 
 void setLadderGrabKeys() {
+
 	if (mSettings.laddergrabcontrol == 1)
 		patchBytesM((BYTE*)(0x00469A89 + 2), (BYTE*)"\xE0\x00", 2); /* default R1  */
 	else if (mSettings.laddergrabcontrol == 2)
@@ -731,7 +734,7 @@ void setButtonPrompts() {
 	if (mSettings.buttonfont > 1 && mSettings.buttonfont < 5) {
 
 		if (!mSettings.isPs2Controls) {
-			if (!(mSettings.buttonfont == 3)){
+			if (!(mSettings.buttonfont == 3)) {
 				//Adjust ps2 button prompts to match xbox controls
 				patchByte((void*)0x005AD53A, 0x07); 
 				patchByte((void*)0x005AD53B, 0x06);
@@ -789,50 +792,10 @@ void setButtonPrompts() {
 	}
 	setHelperText(0x30B25099/*gap_regular_helper_text_xbox*/, 1, "\\b3 = Accept");
 	setHelperText(0xDDCF8C99/*gap_adjust_helper_text_xbox*/, 1, "\\b1/\\b2 = Rotate");
-
-	/*
-		fonts match the controls of their console
-
-		ps2 Helper text CAP / in level / speechboxes:
-		\\b0 FFFFFFE3 GRIND
-		\\b1 FFFFFFE4 FLIP
-		\\b2 FFFFFFE5 GRAB
-		\\b3 FFFFFFE6 OLLIE
-		\\b4 FFFFFFE7 arrowdown
-		\\b5 FFFFFFE8 arrowright
-		\\b6 FFFFFFE9 arrowleft
-		\\b7 FFFFFFEA arrowup
-		\\be 18 L1
-		\\bf 19 R1
-		\\bg 1A L2
-		\\bh 1B R2
-		\\bi 1C L1+R1
-
-		ps2 Helper text mainmenu/CAG:
-		\\bm 20 ollie
-		\\bn 21 grab
-		\\bo 22 flip
-		\\bp 23 grind
-		\\bq 24 L2 white
-		\\br 25 R2 black
-		\\bs 26 L1
-		\\bt 27 R1
-		\\b4 FFFFFFE7 arrowdown
-		\\b5 FFFFFFE8 arrowright
-		\\b6 FFFFFFE9 arrowleft
-		\\b7 FFFFFFEA arrowup
-		\\b8 FFFFFFEB ESC
-
-		xbox Helper text CAP / in level / speechboxes:
-		\\bh 1B black
-		[...]
-
-		xbox Helper text mainmenu/CAG:
-		[...]
-	*/
 }
 
 void setHelperText(uint32_t struct_checksum, int index, char* text) {
+
 	//scripts/engine/menu/helper_text.q
 	Script::LazyArray* helper_text_elements = nullptr;
 
