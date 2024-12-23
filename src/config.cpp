@@ -562,6 +562,7 @@ void loadSettings(struct modsettings* settingsOut) {
 		settingsOut->invertRYplayer1 = invertRYplayer1;
 		settingsOut->disableRXplayer1 = disableRXplayer1;
 		settingsOut->disableRYplayer1 = disableRYplayer1;
+		settingsOut->buttonfont = buttonfont;
 		settingsOut->chatsize = chatsize;
 		settingsOut->boardscuffs = boardscuffs;
 		settingsOut->dropdowncontrol = dropdowncontrol;

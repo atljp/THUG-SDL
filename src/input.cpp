@@ -119,6 +119,7 @@ EdCParkEditorInstance* ParkEd;
 CGoalManagerInstance* GoalMan;
 SkateInstance* Skate;
 int buffer = 0;
+bool is_released = 1;
 char* executableDirectory3[MAX_PATH];
 uint8_t numplayers = 0;
 int controllerCount;
@@ -394,53 +395,90 @@ void pollController(device* dev, SDL_GameController* controller) {
 				getStick(controller, padbinds.movement, &(dev->controlData[6]), &(dev->controlData[7]));
 			}
 			else {
-
-				/******************************************************************/
-				/*                                                                */
-				/*  Gameplay (in level & CAP editing) controls					  */
-				/******************************************************************/
-
-				// Buttons
-				if (getButton(controller, padbinds.menu)) {
-					dev->controlData[2] |= 0x01 << 3;
-				}
-				if (getButton(controller, padbinds.cameraToggle)) {
-					dev->controlData[2] |= 0x01 << 0;
-				}
-				if (getButton(controller, padbinds.cameraSwivelLock)) {
-					dev->controlData[2] |= 0x01 << 2;
-				}
-				if (getButton(controller, padbinds.grind)) {
-					dev->controlData[3] |= 0x01 << 4;
-					dev->controlData[12] = 0xff;
-				}
-				if (getButton(controller, padbinds.grab)) {
-					dev->controlData[3] |= 0x01 << 5;
-					dev->controlData[13] = 0xff;
-				}
-				if (getButton(controller, padbinds.ollie)) {
-					dev->controlData[3] |= 0x01 << 6;
-					dev->controlData[14] = 0xff;
-				}
-				if (getButton(controller, padbinds.kick)) {
-					dev->controlData[3] |= 0x01 << 7;
-					dev->controlData[15] = 0xff;
-				}
 				if (ParkEd->m_state == EEditorState::vEDITING) {
-					if (getButton(controller, padbinds.leftSpin)) {
-						dev->controlData[3] |= 0x01 << 2;
+
+					/******************************************************************/
+					/*                                                                */
+					/*  Gameplay (CAP editing) controls								  */
+					/******************************************************************/
+
+					if (getButton(controller, padbinds.menu)) {
+						dev->controlData[2] |= 0x01 << 3;
 					}
-					if (getButton(controller, padbinds.rightSpin)) {
-						dev->controlData[20] |= 0x01 << 0;
+					if (getButton(controller, padbinds.grind)) {
+						dev->controlData[3] |= 0x01 << 4;
 					}
-					if (getButton(controller, padbinds.nollie)) {
-						dev->controlData[3] |= 0x01 << 0;
+					if (getButton(controller, padbinds.grab)) {
+						dev->controlData[3] |= 0x01 << 5;
 					}
-					if (getButton(controller, padbinds.switchRevert)) {
-						dev->controlData[20] |= 0x01 << 1;
+					if (getButton(controller, padbinds.ollie)) {
+						dev->controlData[3] |= 0x01 << 6;
+					}
+					if (getButton(controller, padbinds.kick)) {
+						dev->controlData[3] |= 0x01 << 7;
+					}
+					if (inputsettings.isPs2Controls) {
+						if (getButton(controller, padbinds.leftSpin)) {
+							dev->controlData[3] |= 0x01 << 2;
+						}
+						if (getButton(controller, padbinds.rightSpin)) {
+							dev->controlData[20] |= 0x01 << 0;
+						}
+						if (getButton(controller, padbinds.nollie)) {
+							dev->controlData[3] |= 0x01 << 0;
+						}
+						if (getButton(controller, padbinds.switchRevert)) {
+							dev->controlData[20] |= 0x01 << 1;
+						}
+					}
+					else {
+						if (getButton(controller, padbinds.leftSpin)) {
+							dev->controlData[3] |= 0x01 << 0; // Lower
+						}
+						if (getButton(controller, padbinds.rightSpin)) {
+							dev->controlData[3] |= 0x01 << 2; // Raise
+						}
+						if (getButton(controller, padbinds.nollie)) {
+							dev->controlData[20] |= 0x01 << 1; // White
+						}
+						if (getButton(controller, padbinds.switchRevert)) {
+							dev->controlData[20] |= 0x01 << 0; // Black
+						}
 					}
 				}
 				else {
+
+					/******************************************************************/
+					/*                                                                */
+					/*  Gameplay (in level) controls								  */
+					/******************************************************************/
+
+					// Buttons
+					if (getButton(controller, padbinds.menu)) {
+						dev->controlData[2] |= 0x01 << 3;
+					}
+					if (getButton(controller, padbinds.cameraToggle)) {
+						dev->controlData[2] |= 0x01 << 0;
+					}
+					if (getButton(controller, padbinds.cameraSwivelLock)) {
+						dev->controlData[2] |= 0x01 << 2;
+					}
+					if (getButton(controller, padbinds.grind)) {
+						dev->controlData[3] |= 0x01 << 4;
+						dev->controlData[12] = 0xff;
+					}
+					if (getButton(controller, padbinds.grab)) {
+						dev->controlData[3] |= 0x01 << 5;
+						dev->controlData[13] = 0xff;
+					}
+					if (getButton(controller, padbinds.ollie)) {
+						dev->controlData[3] |= 0x01 << 6;
+						dev->controlData[14] = 0xff;
+					}
+					if (getButton(controller, padbinds.kick)) {
+						dev->controlData[3] |= 0x01 << 7;
+						dev->controlData[15] = 0xff;
+					}
 					// Shoulders
 					if (inputsettings.isPs2Controls) {
 						if (getButton(controller, padbinds.leftSpin)) {
@@ -555,8 +593,9 @@ void pollKeyboard(device* dev) {
 			/*  Menu controls													*/
 			/********************************************************************/
 
-			if (keyboardState[SDL_SCANCODE_SPACE]) {
+			if (keyboardState[SDL_SCANCODE_SPACE] && !buffer) {
 				dev->controlData[2] |= 0x01 << 3;
+				buffer = 20;
 			}
 			if (keyboardState[SDL_SCANCODE_ESCAPE] && !buffer) {
 				// In menus, ESC simulates the grab button
@@ -616,45 +655,78 @@ void pollKeyboard(device* dev) {
 			}
 		}
 		else {
+			if (ParkEd->m_state == EEditorState::vEDITING) {
 
-			/******************************************************************/
-			/*                                                                */
-			/*  Gameplay (in level & CAP editing) controls					  */
-			/******************************************************************/
+				/******************************************************************/
+				/*                                                                */
+				/*  Gameplay (ParkEd editing) PC controls						  */
+				/******************************************************************/
 
-			if (keyboardState[SDL_SCANCODE_ESCAPE] && !buffer) {
-				dev->controlData[2] |= 0x01 << 3;
+				if (keyboardState[SDL_SCANCODE_ESCAPE] && !buffer) {
+					dev->controlData[2] |= 0x01 << 3;
 					buffer = 20;
-			}
-			if (keyboardState[keybinds.cameraToggle]) {
-				dev->controlData[2] |= 0x01 << 0;
-			}
-			if (keyboardState[keybinds.cameraSwivelLock]) {
-				dev->controlData[2] |= 0x01 << 2;
-			}
-			if (keyboardState[keybinds.grind]) {
-				dev->controlData[3] |= 0x01 << 4;
-				dev->controlData[12] = 0xff;
-			}
-			if (keyboardState[keybinds.grab]) {
-				dev->controlData[3] |= 0x01 << 5;
-				dev->controlData[13] = 0xff;
-			}
-			if (keyboardState[keybinds.ollie]) {
-				dev->controlData[3] |= 0x01 << 6;
-				dev->controlData[14] = 0xff;
-			}
-			if (keyboardState[keybinds.kick]) {
-				dev->controlData[3] |= 0x01 << 7;
-				dev->controlData[15] = 0xff;
-			}
-			// Merge Switch/Revert + Right Spin for PC controls
-			if (keyboardState[keybinds.rightSpin]) {
-				
-				if (ParkEd->m_state == EEditorState::vEDITING) {
+				}
+				if (keyboardState[keybinds.grind]) {
+					dev->controlData[3] |= 0x01 << 4;
+				}
+				if (keyboardState[keybinds.grab]) {
+					dev->controlData[3] |= 0x01 << 5;
+				}
+				if (keyboardState[keybinds.ollie] && !buffer) {
+					dev->controlData[3] |= 0x01 << 6;
+					buffer = 20;
+				}
+				if (keyboardState[keybinds.kick]) {
+					dev->controlData[3] |= 0x01 << 7;
+				}
+				if (keyboardState[keybinds.rightSpin]) {
 					dev->controlData[3] |= 0x01 << 2; // Raise
 				}
-				else {
+				if (keyboardState[keybinds.leftSpin]) {
+					dev->controlData[3] |= 0x01 << 0; // Lower
+				}
+				if (keyboardState[keybinds.caveman]) { // Black
+					dev->controlData[20] |= 0x01 << 0;
+				}
+				if (keyboardState[keybinds.caveman2]) { // White
+					dev->controlData[20] |= 0x01 << 1;
+				}
+			}
+			else {
+
+				/******************************************************************/
+				/*                                                                */
+				/*  Gameplay (in level) controls								  */
+				/******************************************************************/
+
+				if (keyboardState[SDL_SCANCODE_ESCAPE] && !buffer) {
+					dev->controlData[2] |= 0x01 << 3;
+					buffer = 20;
+				}
+				if (keyboardState[keybinds.cameraToggle]) {
+					dev->controlData[2] |= 0x01 << 0;
+				}
+				if (keyboardState[keybinds.cameraSwivelLock]) {
+					dev->controlData[2] |= 0x01 << 2;
+				}
+				if (keyboardState[keybinds.grind]) {
+					dev->controlData[3] |= 0x01 << 4;
+					dev->controlData[12] = 0xff;
+				}
+				if (keyboardState[keybinds.grab]) {
+					dev->controlData[3] |= 0x01 << 5;
+					dev->controlData[13] = 0xff;
+				}
+				if (keyboardState[keybinds.ollie]) {
+					dev->controlData[3] |= 0x01 << 6;
+					dev->controlData[14] = 0xff;
+				}
+				if (keyboardState[keybinds.kick]) {
+					dev->controlData[3] |= 0x01 << 7;
+					dev->controlData[15] = 0xff;
+				}
+				// Merge Switch/Revert + Right Spin for PC controls
+				if (keyboardState[keybinds.rightSpin]) {
 					// Right spin
 					dev->controlData[3] |= 0x01 << 1;
 					dev->controlData[19] = 0xff;
@@ -662,13 +734,8 @@ void pollKeyboard(device* dev) {
 					dev->controlData[3] |= 0x01 << 3;
 					dev->controlData[17] = 0xff;
 				}
-			}
-			// Merge Nollie + Left Spin for PC controls
-			if (keyboardState[keybinds.leftSpin]) {
-				if (ParkEd->m_state == EEditorState::vEDITING) {
-					dev->controlData[3] |= 0x01 << 0; // Lower
-				}
-				else {
+				// Merge Nollie + Left Spin for PC controls
+				if (keyboardState[keybinds.leftSpin]) {
 					// Spin left
 					dev->controlData[3] |= 0x01 << 2;
 					dev->controlData[16] = 0xff;
@@ -676,12 +743,12 @@ void pollKeyboard(device* dev) {
 					dev->controlData[3] |= 0x01 << 0;
 					dev->controlData[18] = 0xff;
 				}
-			}
-			if (keyboardState[keybinds.caveman]) {
-				dev->controlData[20] |= 0x01 << 0;
-			}
-			if (keyboardState[keybinds.caveman2]) {
-				dev->controlData[20] |= 0x01 << 1;
+				if (keyboardState[keybinds.caveman]) {
+					dev->controlData[20] |= 0x01 << 0;
+				}
+				if (keyboardState[keybinds.caveman2]) {
+					dev->controlData[20] |= 0x01 << 1;
+				}
 			}
 			// ParkEditor item control
 			if (keyboardState[keybinds.item_up]) {
@@ -837,6 +904,9 @@ void processEvent(SDL_Event* e) {
 	case SDL_KEYDOWN:
 		setUsingKeyboard(1);
 		do_key_input((SDL_KeyCode)e->key.keysym.sym);
+		return;
+	case SDL_KEYUP:
+		is_released = 1;
 		return;
 	case SDL_CONTROLLERBUTTONDOWN: {
 		SDL_GameController* controller = SDL_GameControllerFromInstanceID(e->cdevice.which);

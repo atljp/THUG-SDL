@@ -141,6 +141,7 @@ struct modsettings {
 	uint8_t invertRYplayer1;
 	uint8_t disableRXplayer1;
 	uint8_t disableRYplayer1;
+	uint8_t buttonfont;
 	uint8_t chatsize;
 	uint8_t consolewaittime;
 	uint8_t boardscuffs;

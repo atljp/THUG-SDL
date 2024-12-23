@@ -71,7 +71,8 @@ void initScriptPatch() {
 	setDropDownKeys();
 	setCavemanKeys();
 	setLadderGrabKeys();
-	setButtonPrompts();
+	if (mSettings.buttonfont > 1 && mSettings.buttonfont <5) 
+		setButtonPrompts();
 }
 
 
@@ -122,7 +123,9 @@ LoadTextureFromBuffer_NativeCall LoadTextureFromBuffer_Native = (LoadTextureFrom
 
 bool IsPS2_Patched(void* pParams, DummyScript* pScript) {
 	if (pScript) {
-		if (pScript->mScriptNameChecksum == 0x255ED86F /*grind*/ || pScript->mScriptNameChecksum == 0x6AEC78DA /*check_for_neversoft_skaters*/)
+		if (pScript->mScriptNameChecksum == 0x255ED86F /*grind*/ || 
+			pScript->mScriptNameChecksum == 0x6AEC78DA /*check_for_neversoft_skaters*/ ||
+			(mSettings.isPs2Controls && pScript->mScriptNameChecksum == 0x9DB065AD /*parked_set_helper_text_mode*/))
 			return true;
 	}
 	return false;
@@ -333,8 +336,8 @@ bool SetScreenElementProps_Patched(Script::LazyStruct* pParams, DummyScript* pSc
 bool SetButtonEventMappings_Patched(Script::LazyStruct* pParams, DummyScript* pScript) {
 	if (pScript->mScriptNameChecksum == 0xE2602BAC /*setup_main_button_event_mappings*/) {
 
-		Script::LazyArray* ButtonEventMap_xbox = Script::LazyArray::s_create();
-		Script::LazyArray* ButtonMap = Script::LazyArray::s_create();
+		Script::LazyArray* ButtonEventMap_xbox = nullptr;
+		Script::LazyArray* ButtonMap = nullptr;
 
 		pParams->GetArray(0x87D839B8 /*xbox*/, &ButtonEventMap_xbox);
 
@@ -711,15 +714,35 @@ void setButtonPrompts() {
 
 		setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 3, "\\bg/\\bf = Lower/Raise"); //Set L2 in helper text to be displayed as L1
 		setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 4, "\\be/\\bh =Zoom"); //Set L1 in helper text to be displayed as L2
-		
+		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text_xbox*/, 4, "\\bg/\\bf =Lower/Raise");
+		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text_xbox*/, 5, "\\be/\\bh =Zoom");
+		setHelperText(0x8ebd23fd/*rail_editor_layout_helper_text_xbox*/, 3, "\\bg/\\bf =Lower/Raise");
+		setHelperText(0x8ebd23fd/*rail_editor_layout_helper_text_xbox*/, 4, "\\be/\\bh =Zoom");
+		setHelperText(0xFBC77044/*rail_editor_grab_helper_text_xbox*/, 3, "\\bg/\\bf =Lower/Raise");
+		setHelperText(0xFBC77044/*rail_editor_grab_helper_text_xbox*/, 4, "\\be/\\bh =Zoom");	
 	}
 	else {
-		setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 3, "\\be/\\bg =Raise/Lower");
-		setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 4, "\\bf/\\bh =Zoom");
-		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text_xbox*/, 4, "\\be/\\bg =Raise/Lower");
-		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text_xbox*/, 5, "\\bf/\\bh =Zoom");
-
-		//TODO adjust cas texts
+		//setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 3, "\\be/\\bg =Raise/Lower"); //Not needed since IsPs2 CFunc returns true for this script
+		//setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 4, "\\bf/\\bh =Zoom");
+		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text*/, 4, "\\be/\\bg =Raise/Lower");
+		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text*/, 5, "\\bf/\\bh =Zoom");
+		setHelperText(0x8ebd23fd /*rail_editor_layout_helper_text_xbox*/, 3, "\\be/\\bg =Raise/Lower");
+		setHelperText(0x8ebd23fd /*rail_editor_layout_helper_text_xbox*/, 4, "\\bf/\\bh =Zoom");
+		setHelperText(0xA737F35E/*gap_regular_helper_text*/, 0, "\\b0 = Delete");
+		setHelperText(0x093BCE23/*generic_helper_text_cas*/, 3, "\\bq/\\br = Rotate");
+		setHelperText(0x4F864854/*generic_helper_text_cas_z*/, 3, "\\bq/\\br = Rotate");
+		setHelperText(0x4F864854/*generic_helper_text_cas_z*/, 4, "\\bt = Zoom");
+		setHelperText(0xCE014F9E/*generic_helper_text_color_menu*/, 4, "\\bq/\\br=Rotate");
+		setHelperText(0x8452EC2D/*generic_helper_text_color_menu_z*/, 4, "\\bq/\\br=Rotate");
+		setHelperText(0x8452EC2D/*generic_helper_text_color_menu_z*/, 5, "\\bt = Zoom");
+		setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 1, "\\bq/\\br=Rotate");
+		setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 2, "\\bs=Reset");
+		setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 3, "\\bt=Zoom");
+		setHelperText(0xE6AD8FF7/*generic_helper_text_color_menu_reset_cad*/, 1, "\\bs=Reset");
+		
+		//TODO CAG buttons and controls
+		//setHelperText(0xA3E41086/*cag_helper_text*/,
+		//cag_helper_text_xbox
 	}
 	setHelperText(0xDDCF8C99/*gap_adjust_helper_text_xbox*/, 1, "\\b1/\\b2 = Rotate");
 
@@ -746,8 +769,8 @@ void setButtonPrompts() {
 		\\bn 21 grab
 		\\bo 22 flip
 		\\bp 23 grind
-		\\bq 24 R2
-		\\br 25 L2 white
+		\\bq 24 L2 white
+		\\br 25 R2 black
 		\\bs 26 L1
 		\\bt 27 R1
 		\\b4 FFFFFFE7 arrowdown
@@ -763,13 +786,6 @@ void setButtonPrompts() {
 		xbox Helper text mainmenu/CAG:
 		[...]
 	*/
-
-
-	//pc and xbox prompts correct for xbox (PC) controls
-	//then change l2 -> l1 for ps2 buttons ONLY FOR XBOX CONTROLS. This changes cap helper so fix again with: L1->L2
-	//also add ps2 layout for menu navigation
-	//remove s_create() from buttonlookup cfunc
-	//change help texts depending on ps2controls y/n
 }
 
 void setHelperText(uint32_t struct_checksum, int index, char* text) {
