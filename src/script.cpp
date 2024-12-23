@@ -67,12 +67,13 @@ void initScriptPatch() {
 	if (!mSettings.noadditionalscriptmods) {
 		editScriptsInMemory(); /*loads single functions of scripts and overwrites existing ones*/
 		Log::TypedLog(CHN_DLL, "Patching scripts in memory\n");
+		setButtonPrompts();
+		Log::TypedLog(CHN_DLL, "Adjusting button prompts\n");
 	}
 	setDropDownKeys();
 	setCavemanKeys();
 	setLadderGrabKeys();
-	if (mSettings.buttonfont > 1 && mSettings.buttonfont <5) 
-		setButtonPrompts();
+
 }
 
 
@@ -223,7 +224,7 @@ bool CreateScreenElement_Patched(Script::LazyStruct* pParams, DummyScript* pScri
 		}
 	}
 	
-	if (pScript->mScriptNameChecksum == 0x85E146D5) { /*create_snazzy_dialog_box*/
+	if (!mSettings.noadditionalscriptmods && pScript->mScriptNameChecksum == 0x85E146D5) { /*create_snazzy_dialog_box*/
 
 		pParams->GetChecksum(0x7321A8D6, &p_checksum, false);  /*type*/
 
@@ -727,48 +728,66 @@ void setLadderGrabKeys() {
 
 void setButtonPrompts() {
 
-	if (!mSettings.isPs2Controls) {
-		//Adjust ps2 button prompts to match xbox controls
-		patchByte((void*)0x005AD53A, 0x07);
-		patchByte((void*)0x005AD53B, 0x06);
-		patchByte((void*)0x005AD53C, 0x04);
-		patchByte((void*)0x005AD53D, 0x05);
-		patchByte((void*)0x005AD532, 0x07); //L1+R1 => R2
-		patchByte((void*)0x005AD530, 0x04); //patch bg -> be (L2 => L1)
-		patchByte((void*)0x005AD52E, 0x06); //patch be -> bg (L1 => L2)
+	if (mSettings.buttonfont > 1 && mSettings.buttonfont < 5) {
 
-		setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 3, "\\bg/\\bf = Lower/Raise"); //Set L2 in helper text to be displayed as L1
-		setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 4, "\\be/\\bh =Zoom"); //Set L1 in helper text to be displayed as L2
-		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text_xbox*/, 4, "\\bg/\\bf =Lower/Raise");
-		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text_xbox*/, 5, "\\be/\\bh =Zoom");
-		setHelperText(0x8ebd23fd/*rail_editor_layout_helper_text_xbox*/, 3, "\\bg/\\bf =Lower/Raise");
-		setHelperText(0x8ebd23fd/*rail_editor_layout_helper_text_xbox*/, 4, "\\be/\\bh =Zoom");
-		setHelperText(0xFBC77044/*rail_editor_grab_helper_text_xbox*/, 3, "\\bg/\\bf =Lower/Raise");
-		setHelperText(0xFBC77044/*rail_editor_grab_helper_text_xbox*/, 4, "\\be/\\bh =Zoom");	
+		if (!mSettings.isPs2Controls) {
+			if (!(mSettings.buttonfont == 3)){
+				//Adjust ps2 button prompts to match xbox controls
+				patchByte((void*)0x005AD53A, 0x07); 
+				patchByte((void*)0x005AD53B, 0x06);
+				patchByte((void*)0x005AD53C, 0x04);
+				patchByte((void*)0x005AD53D, 0x05);
+				patchByte((void*)0x005AD532, 0x07); //L1+R1 => R2
+				patchByte((void*)0x005AD530, 0x04); //patch bg -> be (L2 => L1)
+				patchByte((void*)0x005AD52E, 0x06); //patch be -> bg (L1 => L2)
+
+				setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 3, "\\bg/\\bf = Lower/Raise"); //Set L2 in helper text to be displayed as L1
+				setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 4, "\\be/\\bh =Zoom"); //Set L1 in helper text to be displayed as L2
+				setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text_xbox*/, 4, "\\bg/\\bf =Lower/Raise");
+				setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text_xbox*/, 5, "\\be/\\bh =Zoom");
+				setHelperText(0x8ebd23fd/*rail_editor_layout_helper_text_xbox*/, 3, "\\bg/\\bf =Lower/Raise");
+				setHelperText(0x8ebd23fd/*rail_editor_layout_helper_text_xbox*/, 4, "\\be/\\bh =Zoom");
+				setHelperText(0xFBC77044/*rail_editor_grab_helper_text_xbox*/, 3, "\\bg/\\bf =Lower/Raise");
+				setHelperText(0xFBC77044/*rail_editor_grab_helper_text_xbox*/, 4, "\\be/\\bh =Zoom");
+			}
+			else {
+				setHelperText(0x093BCE23/*generic_helper_text_cas*/, 3, "\\bq/\\br = Rotate");
+				setHelperText(0x4F864854/*generic_helper_text_cas_z*/, 3, "\\bq/\\br = Rotate");
+				setHelperText(0x4F864854/*generic_helper_text_cas_z*/, 4, "\\bt = Zoom");
+				setHelperText(0xCE014F9E/*generic_helper_text_color_menu*/, 4, "\\bq/\\br=Rotate");
+				setHelperText(0x8452EC2D/*generic_helper_text_color_menu_z*/, 4, "\\bq/\\br=Rotate");
+				setHelperText(0x8452EC2D/*generic_helper_text_color_menu_z*/, 5, "\\bt = Zoom");
+				setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 1, "\\bq/\\br=Rotate");
+				setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 2, "\\bs=Reset");
+				setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 3, "\\bt=Zoom");
+				setHelperText(0xE6AD8FF7/*generic_helper_text_color_menu_reset_cad*/, 1, "\\bs=Reset");
+			}
+		}
+		else {
+			//setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 3, "\\be/\\bg =Raise/Lower"); //Not needed since IsPs2 CFunc returns true for this script
+			//setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 4, "\\bf/\\bh =Zoom");
+			setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text*/, 4, "\\be/\\bg =Raise/Lower");
+			setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text*/, 5, "\\bf/\\bh =Zoom");
+			setHelperText(0x8ebd23fd /*rail_editor_layout_helper_text_xbox*/, 3, "\\be/\\bg =Raise/Lower");
+			setHelperText(0x8ebd23fd /*rail_editor_layout_helper_text_xbox*/, 4, "\\bf/\\bh =Zoom");
+			setHelperText(0xA737F35E/*gap_regular_helper_text*/, 0, "\\b0 = Delete");
+			setHelperText(0x093BCE23/*generic_helper_text_cas*/, 3, "\\bq/\\br = Rotate");
+			setHelperText(0x4F864854/*generic_helper_text_cas_z*/, 3, "\\bq/\\br = Rotate");
+			setHelperText(0x4F864854/*generic_helper_text_cas_z*/, 4, "\\bt = Zoom");
+			setHelperText(0xCE014F9E/*generic_helper_text_color_menu*/, 4, "\\bq/\\br=Rotate");
+			setHelperText(0x8452EC2D/*generic_helper_text_color_menu_z*/, 4, "\\bq/\\br=Rotate");
+			setHelperText(0x8452EC2D/*generic_helper_text_color_menu_z*/, 5, "\\bt = Zoom");
+			setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 1, "\\bq/\\br=Rotate");
+			setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 2, "\\bs=Reset");
+			setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 3, "\\bt=Zoom");
+			setHelperText(0xE6AD8FF7/*generic_helper_text_color_menu_reset_cad*/, 1, "\\bs=Reset");
+			setHelperText(0xA65EC4BA/*cag_helper_text_xbox*/, 3, "\\be/\\bg=Raise/Lower");
+			setHelperText(0xA65EC4BA/*cag_helper_text_xbox*/, 4, "\\bf/\\bh=Zoom");
+			setHelperText(0xE827750F/*cag_helper_text_no_back_xbox*/, 2, "\\be/\\bg = Raise/Lower");
+			setHelperText(0xE827750F/*cag_helper_text_no_back_xbox*/, 3, "\\bf/\\bh = Zoom");	
+		}
 	}
-	else {
-		//setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 3, "\\be/\\bg =Raise/Lower"); //Not needed since IsPs2 CFunc returns true for this script
-		//setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 4, "\\bf/\\bh =Zoom");
-		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text*/, 4, "\\be/\\bg =Raise/Lower");
-		setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text*/, 5, "\\bf/\\bh =Zoom");
-		setHelperText(0x8ebd23fd /*rail_editor_layout_helper_text_xbox*/, 3, "\\be/\\bg =Raise/Lower");
-		setHelperText(0x8ebd23fd /*rail_editor_layout_helper_text_xbox*/, 4, "\\bf/\\bh =Zoom");
-		setHelperText(0xA737F35E/*gap_regular_helper_text*/, 0, "\\b0 = Delete");
-		setHelperText(0x093BCE23/*generic_helper_text_cas*/, 3, "\\bq/\\br = Rotate");
-		setHelperText(0x4F864854/*generic_helper_text_cas_z*/, 3, "\\bq/\\br = Rotate");
-		setHelperText(0x4F864854/*generic_helper_text_cas_z*/, 4, "\\bt = Zoom");
-		setHelperText(0xCE014F9E/*generic_helper_text_color_menu*/, 4, "\\bq/\\br=Rotate");
-		setHelperText(0x8452EC2D/*generic_helper_text_color_menu_z*/, 4, "\\bq/\\br=Rotate");
-		setHelperText(0x8452EC2D/*generic_helper_text_color_menu_z*/, 5, "\\bt = Zoom");
-		setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 1, "\\bq/\\br=Rotate");
-		setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 2, "\\bs=Reset");
-		setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 3, "\\bt=Zoom");
-		setHelperText(0xE6AD8FF7/*generic_helper_text_color_menu_reset_cad*/, 1, "\\bs=Reset");
-		setHelperText(0xA65EC4BA/*cag_helper_text_xbox*/, 3, "\\be/\\bg=Raise/Lower");
-		setHelperText(0xA65EC4BA/*cag_helper_text_xbox*/, 4, "\\bf/\\bh=Zoom");
-		setHelperText(0xE827750F/*cag_helper_text_no_back_xbox*/, 2, "\\be/\\bg = Raise/Lower");
-		setHelperText(0xE827750F/*cag_helper_text_no_back_xbox*/, 3, "\\bf/\\bh = Zoom");	
-	}
+	setHelperText(0x30B25099/*gap_regular_helper_text_xbox*/, 1, "\\b3 = Accept");
 	setHelperText(0xDDCF8C99/*gap_adjust_helper_text_xbox*/, 1, "\\b1/\\b2 = Rotate");
 
 	/*
@@ -814,7 +833,6 @@ void setButtonPrompts() {
 }
 
 void setHelperText(uint32_t struct_checksum, int index, char* text) {
-
 	//scripts/engine/menu/helper_text.q
 	Script::LazyArray* helper_text_elements = nullptr;
 
@@ -831,18 +849,24 @@ char* setText(const char* text_content, const char* old_word, const char* new_wo
 	int count = 0; 
 	int old_word_len = strlen(old_word); 
 	int new_word_len = strlen(new_word); 
+
 	// Count occurrences of old_word in text_content 
 	while ((pos = strstr(pos, old_word)) != NULL) { 
 		++count; pos += old_word_len; 
-	} // Allocate memory for the new string 
+	} 
+	
+	// Allocate memory for the new string 
 	char* result = new char[strlen(text_content) + count * (new_word_len - old_word_len) + 1]; 
 	char* current_pos = result; // Replace old_word with new_word 
+
 	while ((pos = strstr(text_content, old_word)) != NULL) { 
 		int len = pos - text_content; 
 		strncpy(current_pos, text_content, len); 
 		current_pos += len; strcpy(current_pos, new_word); 
 		current_pos += new_word_len; text_content = pos + old_word_len; 
-	} // Copy the remaining part of the text_content 
+	} 
+	
+	// Copy the remaining part of the text_content 
 	strcpy(current_pos, text_content); 
 	return result; 
 }
