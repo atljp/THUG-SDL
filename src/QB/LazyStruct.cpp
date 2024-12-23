@@ -237,6 +237,18 @@ namespace Script {
 	}
 
 	//---------------------------------------
+	// Get text
+	//---------------------------------------
+
+	typedef bool(__thiscall* GetText_NativeCall)(LazyStruct* struc, uint32_t checksum, const char** pp_text, bool assert);
+	GetText_NativeCall GetText_Native = (GetText_NativeCall)(0x00410CE0);
+
+	bool LazyStruct::GetText(uint32_t checksum, const char** pp_text, bool assert)
+	{
+		return GetText_Native(this, checksum, pp_text, assert);
+	}
+
+	//---------------------------------------
 	// Add integer
 	//---------------------------------------
 

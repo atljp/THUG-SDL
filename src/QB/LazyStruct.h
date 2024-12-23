@@ -54,6 +54,7 @@ namespace Script
 		int GetInteger(uint32_t qbKey);
 		float GetFloat(uint32_t qbKey);
 		bool GetChecksum(uint32_t checksum, uint32_t* p_checksum, bool assert);
+		bool LazyStruct::GetText(uint32_t checksum, const char** pp_text, bool assert);
 		void AddInteger(uint32_t checksum, int value);
 		void AddPair(uint32_t nameChecksum, float x, float y);
 		void AddChecksum(uint32_t qbKey, uint32_t value);

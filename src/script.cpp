@@ -169,18 +169,20 @@ bool GetMemCardSpaceAvailable_Patched(void* pParams, /*ebp + 0x8*/
 bool CreateScreenElement_Patched(Script::LazyStruct* pParams, DummyScript* pScript) {
 	
 	SkateInstance* Skate = (SkateInstance*)*(uint32_t*)(0x0076A788);
+	uint32_t p_checksum = 0;
 
 	if (Skate->m_cur_level == 0x9F2BAFB7 /*load_skateshop*/ && getaspectratio() > 1.34f) {
 
-		if (pScript->mScriptNameChecksum == 0x7C92D11A) {  /*script: make_mainmenu_3d_plane*/
-			uint32_t p_checksum = 0;
+		if (pScript->mScriptNameChecksum == 0x7C92D11A) {  /*make_mainmenu_3d_plane*/
 			pParams->GetChecksum(0x40C698AF, &p_checksum, false);  /*id*/
 			if (p_checksum == 0xBC4B9584) /*bg_plane*/
 				pParams->AddInteger(0xED7C6031, -281); /*cameraz*/
 		}
 	}
-	else if (!mSettings.noadditionalscriptmods && mSettings.chatsize && mSettings.chatsize < 5){
-		if (pScript->mScriptNameChecksum == 0xCCB19938) { /*create_console_message*/
+	else if (pScript->mScriptNameChecksum == 0xCCB19938) { /*create_console_message*/
+
+		if (!mSettings.noadditionalscriptmods && mSettings.chatsize && mSettings.chatsize < 5) {
+
 			//4 big: scale 1.0, padding_scale 0.85
 			//3 default: scale 0.8, padding_scale 0.65
 			//2 small: scale 0.5, padding_scale 0.45
@@ -200,7 +202,10 @@ bool CreateScreenElement_Patched(Script::LazyStruct* pParams, DummyScript* pScri
 				break;
 			}
 		}
-		else if (pScript->mScriptNameChecksum == 0xEBC4A74E) { /*create_console*/
+	}
+	else if (pScript->mScriptNameChecksum == 0xEBC4A74E) { /*create_console*/
+
+		if (!mSettings.noadditionalscriptmods && mSettings.chatsize && mSettings.chatsize < 5) {
 			switch (mSettings.chatsize) {
 			case 1:
 				pParams->AddFloat(0x6D853B88, 0.25); /*padding_scale*/
@@ -214,6 +219,26 @@ bool CreateScreenElement_Patched(Script::LazyStruct* pParams, DummyScript* pScri
 			case 4:
 				pParams->AddFloat(0x6D853B88, 0.85); /*padding_scale*/
 				break;
+			}
+		}
+	}
+	
+	if (pScript->mScriptNameChecksum == 0x85E146D5) { /*create_snazzy_dialog_box*/
+
+		pParams->GetChecksum(0x7321A8D6, &p_checksum, false);  /*type*/
+
+		if (p_checksum == 0x5200DFB6 || p_checksum == 0x40D92263) { /*textelement, textBlockElement*/
+
+			const char* text_content_gs;
+
+			pParams->GetText(0xC4745838/*text*/, &text_content_gs, 0);
+			if (strstr(text_content_gs, "GameSpy")) {
+				char* text_content_os = setText(text_content_gs, "GameSpy", "OpenSpy");
+				pParams->AddString(0xC4745838/*text*/, text_content_os);
+			}
+			else if (strstr(text_content_gs, "GAMESPY")) {
+				char* text_content_os = setText(text_content_gs, "GAMESPY", "OPENSPY");
+				pParams->AddString(0xC4745838/*text*/, text_content_os);
 			}
 		}
 	}
@@ -799,4 +824,25 @@ void setHelperText(uint32_t struct_checksum, int index, char* text) {
 		if (helper_text_elements)
 			helper_text_elements->GetStructure(index)->AddString(0xC4745838, text); /*text*/
 	}
+}
+
+char* setText(const char* text_content, const char* old_word, const char* new_word) {
+	const char* pos = text_content; 
+	int count = 0; 
+	int old_word_len = strlen(old_word); 
+	int new_word_len = strlen(new_word); 
+	// Count occurrences of old_word in text_content 
+	while ((pos = strstr(pos, old_word)) != NULL) { 
+		++count; pos += old_word_len; 
+	} // Allocate memory for the new string 
+	char* result = new char[strlen(text_content) + count * (new_word_len - old_word_len) + 1]; 
+	char* current_pos = result; // Replace old_word with new_word 
+	while ((pos = strstr(text_content, old_word)) != NULL) { 
+		int len = pos - text_content; 
+		strncpy(current_pos, text_content, len); 
+		current_pos += len; strcpy(current_pos, new_word); 
+		current_pos += new_word_len; text_content = pos + old_word_len; 
+	} // Copy the remaining part of the text_content 
+	strcpy(current_pos, text_content); 
+	return result; 
 }
