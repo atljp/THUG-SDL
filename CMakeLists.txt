@@ -21,6 +21,8 @@ set(SOURCE_FILES
 	"${SRC}/QB/CFuncs.cpp"
 	"${SRC}/Mod/mod_template.cpp"
 	"${SRC}/modloader.cpp"
+	"${SRC}/event.cpp"
+	"${SRC}/Util/sb.cpp"
 )
 
 set(HEADER_FILES
@@ -41,6 +43,8 @@ set(HEADER_FILES
 	"${SRC}/QB/scriptcontent.h"
 	"${SRC}/Mod/mod_template.h"
 	"${SRC}/modloader.h"
+	"${SRC}/event.h"
+	"${SRC}/Util/sb.h"
 )
 
 find_package(SDL2 REQUIRED)

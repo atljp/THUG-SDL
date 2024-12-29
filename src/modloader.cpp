@@ -23,8 +23,8 @@ PreMgrLoadPre_NativeCall PreMgrLoadPre = (PreMgrLoadPre_NativeCall)(0x0057F7F0);
 typedef void(__thiscall* PreMgrLoadPre_NativeCall2)(void* arg1, uint8_t* arg2, char* arg3);
 PreMgrLoadPre_NativeCall2 PreMgrLoadPre2 = (PreMgrLoadPre_NativeCall2)(0x0057FDD0);
 
-typedef void ParseQB_NativeCall(const char* p_fileName, uint8_t* p_qb, int ecx, int assertIfDuplicateSymbols, bool allocateChecksumNameLookupTable);
-ParseQB_NativeCall* ParseQB_Native = (ParseQB_NativeCall*)(0x00472420); //thug2
+//typedef void ParseQB_NativeCall(const char* p_fileName, uint8_t* p_qb, int ecx, int assertIfDuplicateSymbols, bool allocateChecksumNameLookupTable);
+//ParseQB_NativeCall* ParseQB_Native = (ParseQB_NativeCall*)(0x00472420); //thug2
 
 //##############################
 std::unordered_set<std::string> all_pre_files() {

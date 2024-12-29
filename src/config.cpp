@@ -15,6 +15,9 @@ uint8_t* clipping_distance = (uint8_t*)(0x007D0E0C);		//0x01 - 0x64 val
 uint16_t* clipping_distance2 = (uint16_t*)(0x007D0E0C+4);	//0x64 - 0x253 val*5 +95 maybe
 HWND* hwnd = (HWND*)0x007CEC88;								// Referenced at 0x005C3386
 SDL_Window* window;
+float default_clipping_distance = 96000.0f;
+uint32_t* resolution_setting = (uint32_t*)0x007D0E08;
+uint8_t* isFocused = (uint8_t*)0x00768FA9;
 
 uint8_t isWindowed;
 int8_t isBorderless;
@@ -37,6 +40,8 @@ uint8_t consolewaittime;
 uint8_t noadditionalscriptmods;
 uint8_t savewindowposition;
 uint8_t menubuttons;
+bool disablefsgamma;
+bool disableblur;
 bool writefile;
 bool appendlog;
 int windowposx;
@@ -49,8 +54,8 @@ int defWidth;
 int defHeight;
 graphicsSettings graphics_settings;
 
-typedef uint32_t ButtonLookup_NativeCall(char* button);
-ButtonLookup_NativeCall* ButtonLookup_Native = (ButtonLookup_NativeCall*)(0x00401E40);
+typedef uint32_t dehexifyDigit_NativeCall(char* button);
+dehexifyDigit_NativeCall* dehexifyDigit_Native = (dehexifyDigit_NativeCall*)(0x00401E40);
 
 typedef uint32_t __cdecl GlobalGetArrayAsInt_NativeCall(uint32_t nameChecksum);
 GlobalGetArrayAsInt_NativeCall* GlobalGetArrayAsInt_Native = (GlobalGetArrayAsInt_NativeCall*)(0x00413650);
@@ -79,6 +84,8 @@ void InitPatch() {
 	buttonfont = GetPrivateProfileInt(MISC_SECTION, "ButtonFont", 1, configFile);
 	intromovies = getIniBool(MISC_SECTION, "IntroMovies", 1, configFile);
 	boardscuffs = getIniBool(MISC_SECTION, "Boardscuffs", 1, configFile);
+	disablefsgamma = getIniBool(GRAPHICS_SECTION, "DisableFullscreenGamma", 0, configFile);
+	disableblur = getIniBool(GRAPHICS_SECTION, "DisableBlur", 1, configFile);
 	graphics_settings.antialiasing = getIniBool(GRAPHICS_SECTION, "AntiAliasing", 0, configFile);
 	graphics_settings.hqshadows = GetPrivateProfileInt(GRAPHICS_SECTION, "HQShadows", 0, configFile);
 	graphics_settings.distanceclipping = getIniBool(GRAPHICS_SECTION, "DistanceClipping", 0, configFile);
@@ -196,6 +203,13 @@ void InitPatch() {
 	/*Ledge warp fix*/
 	patchCall((void*)0x00569081, (void*)&fix_floating_precision);
 
+	/*Disable gamma*/
+	if (disablefsgamma)
+		patchByte((void*)0x004AF860, 0xC3);
+
+	if (disableblur)
+		patchBytesM((void*)0x00477AF0, (BYTE*)"\xB0\x01\xC3\x90\x90", 5);
+
 	/*Connection fix*/
 	patchCall((void*)0x004E056A, (void*)&runProfileConnectScript);
 	patchByte((void*)0x004CF330, 0xEB);
@@ -229,7 +243,6 @@ void patchStaticValues() {
 	patchBytesM((void*)(0x004B78D0 + 1), (BYTE*)"\x1C\x02", 2);
 	patchBytesM((void*)(0x004B78FA + 4), (BYTE*)"\xC0\x03", 2);
 	patchBytesM((void*)(0x004F8060 + 1), (BYTE*)"\xFF\x01", 2);
-	patchBytesM((void*)0x00477AF0, (BYTE*)"\xB0\x01\xC3\x90\x90", 5);
 
 	srand(time(0));
 	patchCall((void*)0x00424BEB, &Rnd_fixed);
@@ -242,6 +255,9 @@ void patchStaticValues() {
 	/*Increase main memory region*/
 	patchBytesM((void*)(0x0057C45F + 3), (BYTE*)"\x00\x10", 2);
 	patchBytesM((void*)(0x0057C47A + 3), (BYTE*)"\x00\x10", 2);
+
+	/* Expand default clipping distance to avoid issues in large level backgrounds (I.E. hawaii), thanks PARTYMANX */
+	patchDWord((void*)(0x004B9D8B + 2), (uint32_t)&default_clipping_distance);
 }
 
 void enforceMaxResolution() {
@@ -274,19 +290,56 @@ void enforceMaxResolution() {
 	}
 }
 
+void handleWindowEvent(SDL_Event* e) {
+
+	switch (e->type) {
+	case SDL_WINDOWEVENT:
+		if (e->window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
+			*(uint8_t*)0x0072DE00 = 0; // recreate_device
+
+			//Stop music playback
+			patchByte((void*)0x00422B78, 0x74);
+			patchByte((void*)0x00422B90, 0x74);
+			patchByte((void*)0x00425807, 0x75);
+		}
+		else if (e->window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
+			*(uint8_t*)0x0072DE00 = 1;
+			*isFocused = 1;
+
+			//Resume music playback
+			patchByte((void*)0x00422B78, 0x75);
+			patchByte((void*)0x00422B90, 0x75);
+			patchByte((void*)0x00425807, 0x74);
+		}
+		return;
+	default:
+		return;
+	}
+}
+
 void createSDLWindow() {
-	
+
+	registerEventHandler(handleWindowEvent);
+
 	SDL_Init(SDL_INIT_VIDEO);
 
-	uint32_t flags = isWindowed ? (SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE) : SDL_WINDOW_FULLSCREEN;
+	uint32_t flags = isWindowed ? SDL_WINDOW_SHOWN : SDL_WINDOW_FULLSCREEN;
 
-	if (isWindowed && isBorderless) {
+	if (isBorderless && isWindowed) {
 		flags |= SDL_WINDOW_BORDERLESS;
 	}
 
-	/* Fullscreen mode: Sets resX and resY to 0 if the resolution from INI is not supported on the device. */
-	/* Window mode : Sets resX and resY to 0 if the resolution from INI is bigger than the max supported one */
+	//*isFullscreen = !isWindowed;
+	if (isWindowed) {
+		// switch a couple of variables being set for better register selection
+		patchDWord((void*)(0x004B78BA + 2), 0x0072DDD8);
+		patchDWord((void*)(0x004B795C + 2), 0x0072DDE8);
+		patchByte((void*)(0x004B795C + 1), 0x1D);	// set fullscreen to 0
+	}
+
 	enforceMaxResolution();
+
+	*resolution_setting = 0;
 
 	if (resX == 0 || resY == 0) {
 		resX = defWidth;
@@ -304,12 +357,12 @@ void createSDLWindow() {
 
 	Log::TypedLog(CHN_DLL, "Aspect ratio: %f\n", getaspectratio());
 
+	bool windows_created = false;
 	if (isWindowed) {
+		BOOL dpi_result = SetProcessDPIAware();
 		if (savewindowposition) {
 			window = SDL_CreateWindow(window_title, windowposx ? windowposx : SDL_WINDOWPOS_CENTERED, windowposy ? windowposy : SDL_WINDOWPOS_CENTERED, resX, resY, flags);
-		}
-		else {
-			window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, flags);
+			windows_created = true;
 		}
 		if (isBorderless) {
 			SDL_Renderer* Renderer = SDL_CreateRenderer(window, -1, 0);
@@ -317,37 +370,43 @@ void createSDLWindow() {
 		}
 		SDL_SetWindowResizable(window, SDL_TRUE);
 	}
-	else {
-		window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, flags);
-	}
 
-	if (!window)
+	if (!windows_created)
+		window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, flags);
+
+	if (!window) {
 		Log::TypedLog(CHN_SDL, "Failed to create window! Error: %s\n", SDL_GetError());
-	else
-		Log::TypedLog(CHN_SDL, "Window successfully created!\n");
+	}
 
 	SDL_SysWMinfo wmInfo;
 	SDL_VERSION(&wmInfo.version);
 	SDL_GetWindowWMInfo(window, &wmInfo);
 	*hwnd = wmInfo.info.win.window;
-	*(int*)0x00768FA9 = 1; // isfocused flag
-	*(int*)0x007ccbe4 = 1; // anotherisfocused flag
 
-	if (isWindowed) {
-		patchJump((void*)0x004B78BA, &forceWindowmode); /*gross hack to force window mode in D3DPRESENTPARAMS*/
-		SDL_ShowCursor(1);
-	}
-	else {
-		SDL_ShowCursor(0);
-	}
+	*isFocused = 1;
 
-	/* patch resolution of the window */
-	patchDWord((void*)(0x004B790A+4), resX);
-	patchDWord((void*)(0x004B78E9+4), resY);
+	// patch resolution setting
+	patchDWord((void*)(0x004B790A + 4), resX);
+	patchDWord((void*)(0x004B78E9 + 4), resY);
 
-	/* set aspect ratio and FOV */
+	// set aspect ratio and FOV
 	patchJump((void*)0x00485050, setAspectRatio);
 	patchJump((void*)0x00485090, getScreenAngleFactor);
+
+	if (isWindowed)
+		SDL_ShowCursor(1);
+	else
+		SDL_ShowCursor(0);
+}
+
+void getWindowDimensions(uint32_t* width, uint32_t* height) {
+	if (width) {
+		*width = resX;
+	}
+
+	if (height) {
+		*height = resY;
+	}
 }
 
 void writeConfigValues() {
@@ -425,7 +484,7 @@ void __declspec(naked) forceWindowmode() {
 	}
 }
 
-uint32_t patchButtonLookup(char* p_button) {
+uint32_t dehexifyDigit_Wrapper(char* p_button) {
 	uint8_t value = *p_button;
 	uint8_t original_value = *p_button;
 	uint8_t base = *(p_button - 0x30);
@@ -475,7 +534,7 @@ uint32_t patchButtonLookup(char* p_button) {
 	}
 	else { return 0; }
 
-	/* return ButtonLookup_Native(button); */
+	/* return dehexifyDigit_Native(button); */
 	/* Original implementation */
 	/*
 	uint8_t value = *p_button;
@@ -548,7 +607,7 @@ void patch_button_font(uint8_t sel) {
 
 	if (1 < sel && sel < 5) {
 		patchCall((void*)0x00478B8D, patchMetaButtonMap);
-		patchCall((void*)0x004AF394, patchButtonLookup);
+		patchCall((void*)0x004AF394, dehexifyDigit_Wrapper);
 
 		patchNop((void*)0x4af3c6, 3);
 		patchBytesM((void*)0x4af3c9, (BYTE*)"\x80\xF9\x12", 3);

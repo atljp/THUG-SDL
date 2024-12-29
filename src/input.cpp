@@ -9,6 +9,7 @@
 #include "keycodes.h"
 #include <QB/LazyStruct.h>
 #include <QB/Qb.h>
+#include <Util/sb.h>
 
 /******************************************************************/
 /*                                                                */
@@ -107,6 +108,10 @@ struct playerslot {
 // Separate menu controls
 uint8_t* isMenu = (uint8_t*)0x0076A7A7;
 
+// For pause buffer
+uint8_t* otherIsMenu = (uint8_t*)0x0076A7A4;
+uint8_t isInMenu = 0;
+
 // Check for key_on_screen flag: If a text entry prompt is on-screen, keybinds don't interfere with text entry confirmation/cancellation
 uint8_t* keyboard_on_screen = (uint8_t*)0x0076A7A6;
 
@@ -120,6 +125,7 @@ CGoalManagerInstance* GoalMan;
 SkateInstance* Skate;
 int buffer = 0;
 bool is_released = 1;
+bool instances_initialized = false;
 char* executableDirectory3[MAX_PATH];
 uint8_t numplayers = 0;
 int controllerCount;
@@ -128,6 +134,7 @@ struct modsettings inputsettings;
 struct keybinds keybinds;
 struct controllerbinds padbinds;
 struct playerslot players[MAX_PLAYERS] = { { NULL, 0 }, { NULL, 0 } };
+int* shouldQuit = (int*)0x007CEC8C;
 
 typedef bool __cdecl ScriptObjectExists_NativeCall(Script::LazyStruct* params);
 ScriptObjectExists_NativeCall* ScriptObjectExists_Native = (ScriptObjectExists_NativeCall*)(0x0041FD90);
@@ -343,7 +350,8 @@ void pollController(device* dev, SDL_GameController* controller) {
 		dev->isValid = 1;
 		dev->isPluggedIn = 1;
 
-		if (!*keyboard_on_screen && ParkEd) {
+		// We don't check for keyboard_onscreen since the onscreen keyboard is displayed
+		if (ParkEd) {
 
 			if (shouldUseMenuControls()) {
 
@@ -618,6 +626,9 @@ void pollKeyboard(device* dev) {
 
 	if (!*keyboard_on_screen && ParkEd) { 
 
+		// Setup for pause buffer
+		isInMenu = ((*isMenu || *otherIsMenu) && !(ParkEd->m_state == EEditorState::vEDITING));
+
 		if (shouldUseMenuControls()) {
 
 			/********************************************************************/
@@ -731,6 +742,10 @@ void pollKeyboard(device* dev) {
 				/*  Gameplay (in level) controls								  */
 				/******************************************************************/
 
+				if (keyboardState[0x41]) {
+					RunScript(0xfba6378a, nullptr, nullptr, nullptr); //launch_chat_keyboard
+				}
+
 				if (keyboardState[SDL_SCANCODE_ESCAPE] && !buffer) {
 					dev->controlData[2] |= 0x01 << 3;
 					buffer = 20;
@@ -839,6 +854,28 @@ void pollKeyboard(device* dev) {
 	}
 }
 
+// EXTREME HACK: keep pause buffer behavior for speedrunning
+// when transitioning from menu to game and pause is held, pulse off for one frame
+// this only applies to controller at the moment, the bind switching makes it a bit too complex for keyboard while not breaking the CAS menu
+// Thanks PARTYMANX
+uint8_t prev_menu_button_pause_buffer = 0;
+
+void doPauseBuffer(device* dev) {
+
+	uint8_t buttonPressed = (dev->controlData[2] & (0x01 << 3)) != 0;
+
+	if (isInMenu == 1 && buttonPressed && prev_menu_button_pause_buffer == 1) {
+		dev->controlData[2] &= ~(0x01 << 3);
+	}
+
+	if (isInMenu && buttonPressed) {
+		prev_menu_button_pause_buffer = 1;
+	}
+	else {
+		prev_menu_button_pause_buffer = 0;
+	}
+}
+
 
 /******************************************************************/
 /*                                                                */
@@ -911,7 +948,7 @@ void do_text_input(char* text) {
 /* Event processing												  */
 /******************************************************************/
 
-void processEvent(SDL_Event* e) {
+void handleInputEvent(SDL_Event* e) {
 	switch (e->type) {
 	case SDL_CONTROLLERDEVICEADDED:
 		if (SDL_IsGameController(e->cdevice.which)) {
@@ -965,42 +1002,6 @@ void processEvent(SDL_Event* e) {
 	case SDL_CONTROLLERAXISMOTION:
 		setUsingKeyboard(0);
 		return;
-	case SDL_QUIT: {
-		if (inputsettings.savewindowposition)
-			dumpWindowPosition();
-		Sleep(800);
-		PostQuitMessage(0);
-		int* shouldQuit = (int*)0x007CEC8C;
-		*shouldQuit = 1;
-
-		return;
-	}
-	case SDL_WINDOWEVENT: {
-		if (e->window.event == SDL_WINDOWEVENT_FOCUS_LOST) {
-			//Focus flag
-			*(int*)0x007ccbe4 = 0;
-
-			//Stop music playback
-			patchByte((void*)0x00422B78, 0x74);
-			patchByte((void*)0x00422B90, 0x74);
-			patchByte((void*)0x00425807, 0x75);
-		}
-		else if (e->window.event == SDL_WINDOWEVENT_FOCUS_GAINED) {
-			//Focus flag
-			//*(int*)0x007ccbe4 = 1;
-			if (!*(int*)0x0072DE00)
-				*(int*)0x0072DE00 = 1;
-
-			//Device recreation
-			*(int*)0x00786ab4 = 1;
-
-			//Resume music playback
-			patchByte((void*)0x00422B78, 0x75); //window focused: 0x75, unfocused 0x74
-			patchByte((void*)0x00422B90, 0x75); //window focused: 0x75, unfocused 0x74
-			patchByte((void*)0x00425807, 0x74); //window focused: 0x74, unfocused 0x75 => related to music playback
-		}
-		return;
-	}
 	case SDL_TEXTINPUT:
 		do_text_input(e->text.text);
 		return;
@@ -1009,11 +1010,22 @@ void processEvent(SDL_Event* e) {
 	}
 }
 
-void processEvents() {
-	SDL_Event e;
-	while (SDL_PollEvent(&e)) {
-		processEvent(&e);
+void handleQuitEvent(SDL_Event* e) {
+	switch (e->type) {
+	case SDL_QUIT: {
+		if (inputsettings.savewindowposition)
+			dumpWindowPosition();
+
+		*shouldQuit = 1;
+		return;
 	}
+	default:
+		return;
+	}
+}
+
+void fastExit() {
+	exit(0);
 }
 
 void __cdecl processController(device* dev) {
@@ -1025,13 +1037,10 @@ void __cdecl processController(device* dev) {
 	dev->vibrationData_max[0] = 255;
 	dev->vibrationData_max[1] = 255;
 	dev->state = 2;
-	dev->actuatorsDisabled = 0;
+	//dev->actuatorsDisabled = 0;
 
-	SDL_Event e;
-	while (SDL_PollEvent(&e)) {
-		processEvent(&e);
-	}
-
+	handleEvents();
+	
 	dev->isValid = 0;
 	dev->isPluggedIn = 0;
 
@@ -1084,6 +1093,11 @@ void __cdecl processController(device* dev) {
 			pollController(dev, players[dev->port].controller);
 		}
 	}
+
+	if (dev->port == 0) {
+		doPauseBuffer(dev);
+	}
+
 	dev->controlData[2] = ~dev->controlData[2];
 	dev->controlData[3] = ~dev->controlData[3];
 
@@ -1139,6 +1153,12 @@ void __stdcall initManager() {
 
 	initSDLControllers();
 
+	registerEventHandler(handleInputEvent);
+
+	// Fast exit
+	registerEventHandler(handleQuitEvent);
+	patchCall((void*)0x004BFF1E, fastExit);
+
 	if (inputsettings.isPs2Controls) {
 		patchPs2Buttons();
 	}
@@ -1162,7 +1182,7 @@ void patchPs2Buttons() {
 	patchByte((void*)(0x00452226 + 2), 0x05);	// Change PC platform to gamecube. This just makes it default to ps2 controls. Needed for rail DD on R2
 
 	// walk acid drop.
-	// On R2 on PS2
+	// R2 on PS2
 	patchBytesM((void*)0x00463773, (BYTE*)"\x0F\x85\x09\x00\x00\x00", 6);
 
 	//in_air_acid_drop
@@ -1171,7 +1191,7 @@ void patchPs2Buttons() {
 	//in_air_to_break
 	patchBytesM((void*)0x0056C00D, (BYTE*)"\x75\x09", 2);
 
-	//??
+	//r2l2_air_recover
 	patchBytesM((void*)0x0056BB6F, (BYTE*)"\x75\x07", 2);
 
 	//??
@@ -1180,21 +1200,31 @@ void patchPs2Buttons() {
 	//??
 	patchNop((void*)0x0046383C, 13);
 
-	//??
+	//r2l2_break_vert1
 	patchBytesM((void*)0x00565488, (BYTE*)"\x0F\x85\x0D\x00\x00\x00", 6);
+
+	//r2l2_break_vert2
 	patchBytesM((void*)0x005654A2, (BYTE*)"\x0F\x85\x0D\x00\x00\x00", 6);
 }
 
 void initializeInstance() {
-	ParkEd = (EdCParkEditorInstance*)*(uint32_t*)(0x007C992C);
-	Skate = (SkateInstance*)*(uint32_t*)(0x0076A788);
-	GoalMan = GameGetGoalManager_Native(); //Points to start of GoalMan. Not needed (yet)
 
-	// Gross? Remove call inside callee
-	patchNop((void*)0x00581730, 5);
+	if (!instances_initialized) {
+		ParkEd = (EdCParkEditorInstance*)*(uint32_t*)(0x007C992C);
+		Skate = (SkateInstance*)*(uint32_t*)(0x0076A788);
+		//GoalMan = GameGetGoalManager_Native(); //Points to start of GoalMan. Not needed (yet)
+
+		if (ParkEd && Skate)
+			instances_initialized = true;
+	}
+	else {
+		// Gross? Callee cleans up
+		patchCall((void*)0x00408123, (void*)0x004A4F00);
+	}
 }
 
 void patchInput() {
+
 	// Patch SIO::Device
 	// Process
 	patchThisToCdecl((void*)0x00581A20, &processController);
@@ -1202,13 +1232,11 @@ void patchInput() {
 
 	// set_actuator
 	// Don't call read_data in activate_actuators
-	patchCall((void*)0x00581730, initializeInstance); //These were 7 NOPs before, initialize ParkEdInstance handle here instead
-	patchNop((void*)0x00581735, 2);
-	patchCall((void*)0x0058182C, set_actuators);
-	patchCall((void*)0x00581885, set_actuators);
-	patchCall((void*)0x00581922, set_actuators);
-	patchCall((void*)0x005819B2, set_actuators);
-	patchCall((void*)0x00581A0E, set_actuators);
+	patchNop((void*)0x00581730, 7); //call_device_read
+	patchJump((void*)0x005C4200, set_actuators);
+
+	// Initialize ParkEdInstance handle here
+	patchCall((void*)0x00408123, initializeInstance);
 
 	// Init input patch - nop direct input setup
 	patchNop((void*)0x005C56AB, 47);
@@ -1220,10 +1248,7 @@ void patchInput() {
 	// Patch F1 button for taunt
 	patchByte((void*)(0x004C82E5+1), 0x1F);
 
-	patchJump((void*)0x005C30E0, processEvents);
-
-	//TODO, THAW addresses:
-	// addr_procevents 0x006b3110
-	// addr_unfocuspoll 0x004365b5
-	// addr_fmvunfocuspoll 0x004374c8
+	// Init events
+	initEvents();
+	patchJump((void*)0x005C30E0, handleEvents);
 }

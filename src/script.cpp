@@ -6,6 +6,7 @@ bool boardscuffpatched = false;
 uint32_t addr_sCreateScriptSymbol = 0x0040AF40;
 uint32_t addr_sCreateSymbolOfTheFormNameEqualsValue = 0x0040D1D0;
 LPVOID pResource_oslogo;
+LPVOID pResource_keyboard_restored;
 
 struct DummyScript
 {
@@ -73,7 +74,6 @@ void initScriptPatch() {
 	setDropDownKeys();
 	setCavemanKeys();
 	setLadderGrabKeys();
-
 }
 
 
@@ -136,7 +136,7 @@ bool IsPS2_Patched(void* pParams, DummyScript* pScript) {
 bool IsXBOX_Patched(void* pParams, DummyScript* pScript) {
 
 	if (pScript->mScriptNameChecksum == 0xEF384924 /*load_textures_to_main_memory*/) {
-			LoadTextureFromBuffer_Native(*(int*)0x00707840, (uint8_t*)pResource_oslogo, 0x4000, 0x2074BEAE /*gslogo*/, true, true, true);
+			LoadTextureFromBuffer_Native(*(int*)0x00707840, (uint8_t*)pResource_oslogo, sizeof(pResource_oslogo), 0x2074BEAE /*gslogo*/, true, true, true);
 			return false;
 	}
 	return true;
@@ -225,6 +225,21 @@ bool CreateScreenElement_Patched(Script::LazyStruct* pParams, DummyScript* pScri
 			}
 		}
 	}
+	else if (pScript->mScriptNameChecksum == 0x361F992E) { /*create_timeline_trick_info*/
+
+		const char* text_content_cat_info;
+
+		pParams->GetText(0xC4745838/*text*/, &text_content_cat_info, 0);
+		if (strstr(text_content_cat_info, "(\\bq)")) {
+			if (!(mSettings.isPs2Controls) && mSettings.buttonfont == 3) {
+				pParams->AddString(0xC4745838/*text*/, "(\\bt)");
+			}
+			else {
+				pParams->AddString(0xC4745838/*text*/, "(\\br)");
+			}
+		}
+	}
+
 	if (!mSettings.noadditionalscriptmods && pScript->mScriptNameChecksum == 0x85E146D5) { /*create_snazzy_dialog_box*/
 
 		pParams->GetChecksum(0x7321A8D6, &p_checksum, false);  /*type*/
@@ -484,6 +499,13 @@ void editScriptsInMemory() {
 		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)change_level_new);
 		sCreateScriptSymbol_Wrapper(sizeof(change_level_new), 0x39C58EA1, contentsChecksum, (uint8_t*)change_level_new, "game\\skutils.qb");
 
+		//Restore onscreen keyboard
+		if (pResource_keyboard_restored = getResource(IDR_KEYBOARD_RESTORED)) {
+			removeScript(0xF0425254); /*create_onscreen_keyboard*/
+			contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)pResource_keyboard_restored);
+			sCreateScriptSymbol_Wrapper(5896, 0xF0425254, contentsChecksum, (uint8_t*)pResource_keyboard_restored, "engine\\menu\\keyboard.qb");
+		}
+
 		if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
 	}
 }
@@ -734,8 +756,12 @@ void setButtonPrompts() {
 	if (mSettings.buttonfont > 1 && mSettings.buttonfont < 5) {
 
 		if (!mSettings.isPs2Controls) {
-			if (!(mSettings.buttonfont == 3)) {
-				//Adjust ps2 button prompts to match xbox controls
+
+			/* XBOX controls */
+			if (mSettings.buttonfont != 3) {
+				
+				/* PS2 font (and ngc but we don't care about that) */
+
 				patchByte((void*)0x005AD53A, 0x07); 
 				patchByte((void*)0x005AD53B, 0x06);
 				patchByte((void*)0x005AD53C, 0x04);
@@ -754,6 +780,9 @@ void setButtonPrompts() {
 				setHelperText(0xFBC77044/*rail_editor_grab_helper_text_xbox*/, 4, "\\be/\\bh =Zoom");
 			}
 			else {
+
+				/* XBOX font */
+
 				setHelperText(0x093BCE23/*generic_helper_text_cas*/, 3, "\\bq/\\br = Rotate");
 				setHelperText(0x4F864854/*generic_helper_text_cas_z*/, 3, "\\bq/\\br = Rotate");
 				setHelperText(0x4F864854/*generic_helper_text_cas_z*/, 4, "\\bt = Zoom");
@@ -764,9 +793,14 @@ void setButtonPrompts() {
 				setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 2, "\\bs=Reset");
 				setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 3, "\\bt=Zoom");
 				setHelperText(0xE6AD8FF7/*generic_helper_text_color_menu_reset_cad*/, 1, "\\bs=Reset");
+
+
 			}
 		}
 		else {
+
+			/* PS2 controls*/
+
 			//setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 3, "\\be/\\bg =Raise/Lower"); //Not needed since IsPs2 CFunc returns true for this script
 			//setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 4, "\\bf/\\bh =Zoom");
 			setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text*/, 4, "\\be/\\bg =Raise/Lower");
@@ -792,6 +826,25 @@ void setButtonPrompts() {
 	}
 	setHelperText(0x30B25099/*gap_regular_helper_text_xbox*/, 1, "\\b3 = Accept");
 	setHelperText(0xDDCF8C99/*gap_adjust_helper_text_xbox*/, 1, "\\b1/\\b2 = Rotate");
+
+	/* CAT menu*/
+	if (mSettings.isPs2Controls) {
+
+		removeScript(0x0CA5D7F8); /*add_timeline_helper_text*/
+		uint32_t contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)add_timeline_helper_text_ps2_controls_ps2font);
+		sCreateScriptSymbol_Wrapper(sizeof(add_timeline_helper_text_ps2_controls_ps2font), 0x0CA5D7F8, contentsChecksum, (uint8_t*)add_timeline_helper_text_ps2_controls_ps2font, "game\\menu\\catmenu.qb");
+	}
+	else {
+		if (mSettings.buttonfont != 3) {
+
+			/* PS2 and PC font (and ngc but we still don't care about it).
+			XBOX font is already correct except for the spin on/off text which is handled in CreateScreenElement_Patched */
+
+			removeScript(0x0CA5D7F8); /*add_timeline_helper_text*/
+			uint32_t contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)add_timeline_helper_text_xbox_controls_ps2font);
+			sCreateScriptSymbol_Wrapper(sizeof(add_timeline_helper_text_xbox_controls_ps2font), 0x0CA5D7F8, contentsChecksum, (uint8_t*)add_timeline_helper_text_xbox_controls_ps2font, "game\\menu\\catmenu.qb");
+		}
+	}
 }
 
 void setHelperText(uint32_t struct_checksum, int index, char* text) {
