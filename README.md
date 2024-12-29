@@ -20,12 +20,20 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 
 - Unofficial port of [partymod-thaw](https://github.com/PARTYMANX/partymod-thaw)
 - Replaced input system entirely with new, modern system using the SDL2 library
-- Improved window handling allowing for custom resolutions and configurable windowing (windowed mode, 4k)
-- - IMPORTANT: Fullscreen is currently not working (Dec. 2024)
+- Improved window handling allowing for custom resolutions and configurable windowing (4k resolution, (borderless) windowed mode)
 - Stability fixes
+- Increased default clipping distance for large levels
+- Added pause buffer for speedrunning (menu to game transition with pause button held)
+- Option to toggle blur effects
+- Option to toggle the fullscreen gamma correction which makes the game looks too dark
+- Restored the onscreen keyboard (gamepad only)
+- Increased speed when exiting the game
 
 ### Controls
 - Native gamepad support
+- Restore original menu navigation for Xbox and Ps2 layouts
+- Option to use "grind" in menus to go back (original ps2 layout)
+- Fix incorrect button prompts in textboxes and helper texts
 - Adjustable keys for Rail Drop Downs
 - Adjustable keys for Caveman
 - Adjustable keys for ladder/rail grab
@@ -35,6 +43,7 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 
 ### Online
 - Openspy support
+- Replace GameSpy with OpenSpy in texts and images
 - Menu to load online settings
 - Longer text input in quick chat
 - No chat reset after net games started/ended
@@ -56,7 +65,6 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Create-A-Skater: Board scaling
 
 ## TODO
-- Window in fullscreen mode hangs after alt-tabbing
 - Modloader
 - Crash logs
 
