@@ -4,7 +4,7 @@
 #include "displayconfig.h"
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_syswm.h"
-#include "Resources/MyResources.h"
+#include "Resources/Resources.h"
 
 #pragma data_seg (".d3d9_shared")
 HINSTANCE gl_hOriginalDll;

@@ -28,13 +28,15 @@ namespace Log
 
 	void Initialize();
 	//void CoreLog(const char* to_log, const char* category = CHN_LOG);
+	void Log(const char* Format, ...);
 	void PrintLog(const char* Format, ...);
 	void TypedLog(const char* category, const char* Format, ...);
-	void StringFromParams(char* print_dest, Script::LazyStruct* pParams, void* pScript);
+	void StringFromParams(char* print_dest, Script::LazyStruct* pParams);
 	bool CFunc_PrintF(Script::LazyStruct* pParams, void* pScript);
+	bool CFunc_ScriptAssert(Script::LazyStruct* pParams);
     //void CoreWarn(char* buf, bool is_warning);
 	//void Warn(const char* Format, ...);
-	//void Error(const char* Format, ...);
+	void Error(const char* Format, ...);
 	//void PatchCFuncs();
     //void PatchLogger();
     //void PrintStructItem(LazyStructItem *item);

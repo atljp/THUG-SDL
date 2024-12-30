@@ -16,15 +16,17 @@
 #include "patch.h"
 #include "input.h"
 #include "Logger/Logger.h"
+#include "Logger/ErrorManager.h"
 #include "QB/CFuncs.h"
 #include "QB/LazyArray.h"
 #include "QB/scriptcontent.h"
 #include "QB/malloc.h"
-#include "Resources/MyResources.h"
+#include "Resources/Resources.h"
 #include "modloader.h"
 
 #define CONFIG_FILE_NAME "thugsdl.ini"
 #define GRAPHICS_SECTION "Graphics"
+#define LOG_SECTION "Logger"
 #define KEYBIND_SECTION "Keybinds"
 #define CONTROLLER_SECTION "Gamepad"
 #define MISC_SECTION "Miscellaneous"
@@ -34,7 +36,7 @@
 #define MOD_SECTION "AdditionalMods"
 #define CHAT_SECTION "Chat"
 #define VERSION_NUMBER_MAJOR 0
-#define VERSION_NUMBER_MINOR 6
+#define VERSION_NUMBER_MINOR 8
 
 struct keybinds {
 	//SDL_Scancode menu;

@@ -1,4 +1,0 @@
-#include "MyResources.h"
-
-IDR_OSLOGO RCDATA "oslogo.img"
-IDR_KEYBOARD_RESTORED RCDATA "onscreen_keyboard_restored_scriptcontent.qb"

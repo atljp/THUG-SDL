@@ -54,8 +54,8 @@ namespace Log {
 
 			if (!f_logger)
 				PrintLog("Failed to create debug.txt file.\n");
-			if (!f_tracer)
-				PrintLog("Failed to create trace.txt file.\n");
+			//if (!f_tracer)
+			//	PrintLog("Failed to create trace.txt file.\n");
 		}
 	}
 
@@ -74,6 +74,22 @@ namespace Log {
 			fputs(to_log, f_logger);
 			fflush(f_logger);
 		}
+	}
+
+	//------------------------
+	// Prints log message, with arguments!
+	//------------------------
+
+	void Log(const char* Format, ...)
+	{
+		char final_buffer[2000];
+
+		va_list args;
+		va_start(args, Format);
+		vsnprintf(final_buffer, 2000, Format, args);
+		va_end(args);
+
+		CoreLog(final_buffer, CHN_LOG);
 	}
 
 	//------------------------
@@ -106,17 +122,40 @@ namespace Log {
 		CoreLog(final_buffer, category);
 	}
 
+	//------------------------
+	// Print a nasty error!
+	//------------------------
+
+	void Error(const char* Format, ...)
+	{
+		//THAWPlus::DebugScriptCallstack();
+
+		char final_buffer[2000];
+
+		va_list args;
+		va_start(args, Format);
+		vsnprintf(final_buffer, 2000, Format, args);
+		va_end(args);
+
+		char finalString[2048];
+		sprintf(finalString, "CRITICAL: %s", final_buffer);
+		Log("%s\n\n", finalString);
+
+		MessageBox(NULL, final_buffer, "Critical Error", MB_ICONERROR);
+
+		ExitProcess(0);
+	}
 
 	//------------------------
 	// Format string from pParams (built-in function)
 	//------------------------
 
-	typedef bool StringFromParamCall(char* print_dest, Script::LazyStruct* pParams, void* pScript);
+	typedef bool StringFromParamCall(char* print_dest, Script::LazyStruct* pParams);
 	StringFromParamCall* s_from_params = (StringFromParamCall*)(0x00525700); //0x0044C840 = THUG2 , wrong? 0x00496D10
 
-	void StringFromParams(char* print_dest, Script::LazyStruct* pParams,void* pScript)
+	void StringFromParams(char* print_dest, Script::LazyStruct* pParams)
 	{
-		s_from_params(print_dest, pParams, pScript);
+		s_from_params(print_dest, pParams);
 	}
 
 	//------------------------
@@ -126,12 +165,34 @@ namespace Log {
 	bool CFunc_PrintF(Script::LazyStruct* pParams, void* pScript)
 	{
 		char buf[3000];
-		StringFromParams(buf, pParams, pScript);
+		StringFromParams(buf, pParams);
 
 		TypedLog(CHN_LOG, "%s", buf);
 
 		return 1;
 	}
 
+	//------------------------
+	// Function to replace plain ScriptAssert!
+	//
+	// REMEMBER: This should be FATAL and only used
+	// when the game should show an error message.
+	//------------------------
+
+	bool CFunc_ScriptAssert(Script::LazyStruct* pParams)
+	{
+		char buf[2048];
+		StringFromParams(buf, pParams);
+
+		TypedLog(CHN_LOG, "%s", buf);
+
+		if (l_ExitOnAssert)
+		{
+			Error(buf);
+			return true;
+		}
+
+		return 1;
+	}
 
 }

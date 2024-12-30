@@ -63,10 +63,10 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Create-A-Skater: Unlimited 3 axes scaling
 - Create-A-Skater: Increased color ranges
 - Create-A-Skater: Board scaling
+- Exception Handler for debugging crashes. Doesn't work on Windows 11
 
 ## TODO
 - Modloader
-- Crash logs
 
 ## BUILDING
 
@@ -101,6 +101,6 @@ The `.sln` file is in the `build` directory. Make sure to select win32 and Relea
 
 - PARTYMANX: Original development of Partymod. Thanks for the help and patience!
 - %.gone.: Clownjob'd mod for THUG which provided useful insights
-- Zedek the Plague Doctor ™: LazyStruct and LazyArray classes, Logger and lots of script-related helper code
+- Zedek the Plague Doctor ™: LazyStruct and LazyArray classes, Logger and ExceptionHandler and lots of script-related helper code
 - Hardronix: DirectX9 and general code support
 - Thanks to everyone who tested this mod during development!

@@ -8,13 +8,14 @@ set(SRC "${CMAKE_SOURCE_DIR}/src")
 set(SOURCE_FILES
 	"${SRC}/main.cpp"
 	"${SRC}/exports.def"
-	"${SRC}/Resources/MyResources.rc"
+	"${SRC}/Resources/Resources.rc"
 	"${SRC}/patch.cpp"
 	"${SRC}/config.cpp"
 	"${SRC}/input.cpp"
 	"${SRC}/script.cpp"
 	"${SRC}/displayconfig.cpp"
 	"${SRC}/Logger/Logger.cpp"
+	"${SRC}/Logger/ErrorManager.cpp"
 	"${SRC}/QB/LazyStruct.cpp"
 	"${SRC}/QB/LazyArray.cpp"
 	"${SRC}/QB/QB.cpp"
@@ -26,7 +27,7 @@ set(SOURCE_FILES
 )
 
 set(HEADER_FILES
-	"${SRC}/Resources/MyResources.h"
+	"${SRC}/Resources/Resources.h"
 	"${SRC}/d3d9.h"
 	"${SRC}/patch.h"
 	"${SRC}/config.h"
@@ -35,6 +36,7 @@ set(HEADER_FILES
 	"${SRC}/script.h"
 	"${SRC}/keycodes.h"
 	"${SRC}/Logger/Logger.h"
+	"${SRC}/Logger/ErrorManager.h"
 	"${SRC}/QB/LazyStruct.h"
 	"${SRC}/QB/LazyArray.h"
 	"${SRC}/QB/malloc.h"
@@ -61,7 +63,7 @@ target_sources(${PROJECT_NAME_VAR} PRIVATE
 	${HEADER_FILES}
 )
 
-target_link_libraries(${PROJECT_NAME_VAR} PUBLIC ${LIBS})
+target_link_libraries(${PROJECT_NAME_VAR} PUBLIC ${LIBS} dbghelp)
 
 target_include_directories(${PROJECT_NAME_VAR} PUBLIC
 	"${PROJECT_SOURCE_DIR}/src"

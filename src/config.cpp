@@ -12,7 +12,7 @@ uint8_t* hq_shadows = (uint8_t*)0x007D0E01;
 uint8_t* distance_clipping = (uint8_t*)(0x007D0E06);
 uint8_t* fog = (uint8_t*)(0x007D0E02);
 uint8_t* clipping_distance = (uint8_t*)(0x007D0E0C);		//0x01 - 0x64 val
-uint16_t* clipping_distance2 = (uint16_t*)(0x007D0E0C+4);	//0x64 - 0x253 val*5 +95 maybe
+uint16_t* clipping_distance2 = (uint16_t*)(0x007D0E0C+4);	//0x64 - 0x253 val*5 + 95 maybe
 HWND* hwnd = (HWND*)0x007CEC88;								// Referenced at 0x005C3386
 SDL_Window* window;
 float default_clipping_distance = 96000.0f;
@@ -40,6 +40,7 @@ uint8_t consolewaittime;
 uint8_t noadditionalscriptmods;
 uint8_t savewindowposition;
 uint8_t menubuttons;
+bool exceptionhandler;
 bool disablefsgamma;
 bool disableblur;
 bool writefile;
@@ -77,9 +78,10 @@ void InitPatch() {
 	/* Refer to new function for grabbing amount of CFuncs */
 	patchCall((void*)0x0052CDE2, (void*)CFuncs::Pointer_FunctionCount());
 
-	console = GetPrivateProfileInt(MISC_SECTION, "Console", 0, configFile);
-	writefile = getIniBool(MISC_SECTION, "WriteFile", 0, configFile);
-	appendlog = getIniBool(MISC_SECTION, "AppendLog", 0, configFile);
+	console = GetPrivateProfileInt(LOG_SECTION, "Console", 0, configFile);
+	writefile = getIniBool(LOG_SECTION, "WriteFile", 0, configFile);
+	appendlog = getIniBool(LOG_SECTION, "AppendLog", 0, configFile);
+	exceptionhandler = getIniBool(LOG_SECTION, "ExceptionHandler", 0, configFile);
 	language = GetPrivateProfileInt(MISC_SECTION, "Language", 1, configFile);
 	buttonfont = GetPrivateProfileInt(MISC_SECTION, "ButtonFont", 1, configFile);
 	intromovies = getIniBool(MISC_SECTION, "IntroMovies", 1, configFile);
@@ -117,6 +119,13 @@ void InitPatch() {
 		Log::Initialize();
 		patchDWord((void*)0x00686AF4, (uint32_t)&Log::CFunc_PrintF);
 		if (console == 2) { patchJump((void*)0x004019D0, &Log::PrintLog); }
+	}
+
+	/* Register error handler */
+	if (exceptionhandler) {
+		CFuncs::RedirectFunction("ScriptAssert", (void*)Log::CFunc_ScriptAssert);
+		ErrorManager::Initialize();
+		ErrorManager::IgnoreVectoredExceptions(true);
 	}
 
 	Log::TypedLog(CHN_DLL, "THUG SDL %d.%d\n", VERSION_NUMBER_MAJOR, VERSION_NUMBER_MINOR);

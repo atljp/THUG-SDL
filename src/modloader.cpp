@@ -11,6 +11,8 @@ char ini_file[MAX_PATH];
 bool filemissing = FALSE;
 char to_be_injected[60];
 
+LPVOID pResource_template;
+
 typedef void __cdecl PIPLoadPre_NativeCall(uint8_t* p_data);
 PIPLoadPre_NativeCall* PIPLoadPre_Native = (PIPLoadPre_NativeCall*)(0x0057DD90);//0x0057E200);
 
@@ -22,6 +24,9 @@ PreMgrLoadPre_NativeCall PreMgrLoadPre = (PreMgrLoadPre_NativeCall)(0x0057F7F0);
 
 typedef void(__thiscall* PreMgrLoadPre_NativeCall2)(void* arg1, uint8_t* arg2, char* arg3);
 PreMgrLoadPre_NativeCall2 PreMgrLoadPre2 = (PreMgrLoadPre_NativeCall2)(0x0057FDD0);
+
+typedef uint8_t* __cdecl pipLoad_NativeCall(char* p_fileName);
+pipLoad_NativeCall* pipLoad_Native = (pipLoad_NativeCall*)(0x0057E840);
 
 //typedef void ParseQB_NativeCall(const char* p_fileName, uint8_t* p_qb, int ecx, int assertIfDuplicateSymbols, bool allocateChecksumNameLookupTable);
 //ParseQB_NativeCall* ParseQB_Native = (ParseQB_NativeCall*)(0x00472420); //thug2
@@ -449,8 +454,6 @@ void InitMod()
 	// Only load mods if it's activated in the ini
 	if (mExtModsettings.usemod) {
 
-		//MessageBox(0, "Quazar C-function Test", "It works!", MB_OK | MB_ICONHAND);
-
 		// Check if modfolder and mod.ini are valid
 		// When successful, we have a handle to the specified mod.ini and the mod folder. The mod name will also be passed to the window title bar
 		if (getModIni()) {
@@ -485,11 +488,14 @@ void InitMod()
 				patchCall((void*)0x0052CD74, PIPLoadPre_Wrapper);
 				patchCall((void*)0x0057E087, PIPLoadPre_Wrapper);
 
-				//Everything else maybe
 				patchCall((void*)0x0057FD37, PreMgrLoadPre_Wrapper);
 				patchCall((void*)0x00526DA2, PreMgrLoadPre_Wrapper2);
 				patchCall((void*)0x0057FEA4, PreMgrLoadPre_Wrapper2);
 				Log::TypedLog(CHN_MOD, "Patching PIP::LoadPre and PreMgr::LoadPre\n");
+
+				// For qb files. Get resource handle in Resources.rc and Resources.h
+				//if (pResource_template = getResource(IDR_MANUALTRICKS))
+				//	patchCall((void*)0x0040A049, pipLoadWrapper);
 			}
 		}	
 	}
@@ -515,34 +521,10 @@ void InitMod()
 	*/
 }
 
-/*
-* TODO: Add the option to load loose qb files
-* patchCall((void*)0x0046EEA3, ParseQB_Patched); // loads script files
-void ParseQB_Patched(const char* p_fileName, uint8_t* p_qb, int unused, int assertIfDuplicateSymbols, bool allocateChecksumNameLookupTable)
-{
-	if (!strcmp(p_fileName, "scripts\\game\\skater\\physics.qb")) {
-		//ParseQB_Native(p_fileName, (uint8_t*)"pre\\imaginemod\\gamemenu_levelselect.qb", 1, assertIfDuplicateSymbols, allocateChecksumNameLookupTable);
+uint8_t* __cdecl pipLoadWrapper(char* p_fileName, int unk1, int unk2, int unk3, int unk4) {
 
-		const char* filePath = "D:\\Tony Hawk's 6 - Underground 2\\Game\\Data\\pre\\imaginemod\\physics.qb";
+	if (!strcmp(p_fileName, "scripts\\game\\skater\\manualtricks.qb"))
+		return (uint8_t*)pResource_template;
 
-		// Open the file in binary mode
-		std::ifstream file(filePath, std::ios::binary | std::ios::ate);
-		std::streamsize size = file.tellg();
-		file.seekg(0, std::ios::beg);
-		uint8_t* buffer = new uint8_t[size];
-		if (!file.read(reinterpret_cast<char*>(buffer), size)) {
-			std::cerr << "Failed to read the file." << std::endl;
-			delete[] buffer;
-		}
-		file.close();
-		uint8_t* ptr = buffer;
-		printf("replacing physics.qb");
-		ParseQB_Native("scripts\\game\\skater\\physics.qb", ptr, 1, assertIfDuplicateSymbols, allocateChecksumNameLookupTable);
-		delete[] buffer;
-	}
-	else {
-		ParseQB_Native(p_fileName, p_qb, 1, assertIfDuplicateSymbols, allocateChecksumNameLookupTable);
-	}
+	return pipLoad_Native(p_fileName);;
 }
-*/
-
