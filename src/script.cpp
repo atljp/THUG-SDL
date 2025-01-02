@@ -182,80 +182,82 @@ bool CreateScreenElement_Patched(Script::LazyStruct* pParams, DummyScript* pScri
 				pParams->AddInteger(0xED7C6031, -281); /*cameraz*/
 		}
 	}
-	else if (pScript->mScriptNameChecksum == 0xCCB19938) { /*create_console_message*/
 
-		if (!mSettings.noadditionalscriptmods && mSettings.chatsize && mSettings.chatsize < 5) {
+	if (!mSettings.noadditionalscriptmods) {
+		if (pScript->mScriptNameChecksum == 0xCCB19938) { /*create_console_message*/
 
-			//4 big: scale 1.0, padding_scale 0.85
-			//3 default: scale 0.8, padding_scale 0.65
-			//2 small: scale 0.5, padding_scale 0.45
-			//1 extra small scale 0.3, padding_scale 0.25
-			switch (mSettings.chatsize) {
-			case 1:
-				pParams->AddFloat(0x13B9DA7B, 0.3); /*scale*/
-				break;
-			case 2:
-				pParams->AddFloat(0x13B9DA7B, 0.5); /*scale*/
-				break;
-			case 3:
-				pParams->AddFloat(0x13B9DA7B, 0.8); /*scale*/
-				break;
-			case 4:
-				pParams->AddFloat(0x13B9DA7B, 1.0); /*scale*/
-				break;
+			if (mSettings.chatsize && mSettings.chatsize < 5) {
+
+				//4 big: scale 1.0, padding_scale 0.85
+				//3 default: scale 0.8, padding_scale 0.65
+				//2 small: scale 0.5, padding_scale 0.45
+				//1 extra small scale 0.3, padding_scale 0.25
+				switch (mSettings.chatsize) {
+				case 1:
+					pParams->AddFloat(0x13B9DA7B, 0.3); /*scale*/
+					break;
+				case 2:
+					pParams->AddFloat(0x13B9DA7B, 0.5); /*scale*/
+					break;
+				case 3:
+					pParams->AddFloat(0x13B9DA7B, 0.8); /*scale*/
+					break;
+				case 4:
+					pParams->AddFloat(0x13B9DA7B, 1.0); /*scale*/
+					break;
+				}
 			}
 		}
-	}
-	else if (pScript->mScriptNameChecksum == 0xEBC4A74E) { /*create_console*/
+		else if (pScript->mScriptNameChecksum == 0xEBC4A74E) { /*create_console*/
 
-		if (!mSettings.noadditionalscriptmods && mSettings.chatsize && mSettings.chatsize < 5) {
-			switch (mSettings.chatsize) {
-			case 1:
-				pParams->AddFloat(0x6D853B88, 0.25); /*padding_scale*/
-				break;
-			case 2:
-				pParams->AddFloat(0x6D853B88, 0.45); /*padding_scale*/
-				break;
-			case 3:
-				pParams->AddFloat(0x6D853B88, 0.65); /*padding_scale*/
-				break;
-			case 4:
-				pParams->AddFloat(0x6D853B88, 0.85); /*padding_scale*/
-				break;
+			if (mSettings.chatsize && mSettings.chatsize < 5) {
+				switch (mSettings.chatsize) {
+				case 1:
+					pParams->AddFloat(0x6D853B88, 0.25); /*padding_scale*/
+					break;
+				case 2:
+					pParams->AddFloat(0x6D853B88, 0.45); /*padding_scale*/
+					break;
+				case 3:
+					pParams->AddFloat(0x6D853B88, 0.65); /*padding_scale*/
+					break;
+				case 4:
+					pParams->AddFloat(0x6D853B88, 0.85); /*padding_scale*/
+					break;
+				}
 			}
 		}
-	}
-	else if (pScript->mScriptNameChecksum == 0x361F992E) { /*create_timeline_trick_info*/
+		else if (pScript->mScriptNameChecksum == 0x361F992E) { /*create_timeline_trick_info*/
 
-		const char* text_content_cat_info;
+			const char* text_content_cat_info;
 
-		pParams->GetText(0xC4745838/*text*/, &text_content_cat_info, 0);
-		if (strstr(text_content_cat_info, "(\\bq)")) {
-			if (!(mSettings.isPs2Controls) && mSettings.buttonfont == 3) {
-				pParams->AddString(0xC4745838/*text*/, "(\\bt)");
-			}
-			else {
-				pParams->AddString(0xC4745838/*text*/, "(\\br)");
+			pParams->GetText(0xC4745838/*text*/, &text_content_cat_info, 0);
+			if (strstr(text_content_cat_info, "(\\bq)")) {
+				if (!(mSettings.isPs2Controls) && mSettings.buttonfont == 3) {
+					pParams->AddString(0xC4745838/*text*/, "(\\bt)");
+				}
+				else {
+					pParams->AddString(0xC4745838/*text*/, "(\\br)");
+				}
 			}
 		}
-	}
+		else if (pScript->mScriptNameChecksum == 0x85E146D5) { /*create_snazzy_dialog_box*/
 
-	if (!mSettings.noadditionalscriptmods && pScript->mScriptNameChecksum == 0x85E146D5) { /*create_snazzy_dialog_box*/
+			pParams->GetChecksum(0x7321A8D6, &p_checksum, false);  /*type*/
 
-		pParams->GetChecksum(0x7321A8D6, &p_checksum, false);  /*type*/
+			if (p_checksum == 0x5200DFB6 || p_checksum == 0x40D92263) { /*textelement, textBlockElement*/
 
-		if (p_checksum == 0x5200DFB6 || p_checksum == 0x40D92263) { /*textelement, textBlockElement*/
+				const char* text_content_gs;
 
-			const char* text_content_gs;
-
-			pParams->GetText(0xC4745838/*text*/, &text_content_gs, 0);
-			if (strstr(text_content_gs, "GameSpy")) {
-				char* text_content_os = setText(text_content_gs, "GameSpy", "OpenSpy");
-				pParams->AddString(0xC4745838/*text*/, text_content_os);
-			}
-			else if (strstr(text_content_gs, "GAMESPY")) {
-				char* text_content_os = setText(text_content_gs, "GAMESPY", "OPENSPY");
-				pParams->AddString(0xC4745838/*text*/, text_content_os);
+				pParams->GetText(0xC4745838/*text*/, &text_content_gs, 0);
+				if (strstr(text_content_gs, "GameSpy")) {
+					char* text_content_os = setText(text_content_gs, "GameSpy", "OpenSpy");
+					pParams->AddString(0xC4745838/*text*/, text_content_os);
+				}
+				else if (strstr(text_content_gs, "GAMESPY")) {
+					char* text_content_os = setText(text_content_gs, "GAMESPY", "OPENSPY");
+					pParams->AddString(0xC4745838/*text*/, text_content_os);
+				}
 			}
 		}
 	}

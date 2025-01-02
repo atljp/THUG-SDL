@@ -1,3 +1,4 @@
+
 # THUG SDL
 
 A mod to improve the gameplay experience of the PC version of Tony Hawk's Underground. It adds stability and usability fixes, utilizes the SDL2 game library and offers an open base for script-mod development.
@@ -28,6 +29,7 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Option to toggle the fullscreen gamma correction which makes the game looks too dark
 - Restored the onscreen keyboard (gamepad only)
 - Increased speed when exiting the game
+- Modloader for script mods: (Section Modloader)[https://github.com/atljp/THUG-SDL/tree/main?tab=readme-ov-file#modloader]
 
 ### Controls
 - Native gamepad support
@@ -55,6 +57,7 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Supported languages: English, French, German
 - Adjustable button prompts: PC, Ps2, Xbox, Ngc
 - Console window with adjustable log level
+- Option to print the console output to a file (overwrite / append)
 - Intro movie skip
 - Higher quality shadows
 - Toggle for boardscuffs
@@ -63,10 +66,76 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Create-A-Skater: Unlimited 3 axes scaling
 - Create-A-Skater: Increased color ranges
 - Create-A-Skater: Board scaling
-- Exception Handler for debugging crashes. Doesn't work on Windows 11
+- Exception Handler for debugging crashes (doesn't work on Windows 11)
 
-## TODO
-- Modloader
+## MODLOADER
+In thugsdl.ini, you can activate and define your custom script path in the `AdditionalMods` section like this:
+```
+[AdditionalMods]
+UseMod=1
+Folder=data/pre/mymod
+```
+This folder can now be used to load `pre` and `qb` files from:
+- Place mod contents inside your mod folder at `C:\<thug2-install-path>\Game\Data\pre\mymod`  
+- Add the file `mod.ini` to your folder which is needed to load the files
+- Level data has to be treated differently which is described below
+
+Example mod.ini:
+```
+[MODINFO]
+Name=My Custom Mod
+
+[PRE]
+qb.pre=modded_qb.pre
+anims.pre=modded_anims.pre
+
+[QB]
+scripts\game\skater\manualtricks.qb=modded_manualtricks.qb
+levels\mainmenu\mainmenu_scripts.qb=modded_mainmenu_scripts.qb
+```
+
+### Levels
+For this example it is assumed that level files are placed inside the `data\pre\mymod\Levels` folder.<br><br> Level files have to be defined in `scripts\Game\Levels.q`.  <br>Inside your level script, add the path to the pre files and also add the `custom_folder` parameter:
+```
+Level_AU = { 
+	 pre = "mymod\\Levels\\AU.pre"
+	 scnpre = "mymod\\Levels\\AUscn.pre"
+	 colpre = "mymod\\Levels\\AUcol.pre"
+	 pedpre = "mymod\\Levels\\AUped.pre"
+	 [...]
+	 custom_folder = "thugturbo\\Levels\\"
+}
+```
+For netgames, the "scn_net" and "scn_col" suffixes are automatically be added to the pre filename in the `load_level` script. It needs to be adjusted so that it adds the custom path for these files as well. **This only needs to be done once.**
+```
+SCRIPT load_level
+  [...]
+  IF gotparam custom_folder
+    printf "@@@ LOADING SCN_NET FROM CUSTOM PATH" 
+    LoadLevelPreFile ( <custom_folder> + <level> + "scn_net.pre" )
+  ELSE
+    LoadLevelPreFile ( <level> + "scn_net.pre" )
+  ENDIF
+  [...]
+  IF gotparam custom_folder
+    printf "@@@ UNLOADING SCN_NET FROM CUSTOM PATH" 
+    UnloadPreFile ( <custom_folder> + <level> + "scn_net.pre" ) dont_assert 
+  ELSE
+    UnloadPreFile ( <level> + "scn_net.pre" ) dont_assert 
+  ENDIF
+  [...]		
+  IF gotparam custom_folder
+    printf "@@@ LOADING COL_NET FROM CUSTOM PATH" 
+    LoadPipPre ( <custom_folder> + <level> + "col_net.pre" ) heap = bottomup 
+  ELSE
+    LoadPipPre ( <level> + "col_net.pre" ) heap = bottomup 
+  ENDIF
+  [...]
+ENDSCRIPT
+``` 
+An example file can be found here: [Levels.q](https://github.com/atljp/THUG-SDL/blob/main/src/Mod/Levels.q)
+
+
 
 ## BUILDING
 
