@@ -116,7 +116,7 @@ uint8_t isInMenu = 0;
 uint8_t* keyboard_on_screen = (uint8_t*)0x0076A7A6;
 
 // Create-A-Goal is technically detected as a menu but uses default keybindings
-uint8_t* isCAG = (uint8_t*)0x006A0350;// & *(uint8_t*)0x006F2894);
+uint8_t* isCAG = (uint8_t*)0x006A0350;
 
 SDL_GameController** controllerList;
 uint8_t isUsingKeyboard = 1;
@@ -124,7 +124,10 @@ EdCParkEditorInstance* ParkEd;
 CGoalManagerInstance* GoalMan;
 SkateInstance* Skate;
 int buffer = 0;
-bool is_released = 1;
+bool bSpace_released = true;
+bool bReturn_released = true;
+bool bBackspace_released = true;
+bool bEscape_released = true;
 bool instances_initialized = false;
 char* executableDirectory3[MAX_PATH];
 uint8_t numplayers = 0;
@@ -602,7 +605,7 @@ void pollKeyboard(device* dev) {
 	uint8_t* keyboardState = (uint8_t*)SDL_GetKeyboardState(NULL);
 
 	// Add a bit of delay for certain key presses
-	if (buffer > 0)	
+	if (buffer > 0)
 		buffer--;
 
 	/********************************************************************/
@@ -624,7 +627,7 @@ void pollKeyboard(device* dev) {
 	/*  When a keyboard is on screen, use m_keyinput instead			*/
 	/********************************************************************/
 
-	if (!*keyboard_on_screen && ParkEd) { 
+	if (!*keyboard_on_screen && ParkEd) {
 
 		// Setup for pause buffer
 		isInMenu = ((*isMenu || *otherIsMenu) && !(ParkEd->m_state == EEditorState::vEDITING));
@@ -636,16 +639,26 @@ void pollKeyboard(device* dev) {
 			/*  Menu controls													*/
 			/********************************************************************/
 
-			if (keyboardState[SDL_SCANCODE_SPACE] && !buffer) {
+			if (keyboardState[SDL_SCANCODE_SPACE] && bSpace_released) {
 				dev->controlData[2] |= 0x01 << 3;
 				buffer = 20;
+				bSpace_released = false;
 			}
-			if (keyboardState[SDL_SCANCODE_ESCAPE] && !buffer) {
+			if (keyboardState[SDL_SCANCODE_ESCAPE] && bEscape_released && !buffer) {
 				// In menus, ESC simulates the grab button
 				// The ParkEditor is detected as a menu so ESC doesn't work there when only checking for the menu flag
 				// That's why the ParkEd state is checked as well
 				dev->controlData[3] |= 0x01 << 5;
+				bEscape_released = false;
 				buffer = 20;
+			}
+			if (keyboardState[SDL_SCANCODE_BACKSPACE] && bBackspace_released) {
+				dev->controlData[3] |= 0x01 << 5;
+				bBackspace_released = false;
+			}
+			if (keyboardState[SDL_SCANCODE_RETURN] && bReturn_released) {
+				dev->controlData[3] |= 0x01 << 6;
+				bReturn_released = false;
 			}
 			if (keyboardState[SDL_SCANCODE_E]) {
 				dev->controlData[3] |= 0x01 << 7;
@@ -688,13 +701,6 @@ void pollKeyboard(device* dev) {
 			}
 			if (keyboardState[SDL_SCANCODE_2]) {
 				dev->controlData[3] |= 0x01 << 3;
-			}
-			if (keyboardState[SDL_SCANCODE_BACKSPACE]) {
-				dev->controlData[3] |= 0x01 << 5;
-			}
-			if (keyboardState[SDL_SCANCODE_RETURN] && !buffer) {
-				dev->controlData[3] |= 0x01 << 6;
-				buffer = 10;
 			}
 		}
 		else {
@@ -742,12 +748,9 @@ void pollKeyboard(device* dev) {
 				/*  Gameplay (in level) controls								  */
 				/******************************************************************/
 
-				if (keyboardState[0x41]) {
-					RunScript(0xfba6378a, nullptr, nullptr, nullptr); //launch_chat_keyboard
-				}
-
-				if (keyboardState[SDL_SCANCODE_ESCAPE] && !buffer) {
+				if (keyboardState[SDL_SCANCODE_ESCAPE] && bEscape_released && !buffer) {
 					dev->controlData[2] |= 0x01 << 3;
+					bEscape_released = false;
 					buffer = 20;
 				}
 				if (keyboardState[keybinds.cameraToggle]) {
@@ -772,29 +775,53 @@ void pollKeyboard(device* dev) {
 					dev->controlData[3] |= 0x01 << 7;
 					dev->controlData[15] = 0xff;
 				}
-				// Merge Switch/Revert + Right Spin for PC controls
-				if (keyboardState[keybinds.rightSpin]) {
-					// Right spin
-					dev->controlData[3] |= 0x01 << 1;
-					dev->controlData[19] = 0xff;
-					// Revert
-					dev->controlData[3] |= 0x01 << 3;
-					dev->controlData[17] = 0xff;
+				// Shoulders
+				if (inputsettings.isPs2Controls) {
+					if (keyboardState[keybinds.rightSpin]) {
+						dev->controlData[3] |= 0x01 << 3;
+						dev->controlData[17] = 0xff;
+					}
+					if (keyboardState[keybinds.switchRevert]) {
+						dev->controlData[3] |= 0x01 << 1;
+						dev->controlData[19] = 0xff;
+					}
+					if (keyboardState[keybinds.leftSpin]) {
+						dev->controlData[3] |= 0x01 << 2;
+						dev->controlData[16] = 0xff;
+					}
+					if (keyboardState[keybinds.nollie]) {
+						dev->controlData[3] |= 0x01 << 0;
+						dev->controlData[18] = 0xff;
+					}
+					if (keyboardState[keybinds.leftSpin] && keyboardState[keybinds.nollie]) {
+						dev->controlData[20] |= 0x01 << 0;
+					}
 				}
-				// Merge Nollie + Left Spin for PC controls
-				if (keyboardState[keybinds.leftSpin]) {
-					// Spin left
-					dev->controlData[3] |= 0x01 << 2;
-					dev->controlData[16] = 0xff;
-					// Nollie
-					dev->controlData[3] |= 0x01 << 0;
-					dev->controlData[18] = 0xff;
-				}
-				if (keyboardState[keybinds.caveman]) {
-					dev->controlData[20] |= 0x01 << 0;
-				}
-				if (keyboardState[keybinds.caveman2]) {
-					dev->controlData[20] |= 0x01 << 1;
+				else {
+					// Merge Switch/Revert + Right Spin for PC controls
+					if (keyboardState[keybinds.rightSpin]) {
+						// Right spin
+						dev->controlData[3] |= 0x01 << 3;
+						dev->controlData[17] = 0xff;
+						// Revert
+						dev->controlData[3] |= 0x01 << 1;
+						dev->controlData[19] = 0xff;
+					}
+					// Merge Nollie + Left Spin for PC controls
+					if (keyboardState[keybinds.leftSpin]) {
+						// Spin left
+						dev->controlData[3] |= 0x01 << 2;
+						dev->controlData[16] = 0xff;
+						// Nollie
+						dev->controlData[3] |= 0x01 << 0;
+						dev->controlData[18] = 0xff;
+					}
+					if (keyboardState[keybinds.caveman]) {
+						dev->controlData[20] |= 0x01 << 0;
+					}
+					if (keyboardState[keybinds.caveman2]) {
+						dev->controlData[20] |= 0x01 << 1;
+					}
 				}
 			}
 			// ParkEditor item control
@@ -914,7 +941,8 @@ void do_key_input(SDL_KeyCode key) {
 	else if (key == SDLK_BACKSPACE) {
 		key_out = 0x08;    // BS
 	}
-	else if (key == SDLK_ESCAPE) {
+	else if (key == SDLK_ESCAPE && bEscape_released) {
+		bEscape_released = false;
 		buffer = 20;
 		key_out = 0x1B;    // ESC
 	}
@@ -975,7 +1003,14 @@ void handleInputEvent(SDL_Event* e) {
 		do_key_input((SDL_KeyCode)e->key.keysym.sym);
 		return;
 	case SDL_KEYUP:
-		is_released = 1;
+		if (e->key.keysym.scancode == SDL_SCANCODE_SPACE && !bSpace_released)
+			bSpace_released = true;
+		else if (e->key.keysym.scancode == SDL_SCANCODE_BACKSPACE && !bBackspace_released)
+			bBackspace_released = true;
+		else if (e->key.keysym.scancode == SDL_SCANCODE_ESCAPE && !bEscape_released)
+			bEscape_released = true;
+		else if (e->key.keysym.scancode == SDL_SCANCODE_RETURN && !bReturn_released)
+			bReturn_released = true;
 		return;
 	case SDL_CONTROLLERBUTTONDOWN: {
 		SDL_GameController* controller = SDL_GameControllerFromInstanceID(e->cdevice.which);

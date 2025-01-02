@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-void InitMod();
+void InitModloader();
 std::map<std::string, std::string> extractSection(const std::string& section, bool isPreFile);
 bool getModIni();
 bool getAllPreFiles();

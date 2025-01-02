@@ -16,7 +16,7 @@ std::map<std::string, std::string> levelPreFilesMap_post;
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- Init -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 /* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
-void InitMod()
+void InitModloader()
 {
 	// Get info to determine if the mod loader is active
 	// Get handles to thugsdl.ini, game dir and window title

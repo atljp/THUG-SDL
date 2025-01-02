@@ -30,18 +30,32 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Restored the onscreen keyboard (gamepad only)
 - Increased speed when exiting the game
 - Modloader for script mods: [Section Modloader](#modloader)
+- Supported languages: English, French, German
+- Adjustable button prompts: PC, Ps2, Xbox, Ngc
+- Console window with adjustable log level
+- Option to print the console output to a file (overwrite / append)
+- Intro movie skip
+- Higher quality shadows
+- Toggle for boardscuffs
+- NoAdditionalScriptMods flag (disables additional modifications)
+- Option to store the window position
+- Create-A-Skater: Unlimited 3 axes scaling
+- Create-A-Skater: Increased color ranges
+- Create-A-Skater: Board scaling
+- Exception Handler to generate crash reports (doesn't work on Windows 11)
 
 ### Controls
 - Native gamepad support
 - Restore original menu navigation for Xbox and Ps2 layouts
-- Option to use "grind" in menus to go back (original ps2 layout)
+- Option to use "grind" in menus to go back (original Ps2 layout)
+- Support for Ps2 controls on keyboard
 - Fix incorrect button prompts in textboxes and helper texts
 - Adjustable keys for Rail Drop Downs
 - Adjustable keys for Caveman
 - Adjustable keys for ladder/rail grab
 - Option for the original Ps2 controller layout
-- Option to invert the x or y camera axis
-- Option to disable the x or y camera axis
+- Option to invert the x and/or y camera axis
+- Option to disable the x and/or y camera axis
 
 ### Online
 - Openspy support
@@ -52,21 +66,6 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Removed short freeze time before level changes
 - Option for chat size scaling
 - Option for chat message time
-
-### Misc
-- Supported languages: English, French, German
-- Adjustable button prompts: PC, Ps2, Xbox, Ngc
-- Console window with adjustable log level
-- Option to print the console output to a file (overwrite / append)
-- Intro movie skip
-- Higher quality shadows
-- Toggle for boardscuffs
-- NoAdditionalScriptMods flag
-- Option to store the window position
-- Create-A-Skater: Unlimited 3 axes scaling
-- Create-A-Skater: Increased color ranges
-- Create-A-Skater: Board scaling
-- Exception Handler for debugging crashes (doesn't work on Windows 11)
 
 
 ## MODLOADER

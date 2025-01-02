@@ -42,8 +42,6 @@ struct keybinds {
 	//SDL_Scancode menu;
 	SDL_Scancode cameraToggle;
 	SDL_Scancode cameraSwivelLock;
-	SDL_Scancode caveman;
-	SDL_Scancode caveman2;
 	SDL_Scancode grind;
 	SDL_Scancode grab;
 	SDL_Scancode ollie;
@@ -52,6 +50,8 @@ struct keybinds {
 	SDL_Scancode rightSpin;
 	SDL_Scancode nollie;
 	SDL_Scancode switchRevert;
+	SDL_Scancode caveman;
+	SDL_Scancode caveman2;
 	SDL_Scancode right;
 	SDL_Scancode left;
 	SDL_Scancode up;

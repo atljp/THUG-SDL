@@ -795,8 +795,10 @@ void setButtonPrompts() {
 				setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 2, "\\bs=Reset");
 				setHelperText(0xB52596F6/*generic_helper_text_color_menu_reset*/, 3, "\\bt=Zoom");
 				setHelperText(0xE6AD8FF7/*generic_helper_text_color_menu_reset_cad*/, 1, "\\bs=Reset");
-
-
+				setHelperText(0xA65EC4BA/*cag_helper_text_xbox*/, 3, "\\bq/\\br=Lower/Raise");
+				setHelperText(0xA65EC4BA/*cag_helper_text_xbox*/, 4, "\\bs/\\bt=Zoom");
+				setHelperText(0xE827750F/*cag_helper_text_no_back_xbox*/, 2, "\\bq/\\br = Lower/Raise");
+				setHelperText(0xE827750F/*cag_helper_text_no_back_xbox*/, 3, "\\bs/\\bt = Zoom");
 			}
 		}
 		else {
@@ -809,6 +811,10 @@ void setButtonPrompts() {
 			setHelperText(0x84EB1BCB/*rail_editor_free_roam_helper_text*/, 5, "\\bf/\\bh =Zoom");
 			setHelperText(0x8ebd23fd /*rail_editor_layout_helper_text_xbox*/, 3, "\\be/\\bg =Raise/Lower");
 			setHelperText(0x8ebd23fd /*rail_editor_layout_helper_text_xbox*/, 4, "\\bf/\\bh =Zoom");
+
+			setHelperText(0xFBC77044/*rail_editor_grab_helper_text_xbox*/, 3, "\\be/\\bg =Raise/Lower");
+			setHelperText(0xFBC77044/*rail_editor_grab_helper_text_xbox*/, 4, "\\bf/\\bh =Zoom");
+
 			setHelperText(0xA737F35E/*gap_regular_helper_text*/, 0, "\\b0 = Delete");
 			setHelperText(0x093BCE23/*generic_helper_text_cas*/, 3, "\\bq/\\br = Rotate");
 			setHelperText(0x4F864854/*generic_helper_text_cas_z*/, 3, "\\bq/\\br = Rotate");
