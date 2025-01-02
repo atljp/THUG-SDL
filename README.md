@@ -106,7 +106,8 @@ Level_AU = {
 	 custom_folder = "mymod\\Levels\\"
 }
 ```
-For netgames, the "scn_net" and "scn_col" suffixes are automatically be added to the pre filename in the `load_level` script. It needs to be adjusted so that it adds the custom path for these files as well. **This only needs to be done once.**
+
+For netgames, the "scn_net" and "scn_col" suffixes are automatically be added to the pre filename in the `load_level` script. <br>It needs to be adjusted so that it adds the custom path for these files as well. **This only needs to be done once.**
 ```
 SCRIPT load_level
   [...]
