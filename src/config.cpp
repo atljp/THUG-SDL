@@ -375,21 +375,23 @@ void createSDLWindow() {
 	if (usemod)
 		sprintf_s(window_title, "%s%s%s%s", window_title, " (", getWindowTitle(), ")");
 
-	if (isWindowed) {
+	if (isWindowed || isBorderless) {
 		BOOL dpi_result = SetProcessDPIAware();
 		if (savewindowposition) {
 			window = SDL_CreateWindow(window_title, windowposx ? windowposx : SDL_WINDOWPOS_CENTERED, windowposy ? windowposy : SDL_WINDOWPOS_CENTERED, resX, resY, flags);
 			windows_created = true;
-		}
-		if (isBorderless) {
-			SDL_Renderer* Renderer = SDL_CreateRenderer(window, -1, 0);
-			SDL_SetWindowHitTest(window, HitTestCallback, 0);
 		}
 		SDL_SetWindowResizable(window, SDL_TRUE);
 	}
 
 	if (!windows_created)
 		window = SDL_CreateWindow(window_title, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, resX, resY, flags);
+
+	// make borderless window draggable
+	if (isBorderless) {
+		SDL_Renderer* Renderer = SDL_CreateRenderer(window, -1, 0);
+		SDL_SetWindowHitTest(window, HitTestCallback, 0);
+	}
 
 	if (!window) {
 		Log::TypedLog(CHN_SDL, "Failed to create window! Error: %s\n", SDL_GetError());
