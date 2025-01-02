@@ -29,7 +29,7 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Option to toggle the fullscreen gamma correction which makes the game looks too dark
 - Restored the onscreen keyboard (gamepad only)
 - Increased speed when exiting the game
-- Modloader for script mods: (Section Modloader)[#modloader]
+- Modloader for script mods: [Section Modloader](#modloader)
 
 ### Controls
 - Native gamepad support
