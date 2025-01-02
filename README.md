@@ -13,7 +13,7 @@ Running any THUG.exe (except THUGONE.exe from Clownjob'd) will automatically loa
 
 `thugsdl.ini` is the settings-database and needs write permission for storing window positions. <br>
 If your game is installed at `C:\Program Files (x86)`, the ini and savegame files have to be located in:
-- C:\Users\\<name>\AppData\Local\VirtualStore
+- `C:\Users\<name>\AppData\Local\VirtualStore`
 
 ## Features
 
@@ -48,12 +48,11 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Native gamepad support
 - Restore original menu navigation for Xbox and Ps2 layouts
 - Option to use "grind" in menus to go back (original Ps2 layout)
-- Support for Ps2 controls on keyboard
+- Support for Ps2 controls on gamepad and keyboard
 - Fix incorrect button prompts in textboxes and helper texts
 - Adjustable keys for Rail Drop Downs
 - Adjustable keys for Caveman
 - Adjustable keys for ladder/rail grab
-- Option for the original Ps2 controller layout
 - Option to invert the x and/or y camera axis
 - Option to disable the x and/or y camera axis
 
@@ -62,7 +61,7 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Replace GameSpy with OpenSpy in texts and images
 - Menu to load online settings
 - Longer text input in quick chat
-- No chat reset after net games started/ended
+- No chat reset after net games started / ended
 - Removed short freeze time before level changes
 - Option for chat size scaling
 - Option for chat message time
@@ -106,8 +105,10 @@ Level_AU = {
 	 custom_folder = "mymod\\Levels\\"
 }
 ```
-<br>
+
+
 For netgames, the "scn_net" and "scn_col" suffixes are automatically added to the pre filename in the `load_level` script. <br>It needs to be adjusted so that it adds the custom path for these files as well. **This only needs to be done once.**
+
 ```
 SCRIPT load_level
   [...]
