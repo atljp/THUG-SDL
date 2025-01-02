@@ -19,8 +19,8 @@ float default_clipping_distance = 96000.0f;
 uint32_t* resolution_setting = (uint32_t*)0x007D0E08;
 uint8_t* isFocused = (uint8_t*)0x00768FA9;
 
-uint8_t isWindowed;
-int8_t isBorderless;
+bool isWindowed;
+bool isBorderless;
 uint8_t console;
 uint8_t language;
 uint8_t buttonfont;
@@ -338,7 +338,6 @@ void createSDLWindow() {
 		flags |= SDL_WINDOW_BORDERLESS;
 	}
 
-	//*isFullscreen = !isWindowed;
 	if (isWindowed) {
 		// switch a couple of variables being set for better register selection
 		patchDWord((void*)(0x004B78BA + 2), 0x0072DDD8);

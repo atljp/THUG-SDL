@@ -4,6 +4,6 @@
 uint8_t resbuffer[100000];
 
 void patchresbuffer() {
-	patchDWord((void*)(0x0049B3BB+1), (uint32_t)&resbuffer);  //0x004B6C64
+	patchDWord((void*)(0x0049B3BB+1), (uint32_t)&resbuffer);
 }
 
