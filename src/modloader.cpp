@@ -1,15 +1,63 @@
 #include "modloader.h"
-#include <map>
-
 
 struct extmodsettings mExtModsettings;
-struct stat info;
 char modname[MAX_PATH];
 char modfolder[MAX_PATH];
 char modfolder_fullpath[MAX_PATH];
-char custommusicpath[MAX_PATH];
 char modini_fullpath[MAX_PATH];
 char to_be_injected[MAX_PATH];
+
+std::map<std::string, std::string> preFilesMap;
+std::map<std::string, std::string> qbFilesMap;
+std::map<std::string, std::string> levelPreFilesMap;
+std::map<std::string, std::string> levelPreFilesMap_post;
+
+/* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- Init -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+/* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
+
+void InitMod()
+{
+	// Get info to determine if the mod loader is active
+	// Get handles to thugsdl.ini, game dir and window title
+	loadModSettings(&mExtModsettings);
+
+	// Only load mods if it's activated in the ini
+	if (mExtModsettings.usemod) {
+
+		// Check if modfolder and mod.ini are valid
+		// This will return a handle to the specified mod.ini and the mod folder.
+		// The mod name will also be passed to the window title bar
+		if (getModIni()) {
+
+			// Get all defined pre files and store them in a map of form qb.pre=mycustomfile.pre
+			if (getAllPreFiles()) {
+
+				Log::TypedLog(CHN_MOD, "Patching PIP::LoadPre and PreMgr::LoadPre\n");
+
+				patchCall((void*)0x0052CC7D, PIPLoadPre_Wrapper2);
+				patchCall((void*)0x0057E6EA, PIPLoadPre_Wrapper2);
+				patchCall((void*)0x00526D86, PIPLoadPre_Wrapper);
+				patchCall((void*)0x0052CD74, PIPLoadPre_Wrapper);
+			}
+			else {
+				Log::TypedLog(CHN_MOD, "Failed to load Pre files\n");
+			}
+			if (getAllQbFiles()) {
+				Log::TypedLog(CHN_MOD, "Patching PIP::Load\n");
+				patchCall((void*)0x0040A049, pipLoadWrapper);
+			}
+			else {
+				Log::TypedLog(CHN_MOD, "Failed to load Qb files\n");
+			}
+		}
+	}
+}
+
+
+/* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=- Function definitions -=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+/* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 typedef void __cdecl PIPLoadPre_NativeCall(uint8_t* p_data);
 PIPLoadPre_NativeCall* PIPLoadPre_Native = (PIPLoadPre_NativeCall*)(0x0057DD90);
@@ -17,67 +65,19 @@ PIPLoadPre_NativeCall* PIPLoadPre_Native = (PIPLoadPre_NativeCall*)(0x0057DD90);
 typedef void __cdecl PIPLoadPre_NativeCall2(uint8_t* p_data);
 PIPLoadPre_NativeCall2* PIPLoadPre_Native2 = (PIPLoadPre_NativeCall2*)(0x0057E200);
 
-typedef void (__fastcall* PreMgrLoadPre_NativeCall)(int ecx, int edx, uint8_t* p_data, void* arg1, void* arg2, bool arg3);
+typedef void(__fastcall* PreMgrLoadPre_NativeCall)(int ecx, int edx, uint8_t* p_data, void* arg1, void* arg2, bool arg3);
 PreMgrLoadPre_NativeCall PreMgrLoadPre = (PreMgrLoadPre_NativeCall)(0x0057F7F0);
 
-typedef void (__thiscall* PreMgrLoadPre_NativeCall2)(void* arg1, uint8_t* arg2, char* arg3);
+typedef void(__thiscall* PreMgrLoadPre_NativeCall2)(void* arg1, uint8_t* arg2, char* arg3);
 PreMgrLoadPre_NativeCall2 PreMgrLoadPre2 = (PreMgrLoadPre_NativeCall2)(0x0057FDD0);
 
 typedef uint8_t* __cdecl pipLoad_NativeCall(const char* p_fileName);
 pipLoad_NativeCall* pipLoad_Native = (pipLoad_NativeCall*)(0x0057E840);
 
 
-std::map<std::string, std::string> preFilesMap;
-std::map<std::string, std::string> qbFilesMap;
-std::map<std::string, std::string> levelPreFilesMap;
-std::map<std::string, std::string> levelPreFilesMap_post;
-
-
-int strncasecmp(const char* s1, const char* s2, size_t n) { 
-	for (size_t i = 0; i < n; ++i) { 
-		char c1 = std::tolower(static_cast<unsigned char>(s1[i])); 
-		char c2 = std::tolower(static_cast<unsigned char>(s2[i])); 
-		
-		if (c1 != c2) { 
-			return c1 - c2; 
-		} 
-		if (c1 == '\0') { 
-			return 0; 
-		} 
-	} 
-	return 0; 
-}
-
-bool checkFolderExists(char* folder) {
-	// Check if specified mod folder exists on hard drive
-	stat(folder, &info);
-	if (info.st_mode & S_IFDIR)
-		return true;
-	else {
-		return false;
-	}
-}
-
-bool checkFileExists(char* file) {
-	// Check if specified file exists on hard drive
-	std::ifstream infile(file);
-
-	if (infile.good()) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
-
-bool isKeyInMap(const std::map<std::string, std::string>& keyValues, const std::string& key) {
-	for (const auto& kv : keyValues) { 
-		if (kv.first == key) { 
-			return true; 
-		} 
-	} 
-	return false; 
-}
+/* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=- Mod loader functions -=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+/* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 std::map<std::string, std::string> extractSection(const std::string& section, bool isPreFile) {
 
@@ -214,7 +214,7 @@ bool getAllPreFiles() {
 		return false;
 
 	for (const auto& kv : preFilesMap) {
-		Log::TypedLog(CHN_MOD, "Found pre file: %s\n", kv.second.c_str());
+		Log::TypedLog(CHN_MOD, "REGISTERING PRE FILE: %s\n", kv.second.c_str());
 	}
 	return true;
 }
@@ -227,13 +227,94 @@ bool getAllQbFiles() {
 		return false;
 
 	for (const auto& kv : qbFilesMap) {
-		Log::TypedLog(CHN_MOD, "Found qb file: %s=%s\n", kv.first.c_str(), kv.second.c_str());
+		Log::TypedLog(CHN_MOD, "REGISTERING QB FILE: %s=%s\n", kv.first.c_str(), kv.second.c_str());
 	}
 	return true;
 }
 
-// ************************************************************************************************************
-// ************************************************************************************************************
+uint8_t* getQbData(const std::string& fileName) {
+
+	char qbfile_fullpath[MAX_PATH];
+
+	sprintf_s(qbfile_fullpath, "%s%s%s", mExtModsettings.workingdir, "data\\pre\\", fileName.c_str());
+	std::ifstream infile(qbfile_fullpath, std::ios::binary | std::ios::ate);
+
+	if (!infile) {
+		Log::TypedLog(CHN_MOD, "Could not open file: %s\n", qbfile_fullpath);
+		return nullptr;
+	}
+
+	size_t fileSize = infile.tellg();
+	infile.seekg(0, std::ios::beg);
+
+	std::vector<uint8_t> buffer(fileSize);
+	if (!infile.read(reinterpret_cast<char*>(buffer.data()), buffer.size())) {
+		Log::TypedLog(CHN_MOD, "Error reading file: %s\n", qbfile_fullpath);
+		return nullptr;
+	}
+
+	// Allocate memory for the data pointer and copy the contents
+	uint8_t* dataPtr = new uint8_t[fileSize];
+	std::memcpy(dataPtr, buffer.data(), fileSize);
+
+	return (uint8_t*)dataPtr;
+}
+
+int strncasecmp(const char* s1, const char* s2, size_t n) {
+	for (size_t i = 0; i < n; ++i) {
+		char c1 = std::tolower(static_cast<unsigned char>(s1[i]));
+		char c2 = std::tolower(static_cast<unsigned char>(s2[i]));
+
+		if (c1 != c2) {
+			return c1 - c2;
+		}
+		if (c1 == '\0') {
+			return 0;
+		}
+	}
+	return 0;
+}
+
+bool checkFolderExists(char* folder) {
+	// Check if specified mod folder exists on hard drive
+	struct stat info;
+	stat(folder, &info);
+	if (info.st_mode & S_IFDIR)
+		return true;
+	else {
+		return false;
+	}
+}
+
+bool checkFileExists(char* file) {
+	// Check if specified file exists on hard drive
+	std::ifstream infile(file);
+
+	if (infile.good()) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+bool isKeyInMap(const std::map<std::string, std::string>& keyValues, const std::string& key) {
+	for (const auto& kv : keyValues) {
+		if (kv.first == key) {
+			return true;
+		}
+	}
+	return false;
+}
+
+char* getWindowTitle() {
+	return modname;
+}
+
+
+/* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
+/* -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Hooked functions =--=-=-=-=-=-=-=-=-=-=-=-=-=-= */
+/* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
 void PIPLoadPre_Wrapper(uint8_t* p_data) {
 
@@ -264,9 +345,6 @@ void PIPLoadPre_Wrapper2(uint8_t* p_data) {
 	}
 	PIPLoadPre_Native2(p_data);
 }
-
-
-
 
 void __fastcall PreMgrLoadPre_Wrapper(int ecx, int edx, uint8_t* p_data, void* arg1, void* arg2, bool arg3) {
 
@@ -300,79 +378,12 @@ void __fastcall PreMgrLoadPre_Wrapper2(void* arg1, void* unused, uint8_t* p_data
 	PreMgrLoadPre2(arg1, p_data, arg3);
 }
 
-void InitMod()
-{
-	// Get info to determine if the mod loader is active
-	// Get handles to thugsdl.ini, game dir and window title
-	loadModSettings(&mExtModsettings);
-
-	// Only load mods if it's activated in the ini
-	if (mExtModsettings.usemod) {
-
-		// Check if modfolder and mod.ini are valid
-		// This will return a handle to the specified mod.ini and the mod folder.
-		// The mod name will also be passed to the window title bar
-		if (getModIni()) {
-			
-			// Get all defined pre files and store them in a map of form qb.pre=mycustomfile.pre
-			if (getAllPreFiles()) {
-
-				Log::TypedLog(CHN_MOD, "Patching PIP::LoadPre and PreMgr::LoadPre\n");
-
-				patchCall((void*)0x0052CC7D, PIPLoadPre_Wrapper2);
-				patchCall((void*)0x0057E6EA, PIPLoadPre_Wrapper2);
-				patchCall((void*)0x00526D86, PIPLoadPre_Wrapper);
-				patchCall((void*)0x0052CD74, PIPLoadPre_Wrapper);		
-			}
-			else {
-				Log::TypedLog(CHN_MOD, "Failed to load Pre files\n");
-			}
-			if (getAllQbFiles()) {
-				Log::TypedLog(CHN_MOD, "Patching PIP::Load\n");
-				patchCall((void*)0x0040A049, pipLoadWrapper);
-			}
-			else {
-				Log::TypedLog(CHN_MOD, "Failed to load Qb files\n");
-			}
-		}	
-	}
-}
-
-uint8_t* getQbData(const std::string& fileName) {
-
-	char qbfile_fullpath[MAX_PATH];
-
-	sprintf_s(qbfile_fullpath, "%s%s%s", mExtModsettings.workingdir, "data\\pre\\", fileName.c_str());
-	std::ifstream infile(qbfile_fullpath, std::ios::binary | std::ios::ate);
-
-	if (!infile) {
-		Log::TypedLog(CHN_MOD, "Could not open file: %s\n", qbfile_fullpath);
-		return nullptr;
-	}
-
-	size_t fileSize = infile.tellg();
-	infile.seekg(0, std::ios::beg);
-
-	std::vector<uint8_t> buffer(fileSize);
-	if (!infile.read(reinterpret_cast<char*>(buffer.data()), buffer.size())) {
-		Log::TypedLog(CHN_MOD, "Error reading file: %s\n", qbfile_fullpath);
-		return nullptr;
-	}
-
-	// Allocate memory for the data pointer and copy the contents
-	uint8_t* dataPtr = new uint8_t[fileSize];
-	std::memcpy(dataPtr, buffer.data(), fileSize);
-
-	return (uint8_t*)dataPtr;
-}
-
-
 uint8_t* __cdecl pipLoadWrapper(char* p_fileName, int unk1, int unk2, int unk3, int unk4) {
 
 	for (const auto& kv : qbFilesMap) {
 
 		if (!strcmp(p_fileName, kv.first.c_str())) {
-			Log::TypedLog(CHN_MOD, "Loading %s\n", kv.first.c_str(), kv.second.c_str());
+			Log::TypedLog(CHN_MOD, "Loading %s -> %s\n", kv.first.c_str(), kv.second.c_str());
 
 			// Get a data pointer from the file on disk
 			return getQbData(kv.second);

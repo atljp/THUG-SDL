@@ -13,7 +13,7 @@ Running any THUG.exe (except THUGONE.exe from Clownjob'd) will automatically loa
 
 `thugsdl.ini` is the settings-database and needs write permission for storing window positions. <br>
 If your game is installed at `C:\Program Files (x86)`, the ini and savegame files have to be located in:
-- C:\Users\<name>\AppData\Local\VirtualStore
+- C:\Users\\<name>\AppData\Local\VirtualStore
 
 ## Features
 
@@ -68,6 +68,7 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Create-A-Skater: Board scaling
 - Exception Handler for debugging crashes (doesn't work on Windows 11)
 
+
 ## MODLOADER
 In thugsdl.ini, you can activate and define your custom script path in the `AdditionalMods` section like this:
 ```
@@ -106,8 +107,8 @@ Level_AU = {
 	 custom_folder = "mymod\\Levels\\"
 }
 ```
-
-For netgames, the "scn_net" and "scn_col" suffixes are automatically be added to the pre filename in the `load_level` script. <br>It needs to be adjusted so that it adds the custom path for these files as well. **This only needs to be done once.**
+<br>
+For netgames, the "scn_net" and "scn_col" suffixes are automatically added to the pre filename in the `load_level` script. <br>It needs to be adjusted so that it adds the custom path for these files as well. **This only needs to be done once.**
 ```
 SCRIPT load_level
   [...]

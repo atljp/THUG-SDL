@@ -366,6 +366,10 @@ void createSDLWindow() {
 	Log::TypedLog(CHN_DLL, "Aspect ratio: %f\n", getaspectratio());
 
 	bool windows_created = false;
+
+	if (usemod)
+		sprintf_s(window_title, "%s%s%s%s", window_title, " (", getWindowTitle(), ")");
+
 	if (isWindowed) {
 		BOOL dpi_result = SetProcessDPIAware();
 		if (savewindowposition) {
