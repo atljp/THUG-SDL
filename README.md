@@ -29,7 +29,7 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Option to toggle the fullscreen gamma correction which makes the game looks too dark
 - Restored the onscreen keyboard (gamepad only)
 - Increased speed when exiting the game
-- Modloader for script mods: (Section Modloader)[https://github.com/atljp/THUG-SDL/tree/main?tab=readme-ov-file#modloader]
+- Modloader for script mods: (Section Modloader)[#modloader]
 
 ### Controls
 - Native gamepad support
@@ -103,7 +103,7 @@ Level_AU = {
 	 colpre = "mymod\\Levels\\AUcol.pre"
 	 pedpre = "mymod\\Levels\\AUped.pre"
 	 [...]
-	 custom_folder = "thugturbo\\Levels\\"
+	 custom_folder = "mymod\\Levels\\"
 }
 ```
 For netgames, the "scn_net" and "scn_col" suffixes are automatically be added to the pre filename in the `load_level` script. It needs to be adjusted so that it adds the custom path for these files as well. **This only needs to be done once.**
