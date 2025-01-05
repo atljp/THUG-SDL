@@ -167,6 +167,8 @@ cmake .. -A win32 -DCMAKE_TOOLCHAIN_FILE=C:/[vcpkg directory]/scripts/buildsyste
 Set the optimization for the partymod dll to O0 (disable optimization) because MSVC seems to break certain functions when optimization is enabled.
 <br><br>
 The `.sln` file is in the `build` directory. Make sure to select win32 and Release as the project's build options in Visual Studio. Build the actual DLL with `Ctrl+Shift+B`.
+<br><br>
+When building the launcher, make sure to set the SubSystem to Windows. In Visual Studio go to the project properties, Linker, System.
 
 ## CREDITS
 

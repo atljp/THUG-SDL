@@ -2,4 +2,3 @@
 
 IDR_OSLOGO RCDATA "oslogo.img"
 IDR_KEYBOARD_RESTORED RCDATA "onscreen_keyboard_restored_scriptcontent.qb"
-IDR_PAUSE_MENU_PATCHED RCDATA "create_pause_menu_scriptcontent.qb"

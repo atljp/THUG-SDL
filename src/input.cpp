@@ -728,17 +728,33 @@ void pollKeyboard(device* dev) {
 				if (keyboardState[keybinds.kick]) {
 					dev->controlData[3] |= 0x01 << 7;
 				}
-				if (keyboardState[keybinds.rightSpin]) {
-					dev->controlData[3] |= 0x01 << 2; // Raise
+				if (inputsettings.isPs2Controls) {
+					if (keyboardState[keybinds.rightSpin]) {
+						dev->controlData[3] |= 0x01 << 2; // Raise
+					}
+					if (keyboardState[keybinds.leftSpin]) {
+						dev->controlData[3] |= 0x01 << 0; // Lower
+					}
+					if (keyboardState[keybinds.nollie]) { // Black
+						dev->controlData[20] |= 0x01 << 0;
+					}
+					if (keyboardState[keybinds.switchRevert]) { // White
+						dev->controlData[20] |= 0x01 << 1;
+					}
 				}
-				if (keyboardState[keybinds.leftSpin]) {
-					dev->controlData[3] |= 0x01 << 0; // Lower
-				}
-				if (keyboardState[keybinds.caveman]) { // Black
-					dev->controlData[20] |= 0x01 << 0;
-				}
-				if (keyboardState[keybinds.caveman2]) { // White
-					dev->controlData[20] |= 0x01 << 1;
+				else {
+					if (keyboardState[keybinds.rightSpin]) {
+						dev->controlData[3] |= 0x01 << 2; // Raise
+					}
+					if (keyboardState[keybinds.leftSpin]) {
+						dev->controlData[3] |= 0x01 << 0; // Lower
+					}
+					if (keyboardState[keybinds.caveman]) { // Black R2
+						dev->controlData[20] |= 0x01 << 0;
+					}
+					if (keyboardState[keybinds.caveman2]) { // White L2
+						dev->controlData[20] |= 0x01 << 1;
+					}
 				}
 			}
 			else {

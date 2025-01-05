@@ -508,15 +508,6 @@ void editScriptsInMemory() {
 			sCreateScriptSymbol_Wrapper(5896, 0xF0425254, contentsChecksum, (uint8_t*)pResource_keyboard_restored, "engine\\menu\\keyboard.qb");
 		}
 
-		//LPVOID pResource_pause_menu_patched;
-		//if (pResource_pause_menu_patched = getResource(IDR_PAUSE_MENU_PATCHED)) {
-		//	removeScript(0x3562432C); /*create_pause_menu*/
-		//	contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)pResource_pause_menu_patched);
-		//	sCreateScriptSymbol_Wrapper(9479, 0x3562432C, contentsChecksum, (uint8_t*)pResource_pause_menu_patched, "game\\menu\\gamemenu.qb");
-		//}
-
-
-
 		if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
 	}
 }

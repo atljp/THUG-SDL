@@ -283,7 +283,7 @@ void update_general_page() {
 	
 
 	pgui_combobox_set_selection(general_page.button_font, settings.button_font-1);
-	pgui_combobox_set_selection(general_page.language, settings.language);
+	pgui_combobox_set_selection(general_page.language, settings.language-1);
 	pgui_checkbox_set_checked(general_page.console, settings.console);
 	pgui_checkbox_set_checked(general_page.write_file, settings.writefile);
 	pgui_checkbox_set_checked(general_page.append_log, settings.appendlog);

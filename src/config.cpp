@@ -136,16 +136,16 @@ void InitPatch() {
 	Log::TypedLog(CHN_DLL, "Button font\t\t\t\t\t%s\n", (buttonfont == 2) ? "Ps2" : ((buttonfont == 3) ? "Xbox" : ((buttonfont == 4) ? "NGC" : "PC")));
 	Log::TypedLog(CHN_DLL, "Ps2Controls\t\t\t\t\t%s\n", Ps2Controls ? "Enabled" : "Disabled");
 	Log::TypedLog(CHN_DLL, "Language setting\t\t\t\t\t%s\n", (language == 1) ? "English" : ((language == 2) ? "French" : ((language == 3) ? "German" : "English")));
-	Log::TypedLog(CHN_DLL, "Shadow Quality\t%s\n", graphics_settings.hqshadows ? (graphics_settings.hqshadows == 2) ? "Very High" : "High" : "Default");
-	Log::TypedLog(CHN_DLL, "Fullscreen Anti-Aliasing\t%s\n", graphics_settings.antialiasing ? "Enabled" : "Disabled");
-	Log::TypedLog(CHN_DLL, "Distance Clipping\t\t%s\n", graphics_settings.distanceclipping ? "Enabled" : "Disabled");
+	Log::TypedLog(CHN_DLL, "Shadow Quality\t\t\t\t\t%s\n", graphics_settings.hqshadows ? (graphics_settings.hqshadows == 2) ? "Very High" : "High" : "Default");
+	Log::TypedLog(CHN_DLL, "Fullscreen Anti-Aliasing\t\t\t\t%s\n", graphics_settings.antialiasing ? "Enabled" : "Disabled");
+	Log::TypedLog(CHN_DLL, "Distance Clipping\t\t\t\t\t%s\n", graphics_settings.distanceclipping ? "Enabled" : "Disabled");
 
 	if (graphics_settings.distanceclipping) {
 		Log::TypedLog(CHN_DLL, "Clipping Distance\t\t%d\n", graphics_settings.clippingdistance);
 		Log::TypedLog(CHN_DLL, "Fog\t\t\t\t%s\n", graphics_settings.fog ? "Enabled" : "Disabled");
 	}
-	Log::TypedLog(CHN_DLL, "Resolution from INI\t\t%d x %d\n", resX, resY);
-	Log::TypedLog(CHN_DLL, "Window mode\t\t\t%s \n", (isWindowed && !isBorderless) ? "Enabled (default)" : ((isWindowed && isBorderless) ? "Enabled (borderless)" : "Disabled"));
+	Log::TypedLog(CHN_DLL, "Resolution from INI\t\t\t\t%d x %d\n", resX, resY);
+	Log::TypedLog(CHN_DLL, "Window mode\t\t\t\t\t%s \n", (isWindowed && !isBorderless) ? "Enabled (default)" : ((isWindowed && isBorderless) ? "Enabled (borderless)" : "Disabled"));
 	Log::TypedLog(CHN_DLL, "Additional Script Mods\t\t\t\t%s\n", noadditionalscriptmods ? "Disabled" : "Enabled");
 
 	switch (dropdowncontrol) {

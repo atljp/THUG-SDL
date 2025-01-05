@@ -69,7 +69,7 @@ void defaultSettings() {
 	settings.disable_fsgamma = 0;
 
 	settings.button_font = 1;
-	settings.language = 0;
+	settings.language = 1;
 	settings.console = 0;
 	settings.writefile = 0;
 	settings.appendlog = 0;
@@ -98,8 +98,8 @@ void defaultSettings() {
 	keybinds.grind = SDL_SCANCODE_KP_8;
 	keybinds.spinLeft = SDL_SCANCODE_KP_7;
 	keybinds.spinRight = SDL_SCANCODE_KP_9;
-	keybinds.nollie = SDL_SCANCODE_KP_7;
-	keybinds.switchRevert = SDL_SCANCODE_KP_9;
+	keybinds.nollie = SDL_SCANCODE_KP_1;
+	keybinds.switchRevert = SDL_SCANCODE_KP_3;
 	keybinds.caveman = SDL_SCANCODE_KP_1;
 	keybinds.caveman2 = SDL_SCANCODE_KP_3;
 
