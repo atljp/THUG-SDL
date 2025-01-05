@@ -141,8 +141,8 @@ void InitPatch() {
 	Log::TypedLog(CHN_DLL, "Distance Clipping\t\t\t\t\t%s\n", graphics_settings.distanceclipping ? "Enabled" : "Disabled");
 
 	if (graphics_settings.distanceclipping) {
-		Log::TypedLog(CHN_DLL, "Clipping Distance\t\t%d\n", graphics_settings.clippingdistance);
-		Log::TypedLog(CHN_DLL, "Fog\t\t\t\t%s\n", graphics_settings.fog ? "Enabled" : "Disabled");
+		Log::TypedLog(CHN_DLL, "Clipping Distance\t\t\t\t\t%d\n", graphics_settings.clippingdistance);
+		Log::TypedLog(CHN_DLL, "Fog\t\t\t\t\t\t%s\n", graphics_settings.fog ? "Enabled" : "Disabled");
 	}
 	Log::TypedLog(CHN_DLL, "Resolution from INI\t\t\t\t%d x %d\n", resX, resY);
 	Log::TypedLog(CHN_DLL, "Window mode\t\t\t\t\t%s \n", (isWindowed && !isBorderless) ? "Enabled (default)" : ((isWindowed && isBorderless) ? "Enabled (borderless)" : "Disabled"));

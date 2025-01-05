@@ -146,6 +146,107 @@ void defaultSettings() {
 	padbinds.camera = CONTROLLER_STICK_RIGHT;
 }
 
+void defaultSettings_tabonly(int tab) {
+
+	if (!tab) {
+		settings.resX = 0;
+		settings.resY = 0;
+		settings.windowed = 1;
+		settings.borderless = 0;
+		settings.savewinpos = 0;
+
+		settings.hq_shadows = 2;
+		settings.antialiasing = 1;
+		settings.distance_clipping = 0;
+		settings.clipping_distance = 100;
+		settings.fog = 0;
+
+		settings.button_font = 1;
+		settings.disable_blur = 1;
+		settings.disable_fsgamma = 0;
+
+		settings.button_font = 1;
+		settings.language = 1;
+		settings.console = 0;
+		settings.writefile = 0;
+		settings.appendlog = 0;
+		settings.exceptionhandler = 0;
+		settings.intromovies = 0;
+		settings.boardscuffs = 1;
+		settings.noadditionalscriptmods = 0;
+		settings.chatsize = 3;
+		settings.chatwaittime = 30;
+		settings.additionalmods = 0;
+		strcpy(settings.additionalmods_folder, "data/pre/mymod");
+	}
+	else if (tab == 1) {
+		keybinds.ollie = SDL_SCANCODE_KP_2;
+		keybinds.grab = SDL_SCANCODE_KP_6;
+		keybinds.flip = SDL_SCANCODE_KP_4;
+		keybinds.grind = SDL_SCANCODE_KP_8;
+		keybinds.spinLeft = SDL_SCANCODE_KP_7;
+		keybinds.spinRight = SDL_SCANCODE_KP_9;
+		keybinds.nollie = SDL_SCANCODE_KP_1;
+		keybinds.switchRevert = SDL_SCANCODE_KP_3;
+		keybinds.caveman = SDL_SCANCODE_KP_1;
+		keybinds.caveman2 = SDL_SCANCODE_KP_3;
+
+		keybinds.item_up = SDL_SCANCODE_HOME;
+		keybinds.item_down = SDL_SCANCODE_END;
+		keybinds.item_left = SDL_SCANCODE_DELETE;
+		keybinds.item_right = SDL_SCANCODE_PAGEDOWN;
+
+		keybinds.forward = SDL_SCANCODE_W;
+		keybinds.backward = SDL_SCANCODE_S;
+		keybinds.left = SDL_SCANCODE_A;
+		keybinds.right = SDL_SCANCODE_D;
+		keybinds.feeble = SDL_SCANCODE_LSHIFT;
+
+		keybinds.camUp = SDL_SCANCODE_Z;
+		keybinds.camDown = SDL_SCANCODE_X;
+		keybinds.camLeft = SDL_SCANCODE_C;
+		keybinds.camRight = SDL_SCANCODE_V;
+		keybinds.viewToggle = SDL_SCANCODE_TAB;
+		keybinds.swivelLock = SDL_SCANCODE_GRAVE;	// unbound
+	}
+	else if (tab == 2) {
+		padbinds.menu = CONTROLLER_BUTTON_START;
+		padbinds.cameraToggle = CONTROLLER_BUTTON_BACK;
+		padbinds.cameraSwivelLock = CONTROLLER_BUTTON_RIGHTSTICK;
+
+		padbinds.grind = CONTROLLER_BUTTON_Y;
+		padbinds.grab = CONTROLLER_BUTTON_B;
+		padbinds.ollie = CONTROLLER_BUTTON_A;
+		padbinds.kick = CONTROLLER_BUTTON_X;
+
+		padbinds.leftSpin = CONTROLLER_BUTTON_LEFTSHOULDER;
+		padbinds.rightSpin = CONTROLLER_BUTTON_RIGHTSHOULDER;
+		padbinds.nollie = CONTROLLER_BUTTON_LEFTTRIGGER;
+		padbinds.switchRevert = CONTROLLER_BUTTON_RIGHTTRIGGER;
+		padbinds.caveman = CONTROLLER_BUTTON_RIGHTTRIGGER;
+		padbinds.caveman2 = CONTROLLER_BUTTON_LEFTTRIGGER;
+
+		padbinds.right = CONTROLLER_BUTTON_DPAD_RIGHT;
+		padbinds.left = CONTROLLER_BUTTON_DPAD_LEFT;
+		padbinds.up = CONTROLLER_BUTTON_DPAD_UP;
+		padbinds.down = CONTROLLER_BUTTON_DPAD_DOWN;
+
+		padbinds.movement = CONTROLLER_STICK_LEFT;
+		padbinds.camera = CONTROLLER_STICK_RIGHT;
+	}
+	else if (tab == 3) {
+		controls.ps2_controls = 1;
+		controls.dropdownkey = 1;
+		controls.laddergrabkey = 1;
+		controls.cavemankey = 1;
+		controls.menubuttons = 1;
+		controls.invertrxp1 = 0;
+		controls.invertryp1 = 0;
+		controls.disablerxp1 = 0;
+		controls.disableryp1 = 0;
+	}
+}
+
 char *getConfigFile() {
 	char executableDirectory[1024];
 	int filePathBufLen = 1024;
@@ -494,18 +595,45 @@ void callback_default(pgui_control *control, void *data) {
 	setAllPadBindText();
 }
 
+HWND test;
+void callback_default_tabonly(pgui_control* control, void* data) {
+	int currentTabIndex = TabCtrl_GetCurSel(test); 
+	if (currentTabIndex != -1) {
+
+		defaultSettings_tabonly(currentTabIndex);
+		switch (currentTabIndex) {
+		case 0:
+			update_general_page();
+			break;
+		case 1:
+			setAllBindText();
+			break;
+		case 2:
+			setAllPadBindText();
+			break;
+		case 3:
+			update_control_page();
+			break;
+		default:
+			break;
+		}		
+	}
+}
+
 int main(int argc, char **argv) {
 	cursedSDLSetup();
 	loadSettings();
 
 	pgui_control *window = pgui_window_create(430, 480, "Tony Hawk's Underground SDL Launcher");
 
-	pgui_control *restore_default_button = pgui_button_create(8, window->h - 42 + 8, 96, 26, "Restore Defaults", window);
+	pgui_control *restore_default_button = pgui_button_create(8, window->h - 42 + 8, 70, 26, "Defaults (all)", window);
+	pgui_control* restore_default_tabonly_button = pgui_button_create(8 + 8 + 71, window->h - 42 + 8, 70, 26, "Defaults (tab)", window);
 	pgui_control* cancel_button = pgui_button_create(window->w - (88 * 3), window->h - 42 + 8, 80, 26, "Cancel", window);
 	pgui_control* save_button = pgui_button_create(window->w - (88 * 2), window->h - 42 + 8, 80, 26, "Save settings", window);
 	pgui_control *ok_button = pgui_button_create(window->w - 88, window->h - 42 + 8, 80, 26, "OK", window);
 
 	pgui_button_set_on_press(restore_default_button, callback_default, NULL);
+	pgui_button_set_on_press(restore_default_tabonly_button, callback_default_tabonly, window);
 	pgui_button_set_on_press(save_button, callback_save, NULL);
 	pgui_button_set_on_press(cancel_button, callback_cancel, NULL);
 	pgui_button_set_on_press(ok_button, callback_ok, NULL);
@@ -518,6 +646,7 @@ int main(int argc, char **argv) {
 	};
 
 	pgui_control *tabs = pgui_tabs_create(8, 8, window->w - 16, window->h - 8 - 32 - 8, tab_names, 4, window);
+	test = tabs->hwnd;
 
 	build_general_page(tabs->children[0]);
 	build_keyboard_page(tabs->children[1]);
