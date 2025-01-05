@@ -71,14 +71,6 @@ void check_additional_mods(pgui_control* control, int value, void* data) {
 	do_setting_checkbox(control, value, data);
 }
 
-void set_menu_combobox_no_offset(pgui_control* control, int value, int* target) {
-	*target = value;
-}
-
-void set_menu_combobox(pgui_control* control, int value, int* target) {
-	*target = value+1;
-}
-
 void do_setting_trackbar(pgui_control* control, int value, int* target) {
 	*target = value;
 }
@@ -171,7 +163,7 @@ void build_general_page(pgui_control* parent) {
 	general_page.chat_size_label = pgui_label_create(8, 24 + (24 * 9) + 8, 128, 24, "Chat size:", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox);
 	general_page.chat_size = pgui_combobox_create(8 + 82, 24 + (24 * 9) + 4, 80, 24, chatsize_options, 4, misc_groupbox);
 	general_page.chat_wait_time_label = pgui_label_with_tooltip_create(8, 24 + (24 * 10) + 11, 128, 24, "Message time (seconds): ", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox, "Value between 1 and 120");
-	general_page.chat_wait_time = pgui_textbox_create(8 + 132, 24 + (24 * 10) + 8, 30, 20, "", misc_groupbox);
+	general_page.chat_wait_time = pgui_textbox_create(8 + 132, 24 + (24 * 10) + 9, 30, 20, "", misc_groupbox);
 	general_page.additional_mods_checkbox = pgui_checkbox_create(8, 24 + (24 * 13) - 2, 128, 24, "Additional mods:", misc_groupbox);
 	general_page.additional_mods = pgui_textbox_create(8, 24 + (24 * 14) - 2, (parent->w / 2) - 32, 24, "", misc_groupbox);
 

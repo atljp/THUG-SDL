@@ -157,6 +157,8 @@ struct gamepad_page {
 	pgui_control* spin_right;
 	pgui_control* nollie;
 	pgui_control* switch_revert;
+	pgui_control* caveman;
+	pgui_control* caveman2;
 	pgui_control* pause;
 
 	pgui_control* forward;
@@ -275,3 +277,5 @@ typedef struct {
 
 
 void do_setting_checkbox(pgui_control* control, int value, int* target);
+void set_menu_combobox_no_offset(pgui_control* control, int value, int* target);
+void set_menu_combobox(pgui_control* control, int value, int* target);

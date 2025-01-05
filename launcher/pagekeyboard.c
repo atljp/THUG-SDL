@@ -1,6 +1,6 @@
 #include "pagekeyboard.h"
 
-struct keyboard_page keyboard_page;
+
 struct keybinds keybinds;
 struct settings settings;
 
@@ -122,6 +122,20 @@ void setAllBindText() {
 	setBindText(keyboard_page.grind, keybinds.grind);
 	setBindText(keyboard_page.spin_left, keybinds.spinLeft);
 	setBindText(keyboard_page.spin_right, keybinds.spinRight);
+
+	if (controls.ps2_controls) {
+		pgui_textbox_set_enabled(keyboard_page.nollie, 1);
+		pgui_textbox_set_enabled(keyboard_page.switch_revert, 1);
+		pgui_textbox_set_enabled(keyboard_page.caveman, 0);
+		pgui_textbox_set_enabled(keyboard_page.caveman2, 0);
+	}
+	else {
+		pgui_textbox_set_enabled(keyboard_page.nollie, 0);
+		pgui_textbox_set_enabled(keyboard_page.switch_revert, 0);
+		pgui_textbox_set_enabled(keyboard_page.caveman, 1);
+		pgui_textbox_set_enabled(keyboard_page.caveman2, 1);
+
+	}
 	setBindText(keyboard_page.nollie, keybinds.nollie);
 	setBindText(keyboard_page.switch_revert, keybinds.switchRevert);
 	setBindText(keyboard_page.caveman, keybinds.caveman);

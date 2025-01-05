@@ -4,4 +4,5 @@
 #include "global.h"
 #include "pagecontrol.h"
 
-struct keyboard_page keyboard_page;
+struct gamepad_page gamepad_page;
+

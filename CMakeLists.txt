@@ -87,6 +87,7 @@ set(LSOURCE_FILES
 	"${LSRC}/pgui.c"
 	"${LSRC}/pagegeneral.c"
 	"${LSRC}/pagekeyboard.c"
+	"${LSRC}/pagegamepad.c"
 	"${LSRC}/pagecontrol.c"
 	"${LSRC}/Resources.rc"
 )
@@ -95,6 +96,7 @@ set (LHEADER_FILES
 	"${LSRC}/pgui.h"
 	"${LSRC}/pagegeneral.h"
 	"${LSRC}/pagekeyboard.h"
+	"${LSRC}/pagegamepad.h"
 	"${LSRC}/pagecontrol.h"
 	"${LSRC}/global.h"
 	"${LSRC}/Resources.h"
