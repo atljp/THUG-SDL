@@ -222,9 +222,9 @@ void build_gamepad_page(pgui_control* parent) {
 	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 8), 96, 16, "Caveman:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
 	gamepad_page.caveman = build_button_combobox(actions_groupbox->w - 8 - box_width, 16 + (graphics_v_spacing * 8), box_width, 20, actions_groupbox, &(padbinds.caveman));
 
-	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 9), 96, 16, "Caveman2:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
+	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 9), 90, 16, "Alt Caveman:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
 	gamepad_page.caveman2 = build_button_combobox(actions_groupbox->w - 9 - box_width, 16 + (graphics_v_spacing * 9), box_width, 20, actions_groupbox, &(padbinds.caveman2));
-
+	
 	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 10), 96, 16, "Pause:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
 	gamepad_page.pause = build_button_combobox(actions_groupbox->w - 8 - box_width, 16 + (graphics_v_spacing * 10), box_width, 20, actions_groupbox, &(padbinds.menu));
 

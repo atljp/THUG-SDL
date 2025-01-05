@@ -134,6 +134,8 @@ void defaultSettings() {
 	padbinds.rightSpin = CONTROLLER_BUTTON_RIGHTSHOULDER;
 	padbinds.nollie = CONTROLLER_BUTTON_LEFTTRIGGER;
 	padbinds.switchRevert = CONTROLLER_BUTTON_RIGHTTRIGGER;
+	padbinds.caveman = CONTROLLER_BUTTON_RIGHTTRIGGER;
+	padbinds.caveman2 = CONTROLLER_BUTTON_LEFTTRIGGER;
 
 	padbinds.right = CONTROLLER_BUTTON_DPAD_RIGHT;
 	padbinds.left = CONTROLLER_BUTTON_DPAD_LEFT;
@@ -369,6 +371,8 @@ void saveSettings() {
 	writeIniInt("Gamepad", "SpinRight", mPadbinds.rightSpin, configFile);
 	writeIniInt("Gamepad", "Nollie", mPadbinds.nollie, configFile);
 	writeIniInt("Gamepad", "Switch", mPadbinds.switchRevert, configFile);
+	writeIniInt("Gamepad", "Caveman", mPadbinds.caveman, configFile);
+	writeIniInt("Gamepad", "Caveman2", mPadbinds.caveman2, configFile);
 
 	writeIniInt("Gamepad", "Right", mPadbinds.right, configFile);
 	writeIniInt("Gamepad", "Left", mPadbinds.left, configFile);
