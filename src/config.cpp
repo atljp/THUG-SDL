@@ -93,8 +93,8 @@ void InitPatch() {
 	graphics_settings.distanceclipping = getIniBool(GRAPHICS_SECTION, "DistanceClipping", 0, configFile);
 	graphics_settings.clippingdistance = GetPrivateProfileInt("Graphics", "ClippingDistance", 100, configFile);
 	graphics_settings.fog = getIniBool(GRAPHICS_SECTION, "Fog", 0, configFile);
-	resX = GetPrivateProfileInt(GRAPHICS_SECTION, "ResolutionX", 640, configFile);
-	resY = GetPrivateProfileInt(GRAPHICS_SECTION, "ResolutionY", 480, configFile);
+	resX = GetPrivateProfileInt(GRAPHICS_SECTION, "ResolutionX", 0, configFile);
+	resY = GetPrivateProfileInt(GRAPHICS_SECTION, "ResolutionY", 0, configFile);
 	isWindowed = getIniBool(GRAPHICS_SECTION, "Windowed", 0, configFile);
 	isBorderless = getIniBool(GRAPHICS_SECTION, "Borderless", 0, configFile);
 	Ps2Controls = getIniBool(CONTROLS_SECTION, "Ps2Controls", 1, configFile);
@@ -136,16 +136,16 @@ void InitPatch() {
 	Log::TypedLog(CHN_DLL, "Button font\t\t\t\t\t%s\n", (buttonfont == 2) ? "Ps2" : ((buttonfont == 3) ? "Xbox" : ((buttonfont == 4) ? "NGC" : "PC")));
 	Log::TypedLog(CHN_DLL, "Ps2Controls\t\t\t\t\t%s\n", Ps2Controls ? "Enabled" : "Disabled");
 	Log::TypedLog(CHN_DLL, "Language setting\t\t\t\t\t%s\n", (language == 1) ? "English" : ((language == 2) ? "French" : ((language == 3) ? "German" : "English")));
-	Log::TypedLog(CHN_DLL, "Graphic settings - Very high Shadow Quality\t%s\n", (graphics_settings.hqshadows == 2) ? "Enabled" : "Disabled");
-	Log::TypedLog(CHN_DLL, "Graphic settings - Fullscreen Anti-Aliasing\t%s\n", graphics_settings.antialiasing ? "Enabled" : "Disabled");
-	Log::TypedLog(CHN_DLL, "Graphic settings - Distance Clipping\t\t%s\n", graphics_settings.distanceclipping ? "Enabled" : "Disabled");
+	Log::TypedLog(CHN_DLL, "Shadow Quality\t%s\n", graphics_settings.hqshadows ? (graphics_settings.hqshadows == 2) ? "Very High" : "High" : "Default");
+	Log::TypedLog(CHN_DLL, "Fullscreen Anti-Aliasing\t%s\n", graphics_settings.antialiasing ? "Enabled" : "Disabled");
+	Log::TypedLog(CHN_DLL, "Distance Clipping\t\t%s\n", graphics_settings.distanceclipping ? "Enabled" : "Disabled");
 
 	if (graphics_settings.distanceclipping) {
-		Log::TypedLog(CHN_DLL, "Graphic settings - Clipping Distance\t\t%d\n", graphics_settings.clippingdistance);
-		Log::TypedLog(CHN_DLL, "Graphic settings - Fog\t\t\t\t%s\n", graphics_settings.fog ? "Enabled" : "Disabled");
+		Log::TypedLog(CHN_DLL, "Clipping Distance\t\t%d\n", graphics_settings.clippingdistance);
+		Log::TypedLog(CHN_DLL, "Fog\t\t\t\t%s\n", graphics_settings.fog ? "Enabled" : "Disabled");
 	}
-	Log::TypedLog(CHN_DLL, "Graphic settings - Resolution from INI\t\t%d x %d\n", resX, resY);
-	Log::TypedLog(CHN_DLL, "Graphic settings - Window mode\t\t\t%s \n", (isWindowed && !isBorderless) ? "Enabled (default)" : ((isWindowed && isBorderless) ? "Enabled (borderless)" : "Disabled"));
+	Log::TypedLog(CHN_DLL, "Resolution from INI\t\t%d x %d\n", resX, resY);
+	Log::TypedLog(CHN_DLL, "Window mode\t\t\t%s \n", (isWindowed && !isBorderless) ? "Enabled (default)" : ((isWindowed && isBorderless) ? "Enabled (borderless)" : "Disabled"));
 	Log::TypedLog(CHN_DLL, "Additional Script Mods\t\t\t\t%s\n", noadditionalscriptmods ? "Disabled" : "Enabled");
 
 	switch (dropdowncontrol) {
@@ -173,6 +173,7 @@ void InitPatch() {
 	Log::TypedLog(CHN_DLL, "Player 1 camera X axis (right stick)\t\t%s\n", disableRXplayer1 ? "Disabled" : "Enabled");
 	Log::TypedLog(CHN_DLL, "Player 1 camera Y axis (right stick)\t\t%s\n", disableRYplayer1 ? "Disabled" : "Enabled");
 	Log::TypedLog(CHN_DLL, "Chat size\t\t\t\t\t\t%s\n", (chatsize == 2) ? "Small" : ((chatsize == 3) ? "Default" : ((chatsize == 4) ? "Big" : "Extra small")));
+	if (consolewaittime < 1 || consolewaittime > 120) consolewaittime = 30;
 	Log::TypedLog(CHN_DLL, "Chat message time\t\t\t\t\t%d seconds\n", consolewaittime);
 	Log::TypedLog(CHN_DLL, "MenuButtons\t\t\t\t\t%s\n", (menubuttons == 2) ? "Ps2" : "PC (default)");
 	if (savewindowposition)

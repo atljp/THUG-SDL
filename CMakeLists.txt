@@ -77,3 +77,39 @@ set_target_properties(
     PROPERTIES 
         OUTPUT_NAME "d3d9"
 )
+
+add_executable(tsdl-launcher)
+
+set(LSRC "${CMAKE_SOURCE_DIR}/launcher")
+
+set(LSOURCE_FILES
+	"${LSRC}/main.c"
+	"${LSRC}/pgui.c"
+	"${LSRC}/pagegeneral.c"
+	"${LSRC}/pagekeyboard.c"
+	"${LSRC}/pagecontrol.c"
+	"${LSRC}/Resources.rc"
+)
+
+set (LHEADER_FILES
+	"${LSRC}/pgui.h"
+	"${LSRC}/pagegeneral.h"
+	"${LSRC}/pagekeyboard.h"
+	"${LSRC}/pagecontrol.h"
+	"${LSRC}/global.h"
+	"${LSRC}/Resources.h"
+)
+
+target_sources(tsdl-launcher PUBLIC 
+	${LSOURCE_FILES}
+	${LHEADER_FILES}
+)
+target_link_libraries(tsdl-launcher PRIVATE 
+	${LIBS}
+	comctl32.lib
+	UxTheme.lib
+)
+target_include_directories(tsdl-launcher PUBLIC
+	"${PROJECT_SOURCE_DIR}/src"
+	${INCLUDES}
+)
