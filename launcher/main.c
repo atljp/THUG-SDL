@@ -64,11 +64,10 @@ void defaultSettings() {
 	settings.clipping_distance = 100;
 	settings.fog = 0;
 
-	settings.button_font = 1;
 	settings.disable_blur = 1;
 	settings.disable_fsgamma = 0;
 
-	settings.button_font = 1;
+	settings.button_font = 2;
 	settings.language = 1;
 	settings.console = 0;
 	settings.writefile = 0;
@@ -161,11 +160,10 @@ void defaultSettings_tabonly(int tab) {
 		settings.clipping_distance = 100;
 		settings.fog = 0;
 
-		settings.button_font = 1;
 		settings.disable_blur = 1;
 		settings.disable_fsgamma = 0;
 
-		settings.button_font = 1;
+		settings.button_font = 2;
 		settings.language = 1;
 		settings.console = 0;
 		settings.writefile = 0;
@@ -289,7 +287,7 @@ void loadSettings() {
 	// MISC
 	settings.intromovies = getIniBool("Miscellaneous", "IntroMovies", 0, configFile);
 	settings.language = GetPrivateProfileInt("Miscellaneous", "Language", 1, configFile);
-	settings.button_font = GetPrivateProfileInt("Miscellaneous", "ButtonFont", 1, configFile);
+	settings.button_font = GetPrivateProfileInt("Miscellaneous", "ButtonFont", 2, configFile);
 	settings.boardscuffs = getIniBool("Miscellaneous", "Boardscuffs", 1, configFile);
 	settings.noadditionalscriptmods = getIniBool("Miscellaneous", "NoAdditionalScriptMods", 0, configFile);
 	

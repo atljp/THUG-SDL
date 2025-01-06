@@ -83,7 +83,7 @@ void InitPatch() {
 	appendlog = getIniBool(LOG_SECTION, "AppendLog", 0, configFile);
 	exceptionhandler = getIniBool(LOG_SECTION, "ExceptionHandler", 0, configFile);
 	language = GetPrivateProfileInt(MISC_SECTION, "Language", 1, configFile);
-	buttonfont = GetPrivateProfileInt(MISC_SECTION, "ButtonFont", 1, configFile);
+	buttonfont = GetPrivateProfileInt(MISC_SECTION, "ButtonFont", 2, configFile);
 	intromovies = getIniBool(MISC_SECTION, "IntroMovies", 1, configFile);
 	boardscuffs = getIniBool(MISC_SECTION, "Boardscuffs", 1, configFile);
 	disablefsgamma = getIniBool(GRAPHICS_SECTION, "DisableFullscreenGamma", 0, configFile);
