@@ -84,7 +84,7 @@ void InitPatch() {
 	exceptionhandler = getIniBool(LOG_SECTION, "ExceptionHandler", 0, configFile);
 	language = GetPrivateProfileInt(MISC_SECTION, "Language", 1, configFile);
 	buttonfont = GetPrivateProfileInt(MISC_SECTION, "ButtonFont", 2, configFile);
-	intromovies = getIniBool(MISC_SECTION, "IntroMovies", 1, configFile);
+	intromovies = getIniBool(MISC_SECTION, "IntroMovies", 0, configFile);
 	boardscuffs = getIniBool(MISC_SECTION, "Boardscuffs", 1, configFile);
 	disablefsgamma = getIniBool(GRAPHICS_SECTION, "DisableFullscreenGamma", 0, configFile);
 	disableblur = getIniBool(GRAPHICS_SECTION, "DisableBlur", 1, configFile);
@@ -95,7 +95,7 @@ void InitPatch() {
 	graphics_settings.fog = getIniBool(GRAPHICS_SECTION, "Fog", 0, configFile);
 	resX = GetPrivateProfileInt(GRAPHICS_SECTION, "ResolutionX", 0, configFile);
 	resY = GetPrivateProfileInt(GRAPHICS_SECTION, "ResolutionY", 0, configFile);
-	isWindowed = getIniBool(GRAPHICS_SECTION, "Windowed", 0, configFile);
+	isWindowed = getIniBool(GRAPHICS_SECTION, "Windowed", 1, configFile);
 	isBorderless = getIniBool(GRAPHICS_SECTION, "Borderless", 0, configFile);
 	Ps2Controls = getIniBool(CONTROLS_SECTION, "Ps2Controls", 1, configFile);
 	dropdowncontrol = GetPrivateProfileInt(CONTROLS_SECTION, "DropDownControl", 1, configFile);

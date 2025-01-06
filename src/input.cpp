@@ -730,13 +730,13 @@ void pollKeyboard(device* dev) {
 				}
 				if (inputsettings.isPs2Controls) {
 					if (keyboardState[keybinds.rightSpin]) {
-						dev->controlData[3] |= 0x01 << 2; // Raise
+						dev->controlData[20] |= 0x01 << 0; // Raise
 					}
 					if (keyboardState[keybinds.leftSpin]) {
-						dev->controlData[3] |= 0x01 << 0; // Lower
+						dev->controlData[3] |= 0x01 << 2; // Lower
 					}
 					if (keyboardState[keybinds.nollie]) { // Black
-						dev->controlData[20] |= 0x01 << 0;
+						dev->controlData[3] |= 0x01 << 0;
 					}
 					if (keyboardState[keybinds.switchRevert]) { // White
 						dev->controlData[20] |= 0x01 << 1;

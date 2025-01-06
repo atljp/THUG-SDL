@@ -267,16 +267,16 @@ void loadSettings() {
 	// GRAPHICS
 	settings.resX = GetPrivateProfileInt("Graphics", "ResolutionX", 0, configFile);
 	settings.resY = GetPrivateProfileInt("Graphics", "ResolutionY", 0, configFile);
-	settings.windowed = getIniBool("Graphics", "Windowed", 0, configFile);
+	settings.windowed = getIniBool("Graphics", "Windowed", 1, configFile);
 	settings.borderless = getIniBool("Graphics", "Borderless", 0, configFile);
 	settings.savewinpos = getIniBool("Graphics", "SaveWindowPosition", 0, configFile);
-	settings.hq_shadows = GetPrivateProfileInt("Graphics", "HQShadows", 0, configFile);
-	settings.antialiasing = getIniBool("Graphics", "AntiAliasing", 0, configFile);
+	settings.hq_shadows = GetPrivateProfileInt("Graphics", "HQShadows", 2, configFile);
+	settings.antialiasing = getIniBool("Graphics", "AntiAliasing", 1, configFile);
 	settings.distance_clipping = getIniBool("Graphics", "DistanceClipping", 0, configFile);
 	settings.clipping_distance = GetPrivateProfileInt("Graphics", "ClippingDistance", 100, configFile);
 	settings.fog = getIniBool("Graphics", "Fog", 0, configFile);
 	settings.disable_blur = getIniBool("Graphics", "DisableBlur", 1, configFile);
-	settings.disable_fsgamma = getIniBool("Graphics", "DisableFullscreenGamma", 1, configFile);
+	settings.disable_fsgamma = getIniBool("Graphics", "DisableFullscreenGamma", 0, configFile);
 
 	// LOGGER
 	settings.console = GetPrivateProfileInt("Logger", "Console", 0, configFile);
