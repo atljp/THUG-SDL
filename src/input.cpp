@@ -189,12 +189,13 @@ void addplayer(SDL_GameController* controller) {
 		if (found) {
 			SDL_GameControllerSetPlayerIndex(controller, i);
 			players[i].controller = controller;
+
+			if (numplayers > 0) {
+				players[i].lockedOut = 1;
+				SDL_JoystickRumble(SDL_GameControllerGetJoystick(controller), 0xffff, 0xffff, 250);
+			}
 			numplayers++;
-
-			players[i].lockedOut = 1;
-			Log::TypedLog(CHN_SDL, "Added player %d: %s\n", i + 1, SDL_GameControllerName(controller));
-
-			SDL_JoystickRumble(SDL_GameControllerGetJoystick(controller), 0xffff, 0xffff, 250);
+			Log::TypedLog(CHN_SDL, "Added player %d: %s\n", i + 1, SDL_GameControllerName(controller));	
 		}
 	}
 	else {
@@ -256,8 +257,8 @@ void initSDLControllers() {
 	for (int i = 0; i < SDL_NumJoysticks(); i++) {
 		if (SDL_IsGameController(i)) {
 			addController(i);
-			if (!(detected)) Log::TypedLog(CHN_SDL, "Detected controller \"%s\"\n", SDL_GameControllerNameForIndex(i));
-			detected = 1;
+			//if (!(detected)) Log::TypedLog(CHN_SDL, "Detected controller \"%s\"\n", SDL_GameControllerNameForIndex(i));
+			//detected = 1;
 		}
 	}
 }
