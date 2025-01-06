@@ -319,8 +319,8 @@ void loadSettings() {
 
 	keybinds.spinLeft = GetPrivateProfileInt("Keybinds", "SpinLeft", SDL_SCANCODE_KP_7, configFile);
 	keybinds.spinRight = GetPrivateProfileInt("Keybinds", "SpinRight", SDL_SCANCODE_KP_9, configFile);
-	keybinds.nollie = GetPrivateProfileInt("Keybinds", "Nollie", SDL_SCANCODE_KP_7, configFile); // Not intended for kb
-	keybinds.switchRevert = GetPrivateProfileInt("Keybinds", "Switch", SDL_SCANCODE_KP_9, configFile); // Not intended for kb
+	keybinds.nollie = GetPrivateProfileInt("Keybinds", "Nollie", SDL_SCANCODE_KP_1, configFile); // Not intended for kb
+	keybinds.switchRevert = GetPrivateProfileInt("Keybinds", "Switch", SDL_SCANCODE_KP_3, configFile); // Not intended for kb
 	keybinds.caveman = GetPrivateProfileInt("Keybinds", "Caveman", SDL_SCANCODE_KP_1, configFile);
 	keybinds.caveman2 = GetPrivateProfileInt("Keybinds", "Caveman2", SDL_SCANCODE_KP_3, configFile);
 

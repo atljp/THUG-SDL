@@ -690,8 +690,8 @@ void loadKeyBinds(struct keybinds* bindsOut) {
 
 		bindsOut->leftSpin = (SDL_Scancode)GetPrivateProfileInt(KEYBIND_SECTION, "SpinLeft", SDL_SCANCODE_KP_7, configFile);
 		bindsOut->rightSpin = (SDL_Scancode)GetPrivateProfileInt(KEYBIND_SECTION, "SpinRight", SDL_SCANCODE_KP_9, configFile);
-		bindsOut->nollie = (SDL_Scancode)GetPrivateProfileInt(KEYBIND_SECTION, "Nollie", SDL_SCANCODE_KP_7, configFile);
-		bindsOut->switchRevert = (SDL_Scancode)GetPrivateProfileInt(KEYBIND_SECTION, "Switch", SDL_SCANCODE_KP_9, configFile);
+		bindsOut->nollie = (SDL_Scancode)GetPrivateProfileInt(KEYBIND_SECTION, "Nollie", SDL_SCANCODE_KP_1, configFile);
+		bindsOut->switchRevert = (SDL_Scancode)GetPrivateProfileInt(KEYBIND_SECTION, "Switch", SDL_SCANCODE_KP_3, configFile);
 		bindsOut->caveman = (SDL_Scancode)GetPrivateProfileInt(KEYBIND_SECTION, "Caveman", SDL_SCANCODE_KP_1, configFile);
 		bindsOut->caveman2 = (SDL_Scancode)GetPrivateProfileInt(KEYBIND_SECTION, "Caveman2", SDL_SCANCODE_KP_3, configFile);
 
