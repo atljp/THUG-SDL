@@ -92,6 +92,26 @@ void do_distance_clipping_checkbox(pgui_control* control, int value, int* target
 	*target = value;
 }
 
+void do_console(pgui_control* control, int value, int* target) {
+	if (value) {
+		pgui_checkbox_set_enabled(general_page.native_log, 1);
+		settings.console = 1;
+	}
+	else {
+		pgui_checkbox_set_enabled(general_page.native_log, 0);
+		settings.console = 0;
+	}
+}
+
+void do_native_log(pgui_control* control, int value, int* target) {
+	if (value) {
+		settings.console = 2;
+	}
+	else {
+		settings.console = 1;
+	}
+}
+
 char* uicontrol_options[] = {
 	"PC",
 	"PS2",
@@ -153,7 +173,8 @@ void build_general_page(pgui_control* parent) {
 	general_page.button_font = pgui_combobox_create(8 + 82, 16, 80, 24, uicontrol_options, 4, misc_groupbox);
 	general_page.language_label = pgui_label_create(8, 16 + 24 + 8, 128, 24, "Language:", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox);
 	general_page.language = pgui_combobox_create(8 + 82, 16 + 20 + 8, 80, 24, language_options, 3, misc_groupbox);
-	general_page.console = pgui_checkbox_create(8, 24 + (24 * 2), 128, 24, "Console", misc_groupbox);
+	general_page.console = pgui_checkbox_create(8, 24 + (24 * 2), 60, 24, "Console", misc_groupbox);
+	general_page.native_log = pgui_checkbox_create(80, 24 + (24 * 2), 80, 24, "Native log", misc_groupbox);
 	general_page.write_file = pgui_checkbox_create(8, 24 + (24 * 3), 128, 24, "Write file", misc_groupbox);
 	general_page.append_log = pgui_checkbox_create(8, 24 + (24 * 4), 128, 24, "Append log", misc_groupbox);
 	general_page.exception_handler = pgui_checkbox_with_tooltip_create(8, 24 + (24 * 5), 136, 24, "Exception Handler", misc_groupbox, "May not work on Windows 11");
@@ -171,7 +192,8 @@ void build_general_page(pgui_control* parent) {
 	// SET SETTINGS
 	//***************************
 	pgui_combobox_set_on_select(general_page.button_font, set_menu_combobox, &(settings.button_font));
-	pgui_checkbox_set_on_toggle(general_page.console, do_setting_checkbox, &(settings.console));
+	pgui_checkbox_set_on_toggle(general_page.console, do_console, &(settings.console));
+	pgui_checkbox_set_on_toggle(general_page.native_log, do_native_log, &(settings.console));
 	pgui_checkbox_set_on_toggle(general_page.write_file, do_setting_checkbox, &(settings.writefile));
 	pgui_checkbox_set_on_toggle(general_page.append_log, do_setting_checkbox, &(settings.appendlog));
 	pgui_checkbox_set_on_toggle(general_page.exception_handler, do_setting_checkbox, &(settings.exceptionhandler));
@@ -281,10 +303,17 @@ void update_general_page() {
 	pgui_checkbox_set_checked(general_page.additional_mods_checkbox, settings.additionalmods);
 	pgui_textbox_set_text(general_page.additional_mods, settings.additionalmods_folder);
 	
-
 	pgui_combobox_set_selection(general_page.button_font, settings.button_font-1);
 	pgui_combobox_set_selection(general_page.language, settings.language-1);
+
 	pgui_checkbox_set_checked(general_page.console, settings.console);
+	if (settings.console)
+		pgui_checkbox_set_enabled(general_page.native_log, 1);
+	else
+		pgui_checkbox_set_enabled(general_page.native_log, 0);
+	if (settings.console == 2)
+		pgui_checkbox_set_checked(general_page.native_log, settings.console);
+
 	pgui_checkbox_set_checked(general_page.write_file, settings.writefile);
 	pgui_checkbox_set_checked(general_page.append_log, settings.appendlog);
 	pgui_checkbox_set_checked(general_page.exception_handler, settings.exceptionhandler);

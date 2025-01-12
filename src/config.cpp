@@ -474,37 +474,6 @@ void patchWindow() {
 	patchCall((void*)0x005C569F, writeConfigValues);
 }
 
-float fix_floating_precision(float val)
-{
-	val = (val > 1.0f) ? 1.0f : (val < -1.0f ? -1.0f : val);
-	double result = std::cos(static_cast<double>(val));
-	return static_cast<float>(result);
-}
-
-void runProfileConnectScript(void* arg1, Script::LazyStruct* pParams) {
-	RunScript(0x588ED87C, pParams, nullptr, nullptr);
-}
-
-void __cdecl setAspectRatio(float aspect) {
-	*screenAspectRatio = (float)resX / (float)resY;
-}
-
-float __cdecl getScreenAngleFactor() {
-	return ((float)resX / (float)resY) / (4.0f / 3.0f);
-}
-
-int Rnd_fixed(int n) {
-	return (rand() % n);
-}
-
-void __declspec(naked) forceWindowmode() {
-	__asm {
-		mov dword ptr ds : [0x0072DDE8] , 1
-		mov eax, 0x004B78C0
-		jmp eax
-	}
-}
-
 uint32_t dehexifyDigit_Wrapper(char* p_button) {
 	uint8_t value = *p_button;
 	uint8_t original_value = *p_button;
@@ -630,8 +599,8 @@ void patch_button_font(uint8_t sel) {
 		patchCall((void*)0x00478B8D, patchMetaButtonMap);
 		patchCall((void*)0x004AF394, dehexifyDigit_Wrapper);
 
-		patchNop((void*)0x4af3c6, 3);
-		patchBytesM((void*)0x4af3c9, (BYTE*)"\x80\xF9\x12", 3);
+		patchNop((void*)0x004AF3C6, 3);
+		patchBytesM((void*)0x004AF3C9, (BYTE*)"\x80\xF9\x12", 3);
 
 		/* code cave that holds at least 40 bytes */
 		patchBytesM((void*)0x005AD516, (BYTE*)"\x00\x01\x02\x03\x04\x05\x06\x07\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x08\x00\x01\x02\x03\x04\x05\x06\x07", 40);	
@@ -787,4 +756,27 @@ void dumpWindowPosition() {
 	char str_y[10]; sprintf(str_y, "%d", windowposy);
 	WritePrivateProfileString(GRAPHICS_SECTION, "WindowPosX", str_x, configFile);
 	WritePrivateProfileString(GRAPHICS_SECTION, "WindowPosY", str_y, configFile);
+}
+
+float fix_floating_precision(float val)
+{
+	val = (val > 1.0f) ? 1.0f : (val < -1.0f ? -1.0f : val);
+	double result = std::cos(static_cast<double>(val));
+	return static_cast<float>(result);
+}
+
+void runProfileConnectScript(void* arg1, Script::LazyStruct* pParams) {
+	RunScript(0x588ED87C, pParams, nullptr, nullptr);
+}
+
+void __cdecl setAspectRatio(float aspect) {
+	*screenAspectRatio = (float)resX / (float)resY;
+}
+
+float __cdecl getScreenAngleFactor() {
+	return ((float)resX / (float)resY) / (4.0f / 3.0f);
+}
+
+int Rnd_fixed(int n) {
+	return (rand() % n);
 }

@@ -66,11 +66,11 @@ void patchCFuncs() {
 
 void initScriptPatch() {
 	if (!mSettings.noadditionalscriptmods) {
-		editScriptsInMemory(); /*loads single functions of scripts and overwrites existing ones*/
-		Log::TypedLog(CHN_DLL, "Patching scripts in memory\n");
 		setButtonPrompts();
 		Log::TypedLog(CHN_DLL, "Adjusting button prompts\n");
 	}
+	editScriptsInMemory(); /*loads single functions of scripts and overwrites existing ones*/
+	Log::TypedLog(CHN_DLL, "Patching scripts in memory\n");
 	setDropDownKeys();
 	setCavemanKeys();
 	setLadderGrabKeys();
@@ -408,9 +408,9 @@ bool SetButtonEventMappings_Patched(Script::LazyStruct* pParams, DummyScript* pS
 
 void editScriptsInMemory() {
 
-	if (!mSettings.noadditionalscriptmods) {
+	uint32_t contentsChecksum = 0;
 
-		uint32_t contentsChecksum = 0;
+	if (!mSettings.noadditionalscriptmods) {
 
 		//Longer text input in online chat
 		removeScript(0x3B4548B8); /*enter_kb_chat*/
@@ -501,14 +501,14 @@ void editScriptsInMemory() {
 		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)change_level_new);
 		sCreateScriptSymbol_Wrapper(sizeof(change_level_new), 0x39C58EA1, contentsChecksum, (uint8_t*)change_level_new, "game\\skutils.qb");
 
-		//Restore onscreen keyboard
-		if (pResource_keyboard_restored = getResource(IDR_KEYBOARD_RESTORED)) {
-			removeScript(0xF0425254); /*create_onscreen_keyboard*/
-			contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)pResource_keyboard_restored);
-			sCreateScriptSymbol_Wrapper(5896, 0xF0425254, contentsChecksum, (uint8_t*)pResource_keyboard_restored, "engine\\menu\\keyboard.qb");
-		}
-
 		if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
+	}
+
+	//Restore onscreen keyboard
+	if (pResource_keyboard_restored = getResource(IDR_KEYBOARD_RESTORED)) {
+		removeScript(0xF0425254); /*create_onscreen_keyboard*/
+		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)pResource_keyboard_restored);
+		sCreateScriptSymbol_Wrapper(5896, 0xF0425254, contentsChecksum, (uint8_t*)pResource_keyboard_restored, "engine\\menu\\keyboard.qb");
 	}
 }
 

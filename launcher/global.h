@@ -249,6 +249,7 @@ struct general_page {
 	pgui_control* button_font_label;
 	pgui_control* button_font;
 	pgui_control* console;
+	pgui_control* native_log;
 	pgui_control* write_file;
 	pgui_control* append_log;
 	pgui_control* exception_handler;

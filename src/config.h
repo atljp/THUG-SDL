@@ -170,7 +170,6 @@ void getConfigFilePath(char mConfigFile[MAX_PATH]);
 void enforceMaxResolution();
 void handleWindowEvent(SDL_Event* e);
 void createSDLWindow();
-void forceWindowmode();
 float fix_floating_precision(float val);
 void runProfileConnectScript(void* arg1, Script::LazyStruct* pParams);
 void writeConfigValues();
