@@ -501,6 +501,12 @@ void editScriptsInMemory() {
 		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)change_level_new);
 		sCreateScriptSymbol_Wrapper(sizeof(change_level_new), 0x39C58EA1, contentsChecksum, (uint8_t*)change_level_new, "game\\skutils.qb");
 
+		//Fix crash when connecting online right after leaving the lobby
+		removeScript(0xBD54C02B); /*connected_to_internet*/
+		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)connected_to_internet_new);
+		sCreateScriptSymbol_Wrapper(sizeof(connected_to_internet_new), 0xBD54C02B, contentsChecksum, (uint8_t*)connected_to_internet_new, "game\\net\\net.qb");
+		
+
 		if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
 	}
 
@@ -591,32 +597,32 @@ void setDropDownKeys() {
 			{
 				/*Set L1+R1*/
 				trigger->AddChecksum(0, 0x3F369070); /*PressTwoAnyOrder*/
-				trigger->AddChecksum(0, 0x26B0C991); /*L1*/
-				trigger->AddChecksum(0, 0xF2F1F64E); /*R1*/
+				trigger->AddChecksum(0, 0x767A45D7); /*black*/
+				trigger->AddChecksum(0, 0xBD30325B); /*white*/
 			}
 			if (mSettings.dropdowncontrol == 2)
 			{
 				/*Set L1*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
-				trigger->AddChecksum(0, 0x26B0C991); /*L1*/
+				trigger->AddChecksum(0, 0xBD30325B); /*white*/
 			}
 			else if (mSettings.dropdowncontrol == 3)
 			{
 				/*Set R1*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
-				trigger->AddChecksum(0, 0xF2F1F64E); /*R1*/
+				trigger->AddChecksum(0, 0x767A45D7); /*black*/
 			}
 			else if (mSettings.dropdowncontrol == 4)
 			{
 				/*Set L2*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
-				trigger->AddChecksum(0, 0xBD30325B); //white
+				trigger->AddChecksum(0, 0x26B0C991); /*L1*/
 			}
 			else if (mSettings.dropdowncontrol == 5)
 			{
 				/*Set R2*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
-				trigger->AddChecksum(0, 0x767A45D7); //black
+				trigger->AddChecksum(0, 0xF2F1F64E); /*R1*/
 			}
 		}
 
@@ -695,14 +701,14 @@ void setCavemanKeys() {
 			{
 				/*Set L1*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
-				trigger->AddChecksum(0, 0x26B0C991); /*L1*/
+				trigger->AddChecksum(0, 0xBD30325B); /*white*/
 				trigger->AddInteger(0, 10);
 			}
 			else if (mSettings.cavemancontrol == 3)
 			{
 				/*Set R1*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
-				trigger->AddChecksum(0, 0xF2F1F64E); /*R1*/
+				trigger->AddChecksum(0, 0x767A45D7); /*black*/
 				trigger->AddInteger(0, 10);
 
 			}
@@ -710,14 +716,14 @@ void setCavemanKeys() {
 			{
 				/*Set L2*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
-				trigger->AddChecksum(0, 0xBD30325B); //white
+				trigger->AddChecksum(0, 0x26B0C991); /*L1*/
 				trigger->AddInteger(0, 10);
 			}
 			else if (mSettings.cavemancontrol == 5)
 			{
 				/*Set R2*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
-				trigger->AddChecksum(0, 0x767A45D7); /*black*/
+				trigger->AddChecksum(0, 0xF2F1F64E); /*R1*/
 				trigger->AddInteger(0, 10);
 
 			}
@@ -725,16 +731,17 @@ void setCavemanKeys() {
 			{
 				/*Set L1+R1*/
 				trigger->AddChecksum(0, 0x3F369070); /*PressTwoAnyOrder*/
-				trigger->AddChecksum(0, 0x26B0C991); /*L1*/
-				trigger->AddChecksum(0, 0xF2F1F64E); /*R1*/
+				trigger->AddChecksum(0, 0x767A45D7); /*black*/
+				trigger->AddChecksum(0, 0xBD30325B); /*white*/
 				trigger->AddInteger(0, 400);
 			}
 			else if (mSettings.cavemancontrol == 7)
 			{
 				/*Set L2+R2*/
 				trigger->AddChecksum(0, 0x3F369070); /*PressTwoAnyOrder*/
-				trigger->AddChecksum(0, 0x767A45D7); /*black*/
-				trigger->AddChecksum(0, 0xBD30325B); //white
+				trigger->AddChecksum(0, 0x26B0C991); /*L1*/
+				trigger->AddChecksum(0, 0xF2F1F64E); /*R1*/
+				
 				trigger->AddInteger(0, 400);
 			}
 

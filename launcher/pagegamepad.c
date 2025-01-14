@@ -188,7 +188,7 @@ void build_gamepad_page(pgui_control* parent) {
 	pgui_control* camera_groupbox = pgui_groupbox_create((parent->w / 2) + 4, (parent->h / 2) + 4 + 32, (parent->w / 2) - 8 - 4, (parent->h / 2) - 8 - 4 - 32, "Camera Controls", parent);
 
 	int label_offset = 4;
-	int graphics_v_spacing = 34;
+	int graphics_v_spacing = 32;
 	int skater_v_spacing = 39;
 	int camera_v_spacing = 39;
 	int box_width = 80;
@@ -213,20 +213,22 @@ void build_gamepad_page(pgui_control* parent) {
 	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 5), 96, 16, "Spin Right:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
 	gamepad_page.spin_right = build_button_combobox(actions_groupbox->w - 8 - box_width, 16 + (graphics_v_spacing * 5), box_width, 20, actions_groupbox, &(padbinds.rightSpin));
 
-	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 6), 96, 16, "Nollie:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
+	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 6), 96, 16, "Nollie¹:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
 	gamepad_page.nollie = build_button_combobox(actions_groupbox->w - 8 - box_width, 16 + (graphics_v_spacing * 6), box_width, 20, actions_groupbox, &(padbinds.nollie));
 
-	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 7), 96, 16, "Switch:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
+	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 7), 96, 16, "Switch¹:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
 	gamepad_page.switch_revert = build_button_combobox(actions_groupbox->w - 8 - box_width, 16 + (graphics_v_spacing * 7), box_width, 20, actions_groupbox, &(padbinds.switchRevert));
 
-	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 8), 96, 16, "Caveman:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
+	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 8), 96, 16, "Caveman²:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
 	gamepad_page.caveman = build_button_combobox(actions_groupbox->w - 8 - box_width, 16 + (graphics_v_spacing * 8), box_width, 20, actions_groupbox, &(padbinds.caveman));
 
-	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 9), 90, 16, "Alt Caveman:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
+	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 9), 90, 16, "Alt Caveman²:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
 	gamepad_page.caveman2 = build_button_combobox(actions_groupbox->w - 9 - box_width, 16 + (graphics_v_spacing * 9), box_width, 20, actions_groupbox, &(padbinds.caveman2));
 	
 	pgui_label_create(8, 16 + label_offset + (graphics_v_spacing * 10), 96, 16, "Pause:", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
 	gamepad_page.pause = build_button_combobox(actions_groupbox->w - 8 - box_width, 16 + (graphics_v_spacing * 10), box_width, 20, actions_groupbox, &(padbinds.menu));
+
+	pgui_label_create_credits(4, parent->h - 36, 180, 14, "¹ Ps2 controls          ² Xbox controls", PGUI_LABEL_JUSTIFY_LEFT, actions_groupbox);
 
 	// skater controls
 	pgui_label_create(8, 16 + label_offset, 96, 16, "Forward:", PGUI_LABEL_JUSTIFY_LEFT, skater_groupbox);

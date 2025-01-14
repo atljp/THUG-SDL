@@ -577,10 +577,10 @@ void pollController(device* dev, SDL_GameController* controller) {
 							dev->controlData[19] = 0xff;
 						}
 						if (getButton(controller, padbinds.caveman)) {
-							dev->controlData[20] |= 0x01 << 0;
+							dev->controlData[20] |= 0x01 << 1;
 						}
 						if (getButton(controller, padbinds.caveman2)) {
-							dev->controlData[20] |= 0x01 << 1;
+							dev->controlData[20] |= 0x01 << 0;
 						}
 					}
 				}
@@ -684,10 +684,10 @@ void pollKeyboard(device* dev) {
 				dev->controlData[3] |= 0x01 << 4;
 			}
 			if (keyboardState[SDL_SCANCODE_MINUS]) {
-				dev->controlData[20] |= 0x01 << 0;
+				dev->controlData[20] |= 0x01 << 0; // black
 			}
 			if (keyboardState[SDL_SCANCODE_EQUALS]) {
-				dev->controlData[20] |= 0x01 << 1;
+				dev->controlData[20] |= 0x01 << 1; // white
 			}
 			if (keyboardState[SDL_SCANCODE_S]) {
 				dev->controlData[5] = 0;
@@ -766,11 +766,11 @@ void pollKeyboard(device* dev) {
 					if (keyboardState[keybinds.leftSpin]) {
 						dev->controlData[3] |= 0x01 << 0; // Lower
 					}
-					if (keyboardState[keybinds.caveman]) { // White L1
+					if (keyboardState[keybinds.caveman]) { // white L1 swapped to act as black on kb
 						dev->controlData[20] |= 0x01 << 0;
 					}
-					if (keyboardState[keybinds.caveman2]) { // Black R1
-						dev->controlData[20] |= 0x01 << 1;
+					if (keyboardState[keybinds.caveman2]) { // black R1 swapped to act as white on kb
+						 dev->controlData[20] |= 0x01 << 1;
 					}
 				}
 			}
@@ -850,10 +850,10 @@ void pollKeyboard(device* dev) {
 						dev->controlData[18] = 0xff;
 					}
 					if (keyboardState[keybinds.caveman]) {
-						dev->controlData[20] |= 0x01 << 0;
+						dev->controlData[20] |= 0x01 << 1;
 					}
 					if (keyboardState[keybinds.caveman2]) {
-						dev->controlData[20] |= 0x01 << 1;
+						dev->controlData[20] |= 0x01 << 0;
 					}
 				}
 			}

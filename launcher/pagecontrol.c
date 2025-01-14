@@ -29,8 +29,8 @@ char* menubutton_options[] = {
 };
 
 char* laddergrab_options[] = {
-	"R1",
-	"L1",
+	"Spin Right",
+	"Spin Left",
 };
 
 void check_nollieandswitch_keys(pgui_control* control, int value, void* data) {
@@ -89,8 +89,9 @@ void build_control_page(pgui_control* parent) {
 	control_page.laddergrabkey = pgui_label_create(8, 24 + (24 * 9), 70, 32, "Ladder grab button:", PGUI_LABEL_JUSTIFY_CENTER, buttons_groupbox);
 	control_page.laddergrabkey_combobox = pgui_combobox_create(8 + 88, 24 + 4 + (24 * 9), 80, 24, laddergrab_options, 2, buttons_groupbox);
 
-	control_page.ps2_helper = pgui_label_create(8, 16 + (24 * 12) + 16 , (parent->w) + - 24 , 90, "* Using Ps2 controls will set getting of board to R1 + L1\!\n   Not using Ps2 controls will merge SpinRight + Switch and SpinLeft + Nollie onto    the spin keys!\n   Make sure to reset the pad bindings after chaning your preset!", PGUI_LABEL_JUSTIFY_LEFT, parent);
-	
+	control_page.ps2_helper = pgui_label_create(8, 16 + (24 * 12) + 16 , (parent->w) + - 24 , 90, "* Using Ps2 controls will set getting of board to R1 + L1\!\n   Not using Ps2 controls will merge SpinRight + Switch and SpinLeft + Nollie onto    the spin keys!\n   Make sure to reset the pad bindings after changing your preset!", PGUI_LABEL_JUSTIFY_LEFT, parent);
+	pgui_label_create(8, 24 + (24 * 10) + 4, 120, 18, "- Default: Spin Right", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
+
 	// **************************
 	// SET SETTINGS
 	//***************************

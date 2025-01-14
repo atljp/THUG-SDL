@@ -174,7 +174,7 @@ void build_general_page(pgui_control* parent) {
 	general_page.language_label = pgui_label_create(8, 16 + 24 + 8, 128, 24, "Language:", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox);
 	general_page.language = pgui_combobox_create(8 + 82, 16 + 20 + 8, 80, 24, language_options, 3, misc_groupbox);
 	general_page.console = pgui_checkbox_create(8, 24 + (24 * 2), 60, 24, "Console", misc_groupbox);
-	general_page.native_log = pgui_checkbox_create(80, 24 + (24 * 2), 80, 24, "Native log", misc_groupbox);
+	general_page.native_log = pgui_checkbox_create(80, 24 + (24 * 2), 80, 24, "Script log", misc_groupbox);
 	general_page.write_file = pgui_checkbox_create(8, 24 + (24 * 3), 128, 24, "Write file", misc_groupbox);
 	general_page.append_log = pgui_checkbox_create(8, 24 + (24 * 4), 128, 24, "Append log", misc_groupbox);
 	general_page.exception_handler = pgui_checkbox_with_tooltip_create(8, 24 + (24 * 5), 136, 24, "Exception Handler", misc_groupbox, "May not work on Windows 11");
