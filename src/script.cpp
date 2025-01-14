@@ -593,12 +593,13 @@ void setDropDownKeys() {
 
 		}
 		else {
-			if (mSettings.dropdowncontrol == 1)
-			{
-				/*Set L1+R1*/
+			if (mSettings.dropdowncontrol == 1) {
+				// No dropdowns on THUG PC originally. Set default to THUG2 PC dropdown L2+R2
+
+				/*Set L2+R2*/
 				trigger->AddChecksum(0, 0x3F369070); /*PressTwoAnyOrder*/
-				trigger->AddChecksum(0, 0x767A45D7); /*black*/
-				trigger->AddChecksum(0, 0xBD30325B); /*white*/
+				trigger->AddChecksum(0, 0xBFB9982B); /*L2*/
+				trigger->AddChecksum(0, 0x6bF8A7F4); /*R2*/
 			}
 			if (mSettings.dropdowncontrol == 2)
 			{
@@ -616,13 +617,13 @@ void setDropDownKeys() {
 			{
 				/*Set L2*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
-				trigger->AddChecksum(0, 0x26B0C991); /*L1*/
+				trigger->AddChecksum(0, 0xbFB9982B); /*L2*/
 			}
 			else if (mSettings.dropdowncontrol == 5)
 			{
 				/*Set R2*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
-				trigger->AddChecksum(0, 0xF2F1F64E); /*R1*/
+				trigger->AddChecksum(0, 0x6BF8A7F4); /*R2*/
 			}
 		}
 
