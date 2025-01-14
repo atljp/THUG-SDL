@@ -80,17 +80,17 @@ void build_control_page(pgui_control* parent) {
 
 	control_page.cavemankey = pgui_label_create(8, 16, 70, 32, "Caveman button(s):", PGUI_LABEL_JUSTIFY_CENTER, buttons_groupbox);
 	control_page.cavemankey_combobox = pgui_combobox_create(8 + 88, 16 + 4, 80, 24, caveman_options, 7, buttons_groupbox);
-	control_page.caveman_helper = pgui_label_create(8, (24 * 2), 180, 160, "- PC and Xbox default: R2 or L2\n- A.k.a. Black or White on OG Xbox\n- A.k.a. Caveman1 or Caveman2\n- Ps2 default: L1+R1", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
+	control_page.caveman_helper = pgui_label_create(8, (24 * 2), 180, 160, "- PC and Xbox default: R1 or L1\n-- Black or White on Xbox (Duke)\n-- RB or LB on Xbox\n-- Caveman1 or Caveman2 on PC\n- Ps2 default: L1+R1", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
 
 	control_page.dropdownkey = pgui_label_create(8, 16 + (24 * 5), 70, 32, "Dropdown button(s):", PGUI_LABEL_JUSTIFY_CENTER, buttons_groupbox);
 	control_page.dropdownkey_combobox = pgui_combobox_create(8 + 88, 16 + 4 + (24 * 5), 80, 24, dropdown_options, 5, buttons_groupbox);
-	control_page.dropdown_helper = pgui_label_create(8, (24 * 7), 180, 80, "- PC and Xbox default: L1+R1\n- A.k.a. Spin left and Spin right\n- Ps2 default: R2", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
+	control_page.dropdown_helper = pgui_label_create(8, (24 * 7), 180, 80, "- PC and Xbox default: R2+L2\n--Spin right and Spin left on PC\n--RT and LT on Xbox\n- Ps2 default: R2", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
 
 	control_page.laddergrabkey = pgui_label_create(8, 24 + (24 * 9), 70, 32, "Ladder grab button:", PGUI_LABEL_JUSTIFY_CENTER, buttons_groupbox);
 	control_page.laddergrabkey_combobox = pgui_combobox_create(8 + 88, 24 + 4 + (24 * 9), 80, 24, laddergrab_options, 2, buttons_groupbox);
 
-	control_page.ps2_helper = pgui_label_create(8, 16 + (24 * 12) + 16 , (parent->w) + - 24 , 90, "* If you don't use Ps2 controls, getting off board is bound to the Caveman buttons from the Keyboard or Gamepad tab! It will also merge SpinRight+Switch and SpinLeft+Nollie onto the spin keys respectively!\n\nIf you use Ps2 controls, getting off board is on L1+R1 by default which is SpinLeft+SpinRight. Nollie and Switch can then be assigned individually.", PGUI_LABEL_JUSTIFY_LEFT, parent);
-
+	control_page.ps2_helper = pgui_label_create(8, 16 + (24 * 12) + 16 , (parent->w) + - 24 , 90, "* Using Ps2 controls will set getting of board to R1 + L1\!\n   Not using Ps2 controls will merge SpinRight + Switch and SpinLeft + Nollie onto    the spin keys!\n   Make sure to reset the pad bindings after chaning your preset!", PGUI_LABEL_JUSTIFY_LEFT, parent);
+	
 	// **************************
 	// SET SETTINGS
 	//***************************

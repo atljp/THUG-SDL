@@ -401,6 +401,22 @@ void pollController(device* dev, SDL_GameController* controller) {
 						if (getButton(controller, padbinds.rightSpin)) {
 							dev->controlData[3] |= 0x01 << 3;
 						}
+						if (getButton(controller, padbinds.caveman)) {
+							dev->controlData[20] |= 0x01 << 1;
+						}
+						if (getButton(controller, padbinds.caveman2)) {
+							dev->controlData[20] |= 0x01 << 0;
+						}
+					}
+				}
+				else {
+					if (inputsettings.isPs2Controls) {
+						if (getButton(controller, padbinds.leftSpin)) {
+							dev->controlData[3] |= 0x01 << 2;
+						}
+						if (getButton(controller, padbinds.rightSpin)) {
+							dev->controlData[3] |= 0x01 << 3;
+						}
 						if (getButton(controller, padbinds.nollie)) {
 							dev->controlData[20] |= 0x01 << 1;
 						}
@@ -408,19 +424,19 @@ void pollController(device* dev, SDL_GameController* controller) {
 							dev->controlData[20] |= 0x01 << 0;
 						}
 					}
-				}
-				else {
-					if (getButton(controller, padbinds.leftSpin)) {
-						dev->controlData[3] |= 0x01 << 2;
-					}
-					if (getButton(controller, padbinds.rightSpin)) {
-						dev->controlData[3] |= 0x01 << 3;
-					}
-					if (getButton(controller, padbinds.nollie)) {
-						dev->controlData[20] |= 0x01 << 1;
-					}
-					if (getButton(controller, padbinds.switchRevert)) {
-						dev->controlData[20] |= 0x01 << 0;
+					else {
+						if (getButton(controller, padbinds.leftSpin)) {
+							dev->controlData[3] |= 0x01 << 2;
+						}
+						if (getButton(controller, padbinds.rightSpin)) {
+							dev->controlData[3] |= 0x01 << 3;
+						}
+						if (getButton(controller, padbinds.caveman)) {
+							dev->controlData[20] |= 0x01 << 1;
+						}
+						if (getButton(controller, padbinds.caveman2)) {
+							dev->controlData[20] |= 0x01 << 0;
+						}
 					}
 				}
 				if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)padbinds.up)) {
@@ -482,10 +498,10 @@ void pollController(device* dev, SDL_GameController* controller) {
 						if (getButton(controller, padbinds.rightSpin)) {
 							dev->controlData[3] |= 0x01 << 2; // Raise
 						}
-						if (getButton(controller, padbinds.nollie)) {
+						if (getButton(controller, padbinds.caveman)) {
 							dev->controlData[20] |= 0x01 << 1; // White
 						}
-						if (getButton(controller, padbinds.switchRevert)) {
+						if (getButton(controller, padbinds.caveman2)) {
 							dev->controlData[20] |= 0x01 << 0; // Black
 						}
 					}
@@ -546,7 +562,7 @@ void pollController(device* dev, SDL_GameController* controller) {
 							dev->controlData[20] |= 0x01 << 0;
 						}
 					}
-					else // PC controls
+					else // Xbox controls
 					{
 						if (getButton(controller, padbinds.leftSpin)) {
 							dev->controlData[3] |= 0x01 << 2;
@@ -736,10 +752,10 @@ void pollKeyboard(device* dev) {
 					if (keyboardState[keybinds.leftSpin]) {
 						dev->controlData[3] |= 0x01 << 2; // Lower
 					}
-					if (keyboardState[keybinds.nollie]) { // Black
+					if (keyboardState[keybinds.nollie]) {
 						dev->controlData[3] |= 0x01 << 0;
 					}
-					if (keyboardState[keybinds.switchRevert]) { // White
+					if (keyboardState[keybinds.switchRevert]) {
 						dev->controlData[20] |= 0x01 << 1;
 					}
 				}
@@ -750,10 +766,10 @@ void pollKeyboard(device* dev) {
 					if (keyboardState[keybinds.leftSpin]) {
 						dev->controlData[3] |= 0x01 << 0; // Lower
 					}
-					if (keyboardState[keybinds.caveman]) { // Black R2
+					if (keyboardState[keybinds.caveman]) { // White L1
 						dev->controlData[20] |= 0x01 << 0;
 					}
-					if (keyboardState[keybinds.caveman2]) { // White L2
+					if (keyboardState[keybinds.caveman2]) { // Black R1
 						dev->controlData[20] |= 0x01 << 1;
 					}
 				}

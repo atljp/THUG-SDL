@@ -753,7 +753,7 @@ void setLadderGrabKeys() {
 		patchBytesM((BYTE*)(0x00469A89 + 2), (BYTE*)"\x80\x00", 2); /* L1 */
 }
 
-void setButtonPrompts() {
+void setButtonPrompts() { //TODO: xbox controls ps2font: R2<->R1 L2<->L1
 
 	if (mSettings.buttonfont > 1 && mSettings.buttonfont < 5) {
 

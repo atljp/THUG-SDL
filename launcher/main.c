@@ -97,8 +97,8 @@ void defaultSettings() {
 	keybinds.grind = SDL_SCANCODE_KP_8;
 	keybinds.spinLeft = SDL_SCANCODE_KP_7;
 	keybinds.spinRight = SDL_SCANCODE_KP_9;
-	keybinds.nollie = SDL_SCANCODE_KP_1;
-	keybinds.switchRevert = SDL_SCANCODE_KP_3;
+	keybinds.nollie = SDL_SCANCODE_KP_1; //ps2 controls
+	keybinds.switchRevert = SDL_SCANCODE_KP_3; //ps2 controls
 	keybinds.caveman = SDL_SCANCODE_KP_1;
 	keybinds.caveman2 = SDL_SCANCODE_KP_3;
 
@@ -128,14 +128,22 @@ void defaultSettings() {
 	padbinds.grab = CONTROLLER_BUTTON_B;
 	padbinds.ollie = CONTROLLER_BUTTON_A;
 	padbinds.kick = CONTROLLER_BUTTON_X;
-
-	padbinds.leftSpin = CONTROLLER_BUTTON_LEFTSHOULDER;
-	padbinds.rightSpin = CONTROLLER_BUTTON_RIGHTSHOULDER;
-	padbinds.nollie = CONTROLLER_BUTTON_LEFTTRIGGER;
-	padbinds.switchRevert = CONTROLLER_BUTTON_RIGHTTRIGGER;
-	padbinds.caveman = CONTROLLER_BUTTON_RIGHTTRIGGER;
-	padbinds.caveman2 = CONTROLLER_BUTTON_LEFTTRIGGER;
-
+	if (controls.ps2_controls) {
+		padbinds.leftSpin = CONTROLLER_BUTTON_LEFTSHOULDER;
+		padbinds.rightSpin = CONTROLLER_BUTTON_RIGHTSHOULDER;
+		padbinds.nollie = CONTROLLER_BUTTON_LEFTTRIGGER;
+		padbinds.switchRevert = CONTROLLER_BUTTON_RIGHTTRIGGER;
+		padbinds.caveman = CONTROLLER_BUTTON_RIGHTTRIGGER;
+		padbinds.caveman2 = CONTROLLER_BUTTON_LEFTTRIGGER;
+	}
+	else {
+		padbinds.leftSpin = CONTROLLER_BUTTON_LEFTTRIGGER;
+		padbinds.rightSpin = CONTROLLER_BUTTON_RIGHTTRIGGER;
+		padbinds.nollie = CONTROLLER_BUTTON_LEFTTRIGGER;
+		padbinds.switchRevert = CONTROLLER_BUTTON_RIGHTTRIGGER;
+		padbinds.caveman = CONTROLLER_BUTTON_LEFTSHOULDER;
+		padbinds.caveman2 = CONTROLLER_BUTTON_RIGHTSHOULDER;
+	}
 	padbinds.right = CONTROLLER_BUTTON_DPAD_RIGHT;
 	padbinds.left = CONTROLLER_BUTTON_DPAD_LEFT;
 	padbinds.up = CONTROLLER_BUTTON_DPAD_UP;
@@ -217,12 +225,22 @@ void defaultSettings_tabonly(int tab) {
 		padbinds.ollie = CONTROLLER_BUTTON_A;
 		padbinds.kick = CONTROLLER_BUTTON_X;
 
-		padbinds.leftSpin = CONTROLLER_BUTTON_LEFTSHOULDER;
-		padbinds.rightSpin = CONTROLLER_BUTTON_RIGHTSHOULDER;
-		padbinds.nollie = CONTROLLER_BUTTON_LEFTTRIGGER;
-		padbinds.switchRevert = CONTROLLER_BUTTON_RIGHTTRIGGER;
-		padbinds.caveman = CONTROLLER_BUTTON_RIGHTTRIGGER;
-		padbinds.caveman2 = CONTROLLER_BUTTON_LEFTTRIGGER;
+		if (controls.ps2_controls) {
+			padbinds.leftSpin = CONTROLLER_BUTTON_LEFTSHOULDER;
+			padbinds.rightSpin = CONTROLLER_BUTTON_RIGHTSHOULDER;
+			padbinds.nollie = CONTROLLER_BUTTON_LEFTTRIGGER;
+			padbinds.switchRevert = CONTROLLER_BUTTON_RIGHTTRIGGER;
+			padbinds.caveman = CONTROLLER_BUTTON_RIGHTTRIGGER;
+			padbinds.caveman2 = CONTROLLER_BUTTON_LEFTTRIGGER;
+		}
+		else {
+			padbinds.leftSpin = CONTROLLER_BUTTON_LEFTTRIGGER;
+			padbinds.rightSpin = CONTROLLER_BUTTON_RIGHTTRIGGER;
+			padbinds.nollie = CONTROLLER_BUTTON_LEFTTRIGGER;
+			padbinds.switchRevert = CONTROLLER_BUTTON_RIGHTTRIGGER;
+			padbinds.caveman = CONTROLLER_BUTTON_LEFTSHOULDER;
+			padbinds.caveman2 = CONTROLLER_BUTTON_RIGHTSHOULDER;
+		}
 
 		padbinds.right = CONTROLLER_BUTTON_DPAD_RIGHT;
 		padbinds.left = CONTROLLER_BUTTON_DPAD_LEFT;
@@ -357,8 +375,8 @@ void loadSettings() {
 	padbinds.rightSpin = GetPrivateProfileInt("Gamepad", "SpinRight", CONTROLLER_BUTTON_RIGHTSHOULDER, configFile);
 	padbinds.nollie = GetPrivateProfileInt("Gamepad", "Nollie", CONTROLLER_BUTTON_LEFTTRIGGER, configFile);
 	padbinds.switchRevert = GetPrivateProfileInt("Gamepad", "Switch", CONTROLLER_BUTTON_RIGHTTRIGGER, configFile);
-	padbinds.caveman = GetPrivateProfileInt("Gamepad", "Caveman", CONTROLLER_BUTTON_RIGHTTRIGGER, configFile);
-	padbinds.caveman2 = GetPrivateProfileInt("Gamepad", "Caveman2", CONTROLLER_BUTTON_LEFTTRIGGER, configFile);
+	padbinds.caveman = GetPrivateProfileInt("Gamepad", "Caveman", CONTROLLER_BUTTON_LEFTSHOULDER, configFile);
+	padbinds.caveman2 = GetPrivateProfileInt("Gamepad", "Caveman2", CONTROLLER_BUTTON_RIGHTSHOULDER, configFile);
 
 	padbinds.right = GetPrivateProfileInt("Gamepad", "Right", CONTROLLER_BUTTON_DPAD_RIGHT, configFile);
 	padbinds.left = GetPrivateProfileInt("Gamepad", "Left", CONTROLLER_BUTTON_DPAD_LEFT, configFile);
