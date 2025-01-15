@@ -560,7 +560,7 @@ void setDropDownKeys() {
 
 		if (mSettings.isPs2Controls)
 		{
-			if (mSettings.dropdowncontrol == 1)
+			if (mSettings.dropdowncontrol == 1 || mSettings.dropdowncontrol == 5)
 			{
 				/*Set R2*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
@@ -584,13 +584,6 @@ void setDropDownKeys() {
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
 				trigger->AddChecksum(0, 0xBFB9982B); /*L2*/
 			}
-			else if (mSettings.dropdowncontrol == 5)
-			{
-				/*Set R2 again, gross*/
-				trigger->AddChecksum(0, 0x823B8342); /*press*/
-				trigger->AddChecksum(0, 0x6BF8A7F4); /*R2*/
-			}
-
 		}
 		else {
 			if (mSettings.dropdowncontrol == 1) {
@@ -772,13 +765,11 @@ void setButtonPrompts() { //TODO: xbox controls ps2font: R2<->R1 L2<->L1
 				
 				/* PS2 font (and ngc but we don't care about that) */
 
-				patchByte((void*)0x005AD53A, 0x07); 
-				patchByte((void*)0x005AD53B, 0x06);
-				patchByte((void*)0x005AD53C, 0x04);
-				patchByte((void*)0x005AD53D, 0x05);
-				patchByte((void*)0x005AD532, 0x07); //L1+R1 => R2
-				patchByte((void*)0x005AD530, 0x04); //patch bg -> be (L2 => L1)
-				patchByte((void*)0x005AD52E, 0x06); //patch be -> bg (L1 => L2)
+				patchByte((void*)0x005AD52F, 0x07); // R1 -> R2
+				patchByte((void*)0x005AD532, 0x05); //L1+R1 => R1
+				patchByte((void*)0x005AD53A, 0x05); // L1 -> R1
+				patchByte((void*)0x005AD53B, 0x04); // R1 -> L1
+				patchByte((void*)0x005AD531, 0x05); // R2 -> R1
 
 				setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 3, "\\bg/\\bf = Lower/Raise"); //Set L2 in helper text to be displayed as L1
 				setHelperText(0x4125FAE0/*park_editor_helper_text_xbox*/, 4, "\\be/\\bh =Zoom"); //Set L1 in helper text to be displayed as L2
@@ -788,6 +779,13 @@ void setButtonPrompts() { //TODO: xbox controls ps2font: R2<->R1 L2<->L1
 				setHelperText(0x8ebd23fd/*rail_editor_layout_helper_text_xbox*/, 4, "\\be/\\bh =Zoom");
 				setHelperText(0xFBC77044/*rail_editor_grab_helper_text_xbox*/, 3, "\\bg/\\bf =Lower/Raise");
 				setHelperText(0xFBC77044/*rail_editor_grab_helper_text_xbox*/, 4, "\\be/\\bh =Zoom");
+
+				// \\bg = L2 ; \\bf = R2
+				// \\be = L1 ; \\ bh = R1
+				//patchByte((void*)0x005AD53C, 0x04);
+				//patchByte((void*)0x005AD53D, 0x05);
+				//patchByte((void*)0x005AD530, 0x04); //patch bg -> be (L2 => L1)
+				//patchByte((void*)0x005AD52E, 0x06); //patch be -> bg (L1 => L2)
 			}
 			else {
 

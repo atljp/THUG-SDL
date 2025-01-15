@@ -6,14 +6,7 @@ A mod to improve the gameplay experience of the PC version of Tony Hawk's Underg
 ## How to install
 
 Download the latest version from the relase tab and extract the files from the zip-archive into the game directory.<br>
-Running any THUG.exe (except THUGONE.exe from Clownjob'd) will automatically load the mod from d3d9.dll.
  - Default game directory: `C:\Program Files (x86)\Activision\Tony Hawk's Underground\Game`
-
-### Issues with write permissions
-
-`thugsdl.ini` is the settings-database and needs write permission for storing window positions. <br>
-If your game is installed at `C:\Program Files (x86)`, the ini and savegame files have to be located in:
-- `C:\Users\<name>\AppData\Local\VirtualStore`
 
 ## Features
 
@@ -22,6 +15,7 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Unofficial port of [partymod-thaw](https://github.com/PARTYMANX/partymod-thaw)
 - Replaced input system entirely with new, modern system using the SDL2 library
 - Improved window handling allowing for custom resolutions and configurable windowing (4k resolution, (borderless) windowed mode)
+- Minimal launcher to configure game and mod settings
 - Stability fixes
 - Increased default clipping distance for large levels
 - Added pause buffer for speedrunning (menu to game transition with pause button held)
@@ -42,7 +36,7 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 - Create-A-Skater: Unlimited 3 axes scaling
 - Create-A-Skater: Increased color ranges
 - Create-A-Skater: Board scaling
-- Exception Handler to generate crash reports (doesn't work on Windows 11)
+- Exception Handler to generate crash reports (may not work on Windows 11)
 
 ### Controls
 - Native gamepad support
@@ -68,15 +62,10 @@ If your game is installed at `C:\Program Files (x86)`, the ini and savegame file
 
 
 ## MODLOADER
-In thugsdl.ini, you can activate and define your custom script path in the `AdditionalMods` section like this:
-```
-[AdditionalMods]
-UseMod=1
-Folder=data/pre/mymod
-```
-This folder can now be used to load `pre` and `qb` files from:
+This allows you to load user-defined `.pre` and `.qb` files from a separate folder. 
+Activate "Additional Mods" in the launcher's General Page and define your folder path relative to the game folder: `data/pre/mymod`.
 - Place mod contents inside your mod folder at `C:\<thug2-install-path>\Game\Data\pre\mymod`  
-- Add the file `mod.ini` to your folder which is needed to load the files
+- Add the file `mod.ini` to your folder (it defines which original files you want to replace with your custom ones)
 - Level data has to be treated differently which is described below
 
 Example mod.ini:
@@ -87,14 +76,20 @@ Name=My Custom Mod
 [PRE]
 qb.pre=modded_qb.pre
 anims.pre=modded_anims.pre
+netanims.pre=modded_netanims.pre
 
 [QB]
-scripts\game\skater\manualtricks.qb=modded_manualtricks.qb
+game\skater\airtricks.qb=modded_airtricks.qb
 levels\mainmenu\mainmenu_scripts.qb=modded_mainmenu_scripts.qb
+scripts\game\skater\manualtricks.qb=modded_manualtricks.qb
 ```
+It should look like this:
+<br>![image](https://github.com/atljp/thps-modding-resources/blob/main/img/custommod_screenshot1.png)
 
 ### Levels
-For this example it is assumed that level files are placed inside the `data\pre\mymod\Levels` folder.<br><br> Level files have to be defined in `scripts\Game\Levels.q`.  <br>Inside your level script, add the path to the pre files and also add the `custom_folder` parameter:
+For this example it is assumed that level files are placed inside the `data\pre\mymod\Levels` folder.<br><br>
+The paths for levels are defined in the `scripts\Game\Levels.q` script.<br>
+To make the game load a level from your new folder, add the path to the pre file names and also add the `custom_folder` parameter:
 ```
 Level_AU = { 
 	 pre = "mymod\\Levels\\AU.pre"
@@ -137,9 +132,24 @@ ENDSCRIPT
 ``` 
 An example file can be found here: [Levels.q](https://github.com/atljp/THUG-SDL/blob/main/src/Mod/Levels.q)
 
+## TROUBLESHOOTING
 
+### Issues with write permissions
 
-## BUILDING
+The game settings are stored in `thugsdl.ini` which needs write permission when you change and save settings. <br>
+
+If the directory your game is installed to is protected, e.g. Program Files (x86), the ini file needs to be located in  
+`C:\Users\<name>\AppData\Local\VirtualStore`. <br>The game will use the VirtualStore location to load and save settings.
+
+### Gamepad bindings and controls
+
+The control settings in the launcher expect the default gamepad binds. When you change to a non-default setup and want to change the controls, you have to account for the bind changes.<br>
+Example:
+- Default Ps2 layout: Spin left on L1, Spin right on R1. Nollie on L2, Switch/Revert on R2
+- - In your custom binds you swap L1 <-> L2 and R1 <-> R2
+- - When you want to set the Caveman key to be on the L1 key, you would have to select L2 in the control options
+
+## BUILDING FROM SOURCE
 
 ### Prerequisites
 The build requires the following tools:
