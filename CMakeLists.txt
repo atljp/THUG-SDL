@@ -115,3 +115,14 @@ target_include_directories(tsdl-launcher PUBLIC
 	"${PROJECT_SOURCE_DIR}/src"
 	${INCLUDES}
 )
+
+add_executable(thugsdlpatcher)
+
+target_sources(thugsdlpatcher PUBLIC
+	"${CMAKE_SOURCE_DIR}/patcher/main.c"
+)
+
+target_include_directories(thugsdlpatcher PUBLIC
+	"${CMAKE_SOURCE_DIR}/src"
+	${THIRDPARTY}
+)

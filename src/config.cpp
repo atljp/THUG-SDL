@@ -180,6 +180,7 @@ void InitPatch() {
 		Log::TypedLog(CHN_DLL, "Found saved window position\t\t\t%d x %d\n", windowposx, windowposy);
 	else
 		Log::TypedLog(CHN_DLL, "Window position\t\t\t\t\tCentered\n");
+	Log::TypedLog(CHN_DLL, "Mod loader\t\t\t\t\t%s\n", usemod ? "Enabled" : "Disabled");
 	Log::TypedLog(CHN_DLL, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Finished initializing INI settings\n");
 
 	/*Language setting*/

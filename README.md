@@ -8,6 +8,8 @@ A mod to improve the gameplay experience of the PC version of Tony Hawk's Underg
 Download the latest version from the relase tab and extract the files from the zip-archive into the game directory.<br>
  - Default game directory: `C:\Program Files (x86)\Activision\Tony Hawk's Underground\Game`
 
+Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be. It will generate THUG-SDL.exe which will be used to start the game from now on.<br>This only needs to be done once.<br><br>*Important: This only works for the No-CD THUG.exe which is around 2.6 MB in size*.
+
 ## Features
 
 ### General
@@ -174,7 +176,7 @@ Create a thug2-sdl/build directory. Then build the VS Solution with CMake from t
 ```
 cmake .. -A win32 -DCMAKE_TOOLCHAIN_FILE=C:/[vcpkg directory]/scripts/buildsystems/vcpkg.cmake
 ```
-Set the optimization for the partymod dll to O0 (disable optimization) because MSVC seems to break certain functions when optimization is enabled.
+Set the optimization for the DLL to O0 (disable optimization) because MSVC seems to break certain functions when optimization is enabled.
 <br><br>
 The `.sln` file is in the `build` directory. Make sure to select win32 and Release as the project's build options in Visual Studio. Build the actual DLL with `Ctrl+Shift+B`.
 <br><br>
