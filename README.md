@@ -8,7 +8,7 @@ A mod to improve the gameplay experience of the PC version of Tony Hawk's Underg
 Download the latest version from the relase tab and extract the files from the zip-archive into the game directory.<br>
  - Default game directory: `C:\Program Files (x86)\Activision\Tony Hawk's Underground\Game`
 
-Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be. It will generate THUG-SDL.exe which will be used to start the game from now on.<br>This only needs to be done once.<br><br>*Important: This only works for the No-CD THUG.exe which is around 2.6 MB in size*.
+Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be. It will generate THUG-SDL.exe which will be used to start the game from now on. This only needs to be done once.<br><br>*Important: This only works for the No-CD THUG.exe, which is approximately 2.6 MB in size.*
 
 ## Features
 

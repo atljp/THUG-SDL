@@ -3,7 +3,6 @@
 
 #define SEARCH_PATTERN "Direct3DC"
 
-// Function to convert an integer to a byte array in the desired format
 void int_to_byte_array(unsigned int value, unsigned char* array) {
     array[0] = (value & 0xFF);         // Extract the lowest byte
     array[1] = (value >> 8) & 0xFF;    // Shift right and extract the next byte
@@ -120,7 +119,7 @@ int main(int argc, char* argv[])
         // Search for the dll pointer
         int ptr_dll = search_pattern(file, pattern_ptr_dll, sizeof(pattern_ptr_dll), 0);
         if (ptr_dll)
-            printf("Pointer C at: 0x%08x\n", ptr_dll);
+            printf("Pointer C found at offset: 0x%08x\n", ptr_dll);
         else
             error |= 1;
 
@@ -164,37 +163,58 @@ int main(int argc, char* argv[])
             fwrite(buffer, 1, file_size, new_file);
 
             // Seek to the specified offset
-            if (fseek(file, (new_loc + sizeof(pattern_new_loc)), SEEK_SET) != 0)
+            if (fseek(file, (new_loc + sizeof(pattern_new_loc)), SEEK_SET) != 0) {
                 perror("Failed to seek to the specified offset");
+                error |= 1;
+            }
 
-            // Write the new string at the specified offset
-            if (fwrite(new_dll_string, 1, sizeof(new_dll_string), new_file) != sizeof(new_dll_string))
+            // Write the new DLL string at the specified offset
+            if (fwrite(new_dll_string, 1, sizeof(new_dll_string), new_file) != sizeof(new_dll_string)) {
                 printf("Failed to write the new string\n");
-            else
-                printf("successfully patched new string\n");
+                error |= 1;
+            }
 
-            // patch the three pointers
+            // Patch the three pointers
             const unsigned char new_loc_ptr[4];
             const unsigned char new_dll_ptr[4];
             int_to_byte_array((new_loc + sizeof(pattern_new_loc)), new_loc_ptr);
             int_to_byte_array((new_loc + sizeof(pattern_new_loc) + 18), new_dll_ptr);
-            //ptr a
-            if (fseek(file, ptr_a, SEEK_SET) != 0)
-                perror("Failed to seek to the specified offset");
-            if (fwrite(new_loc_ptr, 1, sizeof(new_loc_ptr), new_file) != sizeof(new_loc_ptr))
-                printf("Failed to write the new ptr_a\n");
 
-            fseek(file, 0, SEEK_SET);
-            if (fseek(file, ptr_b, SEEK_SET) != 0)
+            //Ponter A
+            if (fseek(file, ptr_a, SEEK_SET) != 0) {
                 perror("Failed to seek to the specified offset");
-            if (fwrite(new_loc_ptr, 1, sizeof(new_loc_ptr), new_file) != sizeof(new_loc_ptr))
+                error |= 1;
+            }
+            if (fwrite(new_loc_ptr, 1, sizeof(new_loc_ptr), new_file) != sizeof(new_loc_ptr)) {
                 printf("Failed to write the new ptr_a\n");
+                error |= 1;
+            }
 
+            // Pointer B
             fseek(file, 0, SEEK_SET);
-            if (fseek(file, ptr_dll, SEEK_SET) != 0)
+            if (fseek(file, ptr_b, SEEK_SET) != 0) {
                 perror("Failed to seek to the specified offset");
-            if (fwrite(new_dll_ptr, 1, sizeof(new_loc_ptr), new_file) != sizeof(new_dll_ptr))
+                error |= 1;
+            }
+            if (fwrite(new_loc_ptr, 1, sizeof(new_loc_ptr), new_file) != sizeof(new_loc_ptr)) {
+                printf("Failed to write the new ptr_a\n");
+                error |= 1;
+            }
+
+            // Pointer C
+            fseek(file, 0, SEEK_SET);
+            if (fseek(file, ptr_dll, SEEK_SET) != 0) {
+                perror("Failed to seek to the specified offset");
+                error |= 1;
+            }
+            if (fwrite(new_dll_ptr, 1, sizeof(new_loc_ptr), new_file) != sizeof(new_dll_ptr)) {
                 printf("Failed to write the new ptr_b\n");
+                error |= 1;
+            }
+
+            if (!error)
+                printf("THUG-SDL.exe was successfully patched\n");
+            
 
             fclose(new_file);
             fclose(file);
@@ -206,7 +226,8 @@ int main(int argc, char* argv[])
     }
     else {
         printf("Failed to open file\n");
-        printf("Usage: %s <filename>\n", argv[0]);
+        printf("Usage (command line): %s <filename>\n", argv[0]);
+        printf("Usage (Windows Explorer): Drag THUG.exe onto the patcher or just double click it when THUG.exe is in the same folder\n");
     }
     system("PAUSE");
     return 0;
