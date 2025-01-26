@@ -146,10 +146,11 @@ If the directory your game is installed to is protected, e.g. Program Files (x86
 ### Gamepad bindings and controls
 
 The control settings in the launcher expect the default gamepad binds. When you change to a non-default setup and want to change the controls, you have to account for the bind changes.<br>
-Example:
+Example 1:
 - Default Ps2 layout: Spin left on L1, Spin right on R1. Nollie on L2, Switch/Revert on R2
 - - In your custom binds you want to swap L1 <-> L2 and R1 <-> R2. This can be done directly in the "Gamepad" tab in the launcher
 - - When you want to set the Caveman key to be on the L1 key, you would have to select L2 in the "Controls" tab in the launcher
+
 Example 2:
 - Default Xbox layout: Spin left and Nollie on L2, Spin Right and Revert on R2, Caveman on either L1 or R1
 - - In your custom binds you want Spin left and Nollie on L1, Spin right and revert on L2, Caveman on R1 and Dropdown on R2.
