@@ -8,7 +8,7 @@ A mod to improve the gameplay experience of the PC version of Tony Hawk's Underg
 Download the latest version from the relase tab and extract the files from the zip-archive into the game directory.<br>
  - Default game directory: `C:\Program Files (x86)\Activision\Tony Hawk's Underground\Game`
 
-Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be. It will generate THUG-SDL.exe which will be used to start the game from now on. This only needs to be done once.<br><br>*Important: This only works for the No-CD THUG.exe, which is approximately 2.6 MB in size.*
+Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be. It will generate THUG-SDL.exe which will be used to start the game from now on. This only needs to be done once.<br>There is also a brief [video](https://youtu.be/717bshkWhMw) showcasing the process.<br><br>*Important: This only works for the No-CD THUG.exe, which is approximately 2.6 MB in size.*
 
 ## Features
 
@@ -148,8 +148,13 @@ If the directory your game is installed to is protected, e.g. Program Files (x86
 The control settings in the launcher expect the default gamepad binds. When you change to a non-default setup and want to change the controls, you have to account for the bind changes.<br>
 Example:
 - Default Ps2 layout: Spin left on L1, Spin right on R1. Nollie on L2, Switch/Revert on R2
-- - In your custom binds you swap L1 <-> L2 and R1 <-> R2
-- - When you want to set the Caveman key to be on the L1 key, you would have to select L2 in the control options
+- - In your custom binds you want to swap L1 <-> L2 and R1 <-> R2. This can be done directly in the "Gamepad" tab in the launcher
+- - When you want to set the Caveman key to be on the L1 key, you would have to select L2 in the "Controls" tab in the launcher
+Example 2:
+- Default Xbox layout: Spin left and Nollie on L2, Spin Right and Revert on R2, Caveman on either L1 or R1
+- - In your custom binds you want Spin left and Nollie on L1, Spin right and revert on L2, Caveman on R1 and Dropdown on R2.
+- - In the "Gamepad" tab in the launcher, set Spin left on L1, Spin right on L2, Caveman on R2
+- - In the "Controls" tab in the launcher, set Caveman to R1 and Drop down to L1 (you moved the default bind from L1 to R2 so it will apply R2). The controls tab only knows about the default binds.
 
 ## BUILDING FROM SOURCE
 
