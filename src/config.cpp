@@ -128,7 +128,7 @@ void InitPatch() {
 		ErrorManager::IgnoreVectoredExceptions(true);
 	}
 
-	Log::TypedLog(CHN_DLL, "THUG SDL %d.%d\n", VERSION_NUMBER_MAJOR, VERSION_NUMBER_MINOR);
+	Log::TypedLog(CHN_DLL, "THUG SDL %d.%d.%d\n", VERSION_NUMBER_MAJOR, VERSION_NUMBER_MINOR, VERSION_NUMBER_FIX);
 	Log::TypedLog(CHN_DLL, "DIRECTORY: %s\n", (LPSTR)executableDirectory);
 	Log::TypedLog(CHN_DLL, "Patch initialized\n");
 	Log::TypedLog(CHN_DLL, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Initializing INI settings\n");

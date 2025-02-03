@@ -37,6 +37,7 @@
 #define CHAT_SECTION "Chat"
 #define VERSION_NUMBER_MAJOR 1
 #define VERSION_NUMBER_MINOR 0
+#define VERSION_NUMBER_FIX 1
 
 struct keybinds {
 	//SDL_Scancode menu;
