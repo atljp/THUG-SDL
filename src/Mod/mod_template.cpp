@@ -1,7 +1,7 @@
 #include "mod_template.h"
 /*
 * Add custom CFuncs or patches for your mod here!
-* 
+* The added CFunc can be called from the scripts, in this example: MYMOD_ToggleWallrideAnywhere
 * 
 * 
 * 
@@ -21,8 +21,11 @@ bool CFunc_ToggleWallrideAnywhere(Script::LazyStruct* pParams, DummyScript* pScr
 	}
 	return true;
 }
+
+//Add a call to this function in DllMain
 void addCustomCFuncs() {
-	//Add a call to this function in DllMain
+	Log::TypedLog(CHN_DLL, "Adding CFuncs\n");
 	CFuncs::AddFunction("MYMOD_ToggleWallrideAnywhere", CFunc_ToggleWallrideAnywhere);
 }
 */
+

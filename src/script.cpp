@@ -8,14 +8,6 @@ uint32_t addr_sCreateSymbolOfTheFormNameEqualsValue = 0x0040D1D0;
 LPVOID pResource_oslogo;
 LPVOID pResource_keyboard_restored;
 
-struct DummyScript
-{
-	char unk1[20];
-	Script::LazyStruct* GetParams;
-	char unk[164];
-	uint32_t mScriptNameChecksum;
-};
-
 struct CGoalManagerInstance
 {
 	char unk[76];

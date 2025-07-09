@@ -5,6 +5,8 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_syswm.h"
 #include "Resources/Resources.h"
+#include "Mod/mod_template.h"
+#include "observemenu.h"
 
 #pragma data_seg (".d3d9_shared")
 HINSTANCE gl_hOriginalDll;
@@ -27,6 +29,7 @@ BOOL WINAPI DllMain(HMODULE hModule, DWORD ul_reason_for_call, LPVOID lpReserved
 		patchWindow();
 		patchresbuffer();
 		patchInput();
+		addObserveCFuncs();
 		//addCustomCFuncs();
 		break;
 		case DLL_PROCESS_DETACH: ExitInstance(); break;

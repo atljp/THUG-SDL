@@ -68,6 +68,7 @@ namespace Script {
 	LazyStructItem* LazyStruct::GetItem(uint32_t qbKey)
 	{
 		LazyStructItem* item = this->first;
+		printf("LazyStructItem first: 0x%08x\n", item);
 
 		while (item != nullptr)
 		{
@@ -110,7 +111,7 @@ namespace Script {
 
 		new_item->flags = 0;
 		new_item->itemType = 0;
-		new_item->unkByteA = 0x0D;
+		//new_item->unkByteA = 0x0D;
 		new_item->key = 0;
 		new_item->next = 0;
 		new_item->value = 0;

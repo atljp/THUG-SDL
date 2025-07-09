@@ -164,6 +164,14 @@ struct logsettings {
 	bool appendlog;
 };
 
+struct DummyScript
+{
+	char unk1[20];
+	Script::LazyStruct* GetParams;
+	char unk[164];
+	uint32_t mScriptNameChecksum;
+};
+
 
 void InitPatch();
 void patchStaticValues();
@@ -195,3 +203,10 @@ void setLadderGrabKeys();
 SDL_Window* getWindowHandle();
 SDL_HitTestResult HitTestCallback(SDL_Window* Window, const SDL_Point* Area, void* Data);
 void dumpWindowPosition();
+uint32_t GetValue(const char* appName, const char* keyName, uint32_t def);
+void SetValue(const char* appName, const char* keyName, uint32_t new_value);
+void GetStringValue(const char* appName, const char* keyName, const char* def, char* buffer);
+int32_t GetSignedValue(const char* appName, const char* keyName, int32_t def);
+void SetStringValue(const char* appName, const char* keyName, char* buffer);
+bool CFunc_GetINIValue(Script::LazyStruct* pParams, DummyScript* pScript);
+void addScriptCFuncs();

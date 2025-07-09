@@ -588,18 +588,22 @@ void pollController(device* dev, SDL_GameController* controller) {
 				if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)padbinds.up)) {
 					dev->controlData[2] |= 0x01 << 4;
 					dev->controlData[10] = 0xFF;
+					//dev->controlData[7] = 0;
 				}
 				if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)padbinds.right)) {
 					dev->controlData[2] |= 0x01 << 5;
 					dev->controlData[8] = 0xFF;
+					//dev->controlData[6] = 255;
 				}
 				if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)padbinds.down)) {
 					dev->controlData[2] |= 0x01 << 6;
 					dev->controlData[11] = 0xFF;
+					//dev->controlData[7] = 255;
 				}
 				if (SDL_GameControllerGetButton(controller, (SDL_GameControllerButton)padbinds.left)) {
 					dev->controlData[2] |= 0x01 << 7;
 					dev->controlData[9] = 0xFF;
+					//dev->controlData[6] = 0;
 				}
 				// Sticks
 				getStick(controller, padbinds.camera, &(dev->controlData[4]), &(dev->controlData[5]));
@@ -1225,7 +1229,7 @@ void __stdcall initManager() {
 
 	// Fast exit
 	registerEventHandler(handleQuitEvent);
-	patchCall((void*)0x004BFF1E, fastExit);
+	if (!(inputsettings.savewindowposition)) patchCall((void*)0x004BFF1E, fastExit);
 
 	if (inputsettings.isPs2Controls) {
 		patchPs2Buttons();

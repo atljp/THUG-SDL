@@ -14,10 +14,10 @@ namespace Script
 {
 	struct LazyStructItem
 	{
-		uint8_t unkFlag0;
+		//uint8_t unkFlag0;
 		uint8_t itemType;
 		uint8_t flags;				// QbNodeFlags
-		uint8_t unkByteA;
+		//uint8_t unkByteA;
 		uint32_t key;				// QBKey
 		uint32_t value;				// Value, could be pointer etc.
 		LazyStructItem* next;
@@ -25,9 +25,9 @@ namespace Script
 
 	struct LazyStruct
 	{
-		uint16_t unk0;
-		uint8_t unk2; //might be a debug flag to not free or something
-		uint8_t unk3;
+		//uint16_t unk0;
+		//uint8_t unk2; //might be a debug flag to not free or something
+		//uint8_t unk3;
 		LazyStructItem* first;
 
 	public:

@@ -3,4 +3,4 @@
 #include "config.h"
 #include "script.h"
 
-void addCustomCFuncs();
+void addObserveCFuncs();

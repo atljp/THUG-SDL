@@ -1,6 +1,7 @@
 #include "config.h"
 #include <d3d9types.h>
 #include <QB/QB.h>
+#include <QB/QBKey.h>
 
 char* executableDirectory[MAX_PATH];
 char configFile[MAX_PATH];
@@ -213,6 +214,7 @@ void InitPatch() {
 
 	/*Ledge warp fix*/
 	patchCall((void*)0x00569081, (void*)&fix_floating_precision);
+	patchCall((void*)0x005746fb, (void*)&fix_floating_precision);
 
 	/*Disable gamma*/
 	if (disablefsgamma)
@@ -230,6 +232,8 @@ void InitPatch() {
 	patchByte((void*)0x005C870A, 0x65);
 	patchByte((void*)0x005C8711, 0x6E);
 	patchBytesM((void*)0x007D1520, (BYTE*)"\x6F\x70\x65\x6E\x73\x70\x79\x00", 8);
+
+	addScriptCFuncs();
 }
 
 void patchStaticValues() {
@@ -759,11 +763,25 @@ void dumpWindowPosition() {
 	WritePrivateProfileString(GRAPHICS_SECTION, "WindowPosY", str_y, configFile);
 }
 
-float fix_floating_precision(float val)
-{
-	val = (val > 1.0f) ? 1.0f : (val < -1.0f ? -1.0f : val);
-	double result = std::cos(static_cast<double>(val));
-	return static_cast<float>(result);
+float fix_floating_precision(float val) {
+	//val = (val > 1.0f) ? 1.0f : (val < -1.0f ? -1.0f : val);
+	//double result = std::cos(static_cast<double>(val));
+	//return static_cast<float>(result);
+	
+	// Clamp input to [-1.0f, 1.0f]
+	if (val > 1.0f) {
+		val = 1.0f;
+	}
+	else if (val < -1.0f) {
+		val = -1.0f;
+	}
+
+	// Convert to double, compute cosine, then convert back to float
+	double val_double = static_cast<double>(val);
+	double cos_val = std::cos(val_double);
+	float result = static_cast<float>(cos_val);
+
+	return result;
 }
 
 void runProfileConnectScript(void* arg1, Script::LazyStruct* pParams) {
@@ -780,4 +798,176 @@ float __cdecl getScreenAngleFactor() {
 
 int Rnd_fixed(int n) {
 	return (rand() % n);
+}
+
+uint32_t GetValue(const char* appName, const char* keyName, uint32_t def) {
+	return GetPrivateProfileInt(appName, keyName, def, configFile);
+}
+
+void SetValue(const char* appName, const char* keyName, uint32_t new_value) {
+	char new_string[12];
+
+	sprintf_s(new_string, "%d", new_value);
+	WritePrivateProfileString(appName, keyName, new_string, configFile);
+}
+
+void GetStringValue(const char* appName, const char* keyName, const char* def, char* buffer) {
+	GetPrivateProfileString(appName, keyName, def, buffer, MAX_PATH, configFile);
+}
+
+int32_t GetSignedValue(const char* appName, const char* keyName, int32_t def) {
+	char returned[32];
+
+	GetStringValue(appName, keyName, "", returned);
+
+	if (strlen(returned))
+	{
+		int32_t final_value;
+		int32_t string_value = atoi(returned);
+		return string_value;
+	}
+
+	return def;
+}
+
+void SetStringValue(const char* appName, const char* keyName, char* buffer) {
+	WritePrivateProfileString(appName, keyName, buffer, configFile);
+}
+
+bool CFunc_GetINIValue(Script::LazyStruct* pParams, DummyScript* pScript) {
+	// Get section and key from script!
+	Script::LazyStructItem* section_item = pParams->GetItem(Script::QbKey("section"));
+
+	if (!section_item)
+	{
+		Log::TypedLog(CHN_DLL, "GetINIValue called with no section param!\n");
+		return 1;
+	}
+	
+	// Get key from script!
+	Script::LazyStructItem* key_item = pParams->GetItem(Script::QbKey("key"));
+	if (!key_item)
+	{
+		Log::TypedLog(CHN_DLL, "GetINIValue called with no key param!\n");
+		return 1;
+	}
+
+	char* get_section = (char*)(section_item->value);
+	char* get_key = (char*)(key_item->value);
+
+	int32_t default_value = 0;
+	Script::LazyStructItem* default_item = pParams->GetItem(Script::QbKey("default"));
+	if (default_item){
+		default_value = default_item->value;
+		printf("Default value: %d\n", default_value);
+	}
+
+	// Return it!
+	pScript->GetParams->AddInteger(Script::QbKey("value"), GetSignedValue(get_section, get_key, default_value));
+
+	return true;
+}
+
+bool CFunc_SetINIValue(Script::LazyStruct* pParams) {
+	// Get section and key from script!
+	Script::LazyStructItem* section_item = pParams->GetItem(Script::QbKey("section"));
+	if (!section_item)
+	{
+		Log::TypedLog(CHN_DLL, "SetINIValue called with no section param!");
+		return false;
+	}
+
+	// Get key from script!
+	Script::LazyStructItem* key_item = pParams->GetItem(Script::QbKey("key"));
+	if (!key_item)
+	{
+		Log::TypedLog(CHN_DLL, "SetINIValue called with no key param!");
+		return false;
+	}
+
+	char* get_section = (char*)(section_item->value);
+	char* get_key = (char*)(key_item->value);
+
+	int new_value = pParams->GetInteger(Script::QbKey("value"));
+
+	SetValue(get_section, get_key, new_value);
+
+	return true;
+}
+
+bool CFunc_GetINIString(Script::LazyStruct* pParams, DummyScript* pScript) {
+	// Get section and key from script!
+	Script::LazyStructItem* section_item = pParams->GetItem(Script::QbKey("section"));
+	if (!section_item)
+	{
+		Log::TypedLog(CHN_DLL, "GetStringValue called with no section param!");
+		return 1;
+	}
+
+	// Get key from script!
+	Script::LazyStructItem* key_item = pParams->GetItem(Script::QbKey("key"));
+	if (!key_item)
+	{
+		Log::TypedLog(CHN_DLL, "GetStringValue called with no key param!");
+		return 1;
+	}
+
+	char* get_section = (char*)(section_item->value);
+	char* get_key = (char*)(key_item->value);
+
+	char default_string[MAX_PATH];
+	memset(&default_string, 0, sizeof(default_string));
+
+	Script::LazyStructItem* default_item = pParams->GetItem(Script::QbKey("default"));
+
+	if (default_item)
+		strncpy(default_string, (char*)(default_item->value), sizeof(default_string));
+
+	// Return it!
+	char returned_string[MAX_PATH];
+	memset(&returned_string, 0, sizeof(returned_string));
+
+	GetStringValue(get_section, get_key, default_string, returned_string);
+
+	if (strlen(returned_string) > 0)
+		pScript->GetParams->AddString(Script::QbKey("string_value"), returned_string);
+	else
+		pScript->GetParams->AddString(Script::QbKey("string_value"), default_string);
+
+	return true;
+}
+
+bool CFunc_SetINIString(Script::LazyStruct* pParams) {
+	// Get section and key from script!
+	Script::LazyStructItem* section_item = pParams->GetItem(Script::QbKey("section"));
+	if (!section_item)
+	{
+		Log::TypedLog(CHN_DLL, "SetINIString called with no section param!");
+		return 1;
+	}
+
+	// Get key from script!
+	Script::LazyStructItem* key_item = pParams->GetItem(Script::QbKey("key"));
+	if (!key_item)
+	{
+		Log::TypedLog(CHN_DLL, "SetINIString called with no key param!");
+		return 1;
+	}
+
+	char* get_section = (char*)(section_item->value);
+	char* get_key = (char*)(key_item->value);
+
+	char* new_string = pParams->GetString(Script::QbKey("value"));
+
+	SetStringValue(get_section, get_key, new_string);
+
+	return true;
+}
+
+void addScriptCFuncs() {
+	Log::TypedLog(CHN_DLL, "Adding Script CFuncs\n");
+	CFuncs::AddFunction("M_GetINIValue", CFunc_GetINIValue);
+	CFuncs::AddFunction("M_SetINIValue", CFunc_SetINIValue);
+	CFuncs::AddFunction("M_GetINIString", CFunc_GetINIString);
+	CFuncs::AddFunction("M_SetINIString", CFunc_SetINIString);
 }
