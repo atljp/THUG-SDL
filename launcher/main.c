@@ -54,6 +54,7 @@ void writeIniString(char* section, char* key, char* val, char* file) {
 void defaultSettings() {
 	settings.resX = 0;
 	settings.resY = 0;
+	settings.screenmode = 0;
 	settings.windowed = 1;
 	settings.borderless = 0;
 	settings.savewinpos = 0;
@@ -158,6 +159,7 @@ void defaultSettings_tabonly(int tab) {
 	if (!tab) {
 		settings.resX = 0;
 		settings.resY = 0;
+		settings.screenmode = 0;
 		settings.windowed = 1;
 		settings.borderless = 0;
 		settings.savewinpos = 0;
@@ -285,6 +287,7 @@ void loadSettings() {
 	// GRAPHICS
 	settings.resX = GetPrivateProfileInt("Graphics", "ResolutionX", 0, configFile);
 	settings.resY = GetPrivateProfileInt("Graphics", "ResolutionY", 0, configFile);
+	settings.screenmode = GetPrivateProfileInt("Graphics", "ScreenMode", 0, configFile);
 	settings.windowed = getIniBool("Graphics", "Windowed", 1, configFile);
 	settings.borderless = getIniBool("Graphics", "Borderless", 0, configFile);
 	settings.savewinpos = getIniBool("Graphics", "SaveWindowPosition", 0, configFile);
@@ -410,6 +413,7 @@ void saveSettings() {
 
 	writeIniInt("Graphics", "ResolutionX", mSettings.resX, configFile);
 	writeIniInt("Graphics", "ResolutionY", mSettings.resY, configFile);
+	writeIniInt("Graphics", "ScreenMode", mSettings.screenmode, configFile);
 	writeIniBool("Graphics", "Windowed", mSettings.windowed, configFile);
 	writeIniBool("Graphics", "Borderless", mSettings.borderless, configFile);
 	writeIniBool("Graphics", "SaveWindowPosition", mSettings.savewinpos, configFile);
@@ -640,7 +644,7 @@ int main(int argc, char **argv) {
 	cursedSDLSetup();
 	loadSettings();
 
-	pgui_control *window = pgui_window_create(430, 480, "Tony Hawk's Underground SDL Launcher");
+	pgui_control *window = pgui_window_create(430, 530, "Tony Hawk's Underground SDL Launcher");
 
 	pgui_control *restore_default_button = pgui_button_create(8, window->h - 42 + 8, 70, 26, "Defaults (all)", window);
 	pgui_control* restore_default_tabonly_button = pgui_button_create(8 + 8 + 71, window->h - 42 + 8, 70, 26, "Defaults (tab)", window);

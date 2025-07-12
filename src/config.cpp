@@ -2,6 +2,7 @@
 #include <d3d9types.h>
 #include <QB/QB.h>
 #include <QB/QBKey.h>
+#include <cmath>
 
 char* executableDirectory[MAX_PATH];
 char configFile[MAX_PATH];
@@ -52,6 +53,7 @@ int usemod;
 
 int resX;
 int resY;
+int screenmode;
 int defWidth;
 int defHeight;
 graphicsSettings graphics_settings;
@@ -61,6 +63,9 @@ dehexifyDigit_NativeCall* dehexifyDigit_Native = (dehexifyDigit_NativeCall*)(0x0
 
 typedef uint32_t __cdecl GlobalGetArrayAsInt_NativeCall(uint32_t nameChecksum);
 GlobalGetArrayAsInt_NativeCall* GlobalGetArrayAsInt_Native = (GlobalGetArrayAsInt_NativeCall*)(0x00413650);
+
+typedef float __cdecl SetScreenAngleFactor_NativeCall(float fov);
+SetScreenAngleFactor_NativeCall* SetScreenAngleFactor_Native = (SetScreenAngleFactor_NativeCall*)(0x00485480);
 
 /* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- Init =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
@@ -96,6 +101,7 @@ void InitPatch() {
 	graphics_settings.fog = getIniBool(GRAPHICS_SECTION, "Fog", 0, configFile);
 	resX = GetPrivateProfileInt(GRAPHICS_SECTION, "ResolutionX", 0, configFile);
 	resY = GetPrivateProfileInt(GRAPHICS_SECTION, "ResolutionY", 0, configFile);
+	screenmode = GetPrivateProfileInt(GRAPHICS_SECTION, "ScreenMode", 0, configFile);
 	isWindowed = getIniBool(GRAPHICS_SECTION, "Windowed", 1, configFile);
 	isBorderless = getIniBool(GRAPHICS_SECTION, "Borderless", 0, configFile);
 	Ps2Controls = getIniBool(CONTROLS_SECTION, "Ps2Controls", 1, configFile);
@@ -417,7 +423,9 @@ void createSDLWindow() {
 
 	// set aspect ratio and FOV
 	patchJump((void*)0x00485050, setAspectRatio);
-	patchJump((void*)0x00485090, getScreenAngleFactor);
+	patchCall((void*)0x004784A7, setScreenAngleFactor);
+	patchCall((void*)0x005216DE, setScreenAngleFactor);
+	//patchJump((void*)0x00485090, getScreenAngleFactor);
 
 	if (isWindowed)
 		SDL_ShowCursor(1);
@@ -789,7 +797,55 @@ void runProfileConnectScript(void* arg1, Script::LazyStruct* pParams) {
 }
 
 void __cdecl setAspectRatio(float aspect) {
-	*screenAspectRatio = (float)resX / (float)resY;
+	float aspect_ratio = 0;
+	uint32_t aspect_bits = *(uint32_t*)&aspect_ratio;
+	switch (screenmode) {
+		case 1: aspect_ratio = 4.0f / 3.0f; break;			// 0x3FAAAAAB
+		case 2: aspect_ratio = 16.0f / 9.0f; break;			// 0x3FE38E39
+		case 3: aspect_ratio = 16.0f / 10.0f; break;		// 0x3FCCCCCD
+		case 4: aspect_ratio = 2560.0f / 1080.0f; break;	// 0x4017B426
+		case 5: aspect_ratio = 21.0f / 10.0f; break;		// 0x40066666
+		default: aspect_ratio = ((float)resX / (float)resY); break;
+	}
+	aspect_bits = *(uint32_t*)&aspect_ratio;
+	patchFloat((void*)0x00707860, aspect_ratio);
+}
+
+float AdjustHorizontalFOV(float verticalFOV, float aspectRatio) {
+	/*
+	Adjust horizontal FOV:
+		- Take half the vertical FOV
+		- Convert it to radians ( * pi / 180 )
+		- Calculate tan(x) in double precision
+		- Scale it with (aspectRatio / 1.33), using 4:3 as the baseline
+		- Apply atan to convert it back to an angle
+		- Multiply by 2, then by (180 / pi), then by 100
+		- Round and divide by 100
+	*/
+
+	float halfFov = verticalFOV * 0.5f;
+	float halfFovRadians = halfFov * 0.0174532924f;
+	double tanResult = tan((double)halfFovRadians);
+	float aspectScale = aspectRatio / 1.3333334f;
+	float horFactor = (float)tanResult * aspectScale;
+	double atanResult = atan((double)horFactor);
+	float angleRad = (float)atanResult;
+	float scaled = angleRad * 2.0f * 57.2957764f * 100.0f;
+	float result = roundf(scaled) / 100.0f;
+
+	return result;
+}
+
+float __cdecl setScreenAngleFactor(float fov) {
+	switch (screenmode) {
+		case 1: fov = 72.0f; break;
+		case 2: fov = 88.18f; break;
+		case 3: fov = 88.18f; break;
+		case 4: fov = 104.5f; break;
+		case 5: fov = 97.7f; break;
+		default: fov = AdjustHorizontalFOV(*(float*)0x00707868, *(float*)0x00707860); break;
+	}
+	return SetScreenAngleFactor_Native(fov);
 }
 
 float __cdecl getScreenAngleFactor() {

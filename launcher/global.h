@@ -8,6 +8,7 @@ struct settings {
 	int windowed;
 	int borderless;
 	int savewinpos;
+	int screenmode;
 
 	int hq_shadows;
 	int antialiasing;
@@ -227,10 +228,12 @@ struct keyboard_page {
 
 struct general_page {
 	pgui_control* resolution_combobox;
+	pgui_control* screenmode_combobox;
 	pgui_control* custom_resolution;
 	pgui_control* custom_res_x_label;
 	pgui_control* custom_res_x;
 	pgui_control* custom_res_y_label;
+	pgui_control* screenmode_label;
 	pgui_control* custom_res_y;
 
 	pgui_control* windowed;

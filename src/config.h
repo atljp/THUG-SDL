@@ -183,6 +183,7 @@ float fix_floating_precision(float val);
 void runProfileConnectScript(void* arg1, Script::LazyStruct* pParams);
 void writeConfigValues();
 void __cdecl setAspectRatio(float aspect);
+float __cdecl setScreenAngleFactor(float fov);
 float __cdecl getScreenAngleFactor();
 float getaspectratio();
 void patchWindow();

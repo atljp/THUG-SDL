@@ -119,6 +119,15 @@ char* uicontrol_options[] = {
 	"Gamecube",
 };
 
+char* screenmode_options[] = {
+	"Automatic",
+	"4:3",
+	"16:9",
+	"16:10",
+	"21:9",
+	"21:10",
+};
+
 char* shadow_quality_options[] = {
 	"Default",
 	"High",
@@ -147,14 +156,16 @@ void build_general_page(pgui_control* parent) {
 
 	// resolution options
 	general_page.resolution_combobox = pgui_combobox_create(8, 16, 160, 24, displayModeStringList, numDisplayModes + 1, resolution_groupbox);
-	general_page.custom_resolution = pgui_checkbox_create(8, 16 + 24, 128, 24, "Use Custom Resolution", resolution_groupbox);
-	general_page.custom_res_x_label = pgui_label_create(8, 16 + (24 * 2) + 4, 48, 24, "Width:", PGUI_LABEL_JUSTIFY_CENTER, resolution_groupbox);
-	general_page.custom_res_x = pgui_textbox_create(8 + 48, 16 + (24 * 2), 48, 20, "", resolution_groupbox);
-	general_page.custom_res_y_label = pgui_label_create(8, 15 + (24 * 3) + 4, 48, 24, "Height:", PGUI_LABEL_JUSTIFY_CENTER, resolution_groupbox);
-	general_page.custom_res_y = pgui_textbox_create(8 + 48, 12 + (24 * 3) + 4, 48, 20, "", resolution_groupbox);
-	general_page.windowed = pgui_checkbox_create(8, 16 + (24 * 4), 128, 24, "Windowed", resolution_groupbox);
-	general_page.borderless = pgui_checkbox_create(8, 16 + (24 * 5), 128, 24, "Borderless", resolution_groupbox);
-	general_page.savewinpos = pgui_checkbox_create(8, 16 + (24 * 6), 128, 24, "Save Window Position", resolution_groupbox);
+	general_page.screenmode_label = pgui_label_create(2, 16 + 24 + 4, 80, 24, "Screen Mode:", PGUI_LABEL_JUSTIFY_CENTER, resolution_groupbox);
+	general_page.screenmode_combobox = pgui_combobox_create(80, 16 + 24, 88, 12, screenmode_options, 6, resolution_groupbox);
+	general_page.custom_resolution = pgui_checkbox_create(8, 16 + (24 * 2), 128, 24, "Use Custom Resolution", resolution_groupbox);
+	general_page.custom_res_x_label = pgui_label_create(8, 16 + (24 * 3) + 4, 48, 24, "Width:", PGUI_LABEL_JUSTIFY_CENTER, resolution_groupbox);
+	general_page.custom_res_x = pgui_textbox_create(8 + 48, 16 + (24 * 3), 48, 20, "", resolution_groupbox);
+	general_page.custom_res_y_label = pgui_label_create(8, 15 + (24 * 4) + 4, 48, 24, "Height:", PGUI_LABEL_JUSTIFY_CENTER, resolution_groupbox);
+	general_page.custom_res_y = pgui_textbox_create(8 + 48, 12 + (24 * 4) + 4, 48, 20, "", resolution_groupbox);
+	general_page.windowed = pgui_checkbox_create(8, 16 + (24 * 5), 128, 24, "Windowed", resolution_groupbox);
+	general_page.borderless = pgui_checkbox_create(8, 16 + (24 * 6), 128, 24, "Borderless", resolution_groupbox);
+	general_page.savewinpos = pgui_checkbox_create(8, 16 + (24 * 7), 128, 24, "Save Window Position", resolution_groupbox);
 
 	// graphics options
 	pgui_label_create(8, 16 + 4, 128, 24, "Shadow quality:", PGUI_LABEL_JUSTIFY_LEFT, graphics_groupbox);
@@ -185,8 +196,8 @@ void build_general_page(pgui_control* parent) {
 	general_page.chat_size = pgui_combobox_create(8 + 82, 24 + (24 * 9) + 4, 80, 24, chatsize_options, 4, misc_groupbox);
 	general_page.chat_wait_time_label = pgui_label_with_tooltip_create(8, 24 + (24 * 10) + 11, 128, 24, "Message time (seconds): ", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox, "Value between 1 and 120");
 	general_page.chat_wait_time = pgui_textbox_create(8 + 132, 24 + (24 * 10) + 9, 30, 20, "", misc_groupbox);
-	general_page.additional_mods_checkbox = pgui_checkbox_create(8, 24 + (24 * 13) - 2, 128, 24, "Additional mods:", misc_groupbox);
-	general_page.additional_mods = pgui_textbox_create(8, 24 + (24 * 14) - 2, (parent->w / 2) - 32, 24, "", misc_groupbox);
+	general_page.additional_mods_checkbox = pgui_checkbox_create(8, 24 + (24 * 12) - 2, 128, 24, "Additional mods:", misc_groupbox);
+	general_page.additional_mods = pgui_textbox_create(8, 24 + (24 * 13) - 2, (parent->w / 2) - 32, 24, "", misc_groupbox);
 
 	// **************************
 	// SET SETTINGS
@@ -216,8 +227,7 @@ void build_general_page(pgui_control* parent) {
 	pgui_checkbox_set_on_toggle(general_page.fog, do_setting_checkbox, &(settings.fog));
 	pgui_checkbox_set_on_toggle(general_page.disable_blur, do_setting_checkbox, &(settings.disable_blur));
 	pgui_checkbox_set_on_toggle(general_page.disable_fs_gamma, do_setting_checkbox, &(settings.disable_fsgamma));
-
-
+	pgui_combobox_set_on_select(general_page.screenmode_combobox, set_menu_combobox_no_offset, &(settings.screenmode));
 	
 	pgui_combobox_set_on_select(general_page.resolution_combobox, set_display_mode, NULL);
 	pgui_checkbox_set_on_toggle(general_page.custom_resolution, check_custom_resolution, NULL);
@@ -272,6 +282,8 @@ void update_general_page() {
 		pgui_label_set_enabled(general_page.custom_res_y_label, 1);
 		pgui_textbox_set_enabled(general_page.custom_res_y, 1);
 	}
+
+	pgui_combobox_set_selection(general_page.screenmode_combobox, settings.screenmode);
 
 	pgui_checkbox_set_checked(general_page.windowed, settings.windowed);
 	pgui_checkbox_set_checked(general_page.borderless, settings.borderless);
@@ -404,6 +416,7 @@ void set_general_settings(struct settings* mSettingsOut) {
 
 	mSettingsOut->resX = settings.resX;
 	mSettingsOut->resY = settings.resY;
+	mSettingsOut->screenmode = settings.screenmode;
 	mSettingsOut->windowed = settings.windowed;
 	mSettingsOut->borderless = settings.borderless;
 	mSettingsOut->hq_shadows = settings.hq_shadows;
