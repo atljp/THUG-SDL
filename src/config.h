@@ -184,7 +184,6 @@ void runProfileConnectScript(void* arg1, Script::LazyStruct* pParams);
 void writeConfigValues();
 void __cdecl setAspectRatio(float aspect);
 float __cdecl setScreenAngleFactor(float fov);
-float __cdecl getScreenAngleFactor();
 float getaspectratio();
 void patchWindow();
 int getIniBool(const char* section, const char* key, int def, char* file);

@@ -77,6 +77,7 @@ void defaultSettings() {
 	settings.intromovies = 0;
 	settings.boardscuffs = 1;
 	settings.noadditionalscriptmods = 0;
+	settings.gamerunrespawns = 1;
 	settings.chatsize = 3;
 	settings.chatwaittime = 30;
 	settings.additionalmods = 0;
@@ -182,6 +183,7 @@ void defaultSettings_tabonly(int tab) {
 		settings.intromovies = 0;
 		settings.boardscuffs = 1;
 		settings.noadditionalscriptmods = 0;
+		settings.gamerunrespawns = 1;
 		settings.chatsize = 3;
 		settings.chatwaittime = 30;
 		settings.additionalmods = 0;
@@ -311,6 +313,7 @@ void loadSettings() {
 	settings.button_font = GetPrivateProfileInt("Miscellaneous", "ButtonFont", 2, configFile);
 	settings.boardscuffs = getIniBool("Miscellaneous", "Boardscuffs", 1, configFile);
 	settings.noadditionalscriptmods = getIniBool("Miscellaneous", "NoAdditionalScriptMods", 0, configFile);
+	settings.gamerunrespawns = getIniBool("Multiplayer", "GameRunRespawns", 1, configFile);
 	
 	// CONTROLS
 	controls.ps2_controls = getIniBool("Controls", "Ps2Controls", 1, configFile);
@@ -445,6 +448,7 @@ void saveSettings() {
 	writeIniInt("Miscellaneous", "Language", mSettings.language, configFile);
 	writeIniInt("Miscellaneous", "Boardscuffs", mSettings.boardscuffs, configFile);
 	writeIniInt("Miscellaneous", "NoAdditionalScriptMods", mSettings.noadditionalscriptmods, configFile);
+	writeIniInt("Multiplayer", "GameRunRespawns", mSettings.gamerunrespawns, configFile);
 	writeIniInt("Chat", "ChatSize", mSettings.chatsize, configFile);
 	writeIniInt("Chat", "ChatWaitTime", mSettings.chatwaittime, configFile);
 	writeIniInt("AdditionalMods", "UseMod", mSettings.additionalmods, configFile);

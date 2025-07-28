@@ -24,6 +24,7 @@ struct settings {
 	int language;
 	int boardscuffs;
 	int noadditionalscriptmods;
+	int gamerunrespawns;
 
 	int console;
 	int writefile;
@@ -261,6 +262,7 @@ struct general_page {
 	pgui_control* language_label;
 	pgui_control* language;
 	pgui_control* no_additional_script_mods;
+	pgui_control* game_run_respawns;
 	pgui_control* boardscuffs;
 
 	pgui_control* chat_size_label;

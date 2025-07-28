@@ -2,7 +2,6 @@
 #include <d3d9types.h>
 #include <QB/QB.h>
 #include <QB/QBKey.h>
-#include <cmath>
 
 char* executableDirectory[MAX_PATH];
 char configFile[MAX_PATH];
@@ -152,6 +151,14 @@ void InitPatch() {
 		Log::TypedLog(CHN_DLL, "Fog\t\t\t\t\t\t%s\n", graphics_settings.fog ? "Enabled" : "Disabled");
 	}
 	Log::TypedLog(CHN_DLL, "Resolution from INI\t\t\t\t%d x %d\n", resX, resY);
+	switch (screenmode) {
+		case 1: Log::TypedLog(CHN_DLL, "Screen mode\t\t\t\t\t4:3\n", resX, resY);
+		case 2: Log::TypedLog(CHN_DLL, "Screen mode\t\t\t\t\t16:9\n", resX, resY);
+		case 3: Log::TypedLog(CHN_DLL, "Screen mode\t\t\t\t\t16:10\n", resX, resY);
+		case 4: Log::TypedLog(CHN_DLL, "Screen mode\t\t\t\t\t21:9\n", resX, resY);
+		case 5: Log::TypedLog(CHN_DLL, "Screen mode\t\t\t\t\t21:10\n", resX, resY);
+		default: Log::TypedLog(CHN_DLL, "Screen mode\t\t\t\t\tAutomatic\n", resX, resY);
+	}
 	Log::TypedLog(CHN_DLL, "Window mode\t\t\t\t\t%s \n", (isWindowed && !isBorderless) ? "Enabled (default)" : ((isWindowed && isBorderless) ? "Enabled (borderless)" : "Disabled"));
 	Log::TypedLog(CHN_DLL, "Additional Script Mods\t\t\t\t%s\n", noadditionalscriptmods ? "Disabled" : "Enabled");
 
@@ -425,7 +432,6 @@ void createSDLWindow() {
 	patchJump((void*)0x00485050, setAspectRatio);
 	patchCall((void*)0x004784A7, setScreenAngleFactor);
 	patchCall((void*)0x005216DE, setScreenAngleFactor);
-	//patchJump((void*)0x00485090, getScreenAngleFactor);
 
 	if (isWindowed)
 		SDL_ShowCursor(1);
@@ -798,7 +804,7 @@ void runProfileConnectScript(void* arg1, Script::LazyStruct* pParams) {
 
 void __cdecl setAspectRatio(float aspect) {
 	float aspect_ratio = 0;
-	uint32_t aspect_bits = *(uint32_t*)&aspect_ratio;
+
 	switch (screenmode) {
 		case 1: aspect_ratio = 4.0f / 3.0f; break;			// 0x3FAAAAAB
 		case 2: aspect_ratio = 16.0f / 9.0f; break;			// 0x3FE38E39
@@ -807,7 +813,6 @@ void __cdecl setAspectRatio(float aspect) {
 		case 5: aspect_ratio = 21.0f / 10.0f; break;		// 0x40066666
 		default: aspect_ratio = ((float)resX / (float)resY); break;
 	}
-	aspect_bits = *(uint32_t*)&aspect_ratio;
 	patchFloat((void*)0x00707860, aspect_ratio);
 }
 
@@ -822,7 +827,6 @@ float AdjustHorizontalFOV(float verticalFOV, float aspectRatio) {
 		- Multiply by 2, then by (180 / pi), then by 100
 		- Round and divide by 100
 	*/
-
 	float halfFov = verticalFOV * 0.5f;
 	float halfFovRadians = halfFov * 0.0174532924f;
 	double tanResult = tan((double)halfFovRadians);
@@ -840,16 +844,12 @@ float __cdecl setScreenAngleFactor(float fov) {
 	switch (screenmode) {
 		case 1: fov = 72.0f; break;
 		case 2: fov = 88.18f; break;
-		case 3: fov = 88.18f; break;
+		case 3: fov = 82.17f; break;
 		case 4: fov = 104.5f; break;
 		case 5: fov = 97.7f; break;
 		default: fov = AdjustHorizontalFOV(*(float*)0x00707868, *(float*)0x00707860); break;
 	}
 	return SetScreenAngleFactor_Native(fov);
-}
-
-float __cdecl getScreenAngleFactor() {
-	return ((float)resX / (float)resY) / (4.0f / 3.0f);
 }
 
 int Rnd_fixed(int n) {
@@ -1020,8 +1020,21 @@ bool CFunc_SetINIString(Script::LazyStruct* pParams) {
 	return true;
 }
 
+/*
+	Call get/set functions from script (QScript syntax):
+
+	M_GetINIValue section = "Graphics" key = "Fog" default = 0
+	// After calling M_GetINIValue, the value is in the global variable
+	printf "Received value from INI: %d" d=<value>
+
+	M_GetINIString section="AdditionalMods" key="Folder" default=""
+	printf "Received value from INI: %g" g=<string_value>
+
+	M_SetINIValue section = "Graphics" key = "Fog" value = 1
+*/
+
 void addScriptCFuncs() {
-	Log::TypedLog(CHN_DLL, "Adding Script CFuncs\n");
+	Log::TypedLog(CHN_DLL, "Adding script CFuncs\n");
 	CFuncs::AddFunction("M_GetINIValue", CFunc_GetINIValue);
 	CFuncs::AddFunction("M_SetINIValue", CFunc_SetINIValue);
 	CFuncs::AddFunction("M_GetINIString", CFunc_GetINIString);
