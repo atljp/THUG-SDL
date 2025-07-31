@@ -381,8 +381,8 @@ const uint8_t LoadInternetOptions_AbortAndDoneScript_myan[] = {
 const uint8_t LoadInternetOptions_RetryScript_myan[] = {
 	/*
 		SCRIPT LoadInternetOptions_RetryScript_myan
-			%memcard_menus_cleanup% 
-			%Goto% %0xFE4E9AAD% 
+			memcard_menus_cleanup
+			Goto %0xFE4E9AAD% 
 		ENDSCRIPT
 	*/
 	0x01, 0x16, 0xE6, 0x11, 0xDF, 0xCC, 0x01, 0x16, 0x7F, 0xA3, 0x9F, 0xAD, 0x16, 0xAD, 0x9A, 0x4E, 0xFE, 0x01, 0x24, 0x01
@@ -911,6 +911,178 @@ const uint8_t console_message_wait_and_die_new[] = { //0xF2F8DF40
 };
 
 const uint8_t gameflow_startrun_new[] = { //0x8c34fe0a 
+	/*
+		SCRIPT GameFlow_StartRun 
+			index = number_of_console_lines 
+			BEGIN 
+				IF ScreenElementExists id = { console_message_vmenu child = ( number_of_console_lines - <index> ) } 
+					RunScriptOnScreenElement id = { console_message_vmenu child = ( number_of_console_lines - <index> ) } console_message_wait_and_die 
+				ELSE 
+				ENDIF 
+				<index> = ( <index> - 1 ) 
+			REPEAT number_of_console_lines 
+			IF NOT LevelIs load_skateshop 
+				IF GameModeEquals is_singlesession 
+					GoalManager_SetEndRunType name = TrickAttack EndOfRun 
+					GoalManager_EditGoal name = TrickAttack params = { time = 120 restart_node = %"P1: Restart" } 
+				ENDIF 
+			ENDIF 
+			IF InSplitScreenGame 
+				GetSkaterId Skater = 0 
+				<ObjId> : Obj_SpawnScript CleanUp_Scuffs 
+				GetSkaterId Skater = 1 
+				<ObjId> : Obj_SpawnScript CleanUp_Scuffs 
+			ELSE 
+				IF NOT IsObserving 
+					Skater : Obj_SpawnScript CleanUp_Scuffs 
+				ENDIF 
+			ENDIF 
+			IF NOT IsTrue Bootstrap_Build 
+				IF NOT InNetGame 
+					toggle_geo_nomenu toggle_comp_geo_params 
+				ENDIF 
+			ENDIF 
+			toggle_geo_nomenu toggle_proset1_params 
+			toggle_geo_nomenu toggle_proset2_params 
+			toggle_geo_nomenu toggle_proset3_params 
+			toggle_geo_nomenu toggle_proset4_params 
+			toggle_geo_nomenu toggle_proset5_params 
+			toggle_geo_nomenu toggle_proset6_params 
+			toggle_geo_nomenu toggle_proset7_params 
+			IF NOT LevelIs load_cas 
+				PlaySkaterCamAnim Skater = 0 stop 
+			ENDIF 
+			DisablePause 
+			ResetSkaters 
+			IF IsCareerMode 
+				UnSetGlobalFlag flag = PROMPT_FOR_SAVE 
+			ENDIF 
+			printf "starting a run....skip tracks and crank up the music" 
+			IF GameModeEquals is_horse 
+			ELSE 
+				SkipMusicTrack 
+			ENDIF 
+			IF IsCareerMode 
+				IF IsTrue ALWAYSPLAYMUSIC 
+					PauseMusic 0 
+				ELSE 
+					PauseMusic 1 
+				ENDIF 
+			ELSE 
+				PauseMusic 0 
+			ENDIF 
+			IF GameModeEquals default_time_limit 
+				UnSetFlag flag = GOAL_MID_GOAL 
+				ResetClock 
+			ELSE 
+			ENDIF 
+			IF GameModeEquals is_horse 
+				horse_start_run 
+			ENDIF 
+			IF InNetGame 
+				IF OnServer 
+				ELSE 
+					LaunchQueuedScripts 
+					IF IsObserving 
+						ShowAllObjects 
+						IF GameModeEquals is_goal_attack 
+							GoalManager_InitializeAllSelectedGoals 
+						ENDIF 
+					ENDIF 
+				ENDIF 
+			ENDIF 
+			IF LevelIs load_cas 
+				IF ( in_cinematic_sequence = 1 ) 
+					killskatercamanim all 
+					unpausegame 
+					change check_for_unplugged_controllers = 0 
+					play_first_cutscene 
+					RETURN 
+				ENDIF 
+			ENDIF 
+			IF NOT ( next_level_script = nullscript ) 
+				IF ( next_level_script = select_sponsor_select_after_movies ) 
+					DisplayLoadingScreen blank 
+					change dont_unhide_loading_screen = 1 
+					change dont_restore_start_key_binding = 1 
+				ENDIF 
+				SpawnScript next_level_script 
+				change next_level_script = nullscript 
+			ENDIF 
+			<should_check_for_controllers> = 1 
+			IF LevelIs load_nj 
+				IF ( in_cinematic_sequence = 1 ) 
+					<should_check_for_controllers> = 0 
+					change in_cinematic_sequence = 0 
+					killskatercamanim all 
+					unpausegame 
+					SetGlobalFlag flag = VIEWED_CUTSCENE_NJ_01V 
+					PlayCutscene name = "cutscenes\\NJ_01V.cut" exitScript = ChapterTitle_and_Restore_Start_Key dont_unload_anims 
+					RETURN 
+				ENDIF 
+			ENDIF 
+			IF ( <should_check_for_controllers> = 1 ) 
+				SpawnScript wait_and_check_for_unplugged_controllers 
+			ENDIF 
+			IF GameModeEquals is_career 
+				IF NOT LevelIs load_skateshop 
+					IF NOT LevelIs load_cas 
+						IF NOT LevelIs load_boardshop 
+							Skater : StatsManager_ActivateGoals 
+							IF ( show_career_startup_menu = 1 ) 
+								create_career_startup_menu 
+								SpawnScript reset_show_career_startup_menu 
+								RETURN 
+							ELSE 
+								IF NOT ( ( change_level_goal_id [ 0 ] ) = null ) 
+									goal_accept_trigger goal_id = ( change_level_goal_id [ 0 ] ) force_start 
+									array_name = change_level_goal_id 
+									SetArrayElement ArrayName = array_name index = 0 newvalue = null 
+									RETURN 
+								ENDIF 
+							ENDIF 
+						ENDIF 
+					ENDIF 
+				ENDIF 
+			ENDIF 
+			IF NOT LevelIs load_skateshop 
+				IF NOT ( dont_restore_start_key_binding = 1 ) 
+					restore_start_key_binding 
+				ENDIF 
+			ENDIF 
+			IF NOT LevelIs load_skateshop 
+				IF NOT LevelIs load_cas 
+					IF NOT LevelIs load_boardshop 
+						IF ( launch_to_createatrick = 1 ) 
+							IF LevelIs load_nj 
+								Skater : Obj_MoveToNode name = TRG_G_CAT_RestartNode Orient NoReset 
+							ENDIF 
+							PauseGame 
+							change inside_pause = 1 
+							IF MusicIsPaused 
+								change music_was_paused = 1 
+							ELSE 
+								change music_was_paused = 0 
+							ENDIF 
+							PauseMusicAndStreams 1 
+							pause_menu_gradient on 
+							create_pre_cat_menu from_mainmenu 
+							change launch_to_createatrick = 0 
+							change check_for_unplugged_controllers = 1 
+							RETURN 
+						ENDIF 
+					ENDIF 
+				ENDIF 
+			ENDIF 
+			IF LevelIs load_sk5ed_gameplay 
+				parked_set_tod 
+			ELSE 
+				IF InMultiplayerGame 
+					script_set_level_tod 
+				ENDIF 
+			ENDIF 
+		ENDSCRIPT
+	*/
 	0x01, 0x16, 0xFE, 0x98, 0x8C, 0x7F, 0x07, 0x16, 0xD1, 0x2F, 0x89, 0x05, 0x01, 0x20, 0x01, 0x25,
 	0x16, 0xEE, 0x93, 0xBC, 0xC5, 0x16, 0xAF, 0x98, 0xC6, 0x40, 0x07, 0x03, 0x16, 0x01, 0x95, 0x49,
 	0x1E, 0x16, 0xD6, 0xAB, 0x4C, 0xDD, 0x07, 0x0E, 0x16, 0xD1, 0x2F, 0x89, 0x05, 0x0A, 0x2D, 0x16,

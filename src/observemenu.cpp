@@ -420,4 +420,7 @@ void addObserveCFuncs() {
 
 	// Hook to get GameMode pointer
 	patchDWord((void*)(0x004FB95F + 3), (uint32_t)&get_gamemode_handle_wrapper);
+
+	// Skip selecting next skater on pad_choose
+	patchByte((void*)0x004CF8FE, 0xEB);
 }

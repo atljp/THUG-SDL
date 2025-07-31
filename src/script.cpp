@@ -1,5 +1,26 @@
 #include "script.h"
 
+/*
+ADDING SCRIPTS FROM FILES
+
+1) Compile the .q to .qb and remove the first bytes that define the script name. The trailing 0x01 is not always there. Usually the script name bytes look like this 0x23 0x16 0xEF 0xBE 0xAD 0xDE 0x01
+2) If the compiler generated a checksum table, this can be removed as it only increases the file size. 0x2B marks the start of the checksum entries, remove from there (including 0x2B)
+3) Place the .qb file inside the src\Resources directory
+4) In resources.rc, add: 
+	IDR_YOURSCRIPTNAME RCDATA "yourscript.qb"
+5) In resources.h, add with an increasing number: 
+	#define		IDR_YOURSCRIPTNAME	101
+6) Load the file like this with an arbitrary path name:
+
+	LPVOID pResource_yourscript;
+
+	if (pResource_yourscript = getResource(IDR_YOURSCRIPTNAME)) {
+		removeScript(0xC0FEBABE); // Checksum of the original script you're replacing
+		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)pResource_yourscript);
+		sCreateScriptSymbol_Wrapper(5896, 0xF0425254, contentsChecksum, (uint8_t*)pResource_yourscript, "path\\to\\file.qb");
+	}
+*/
+
 struct modsettings mSettings;
 bool walkspinpatched = false;
 bool boardscuffpatched = false;
@@ -60,9 +81,9 @@ void initScriptPatch() {
 	if (!mSettings.noadditionalscriptmods) {
 		setButtonPrompts();
 		Log::TypedLog(CHN_DLL, "Adjusting button prompts\n");
+		Log::TypedLog(CHN_DLL, "Patching scripts in memory\n");
 	}
 	editScriptsInMemory(); /*loads single functions of scripts and overwrites existing ones*/
-	Log::TypedLog(CHN_DLL, "Patching scripts in memory\n");
 	setDropDownKeys();
 	setCavemanKeys();
 	setLadderGrabKeys();

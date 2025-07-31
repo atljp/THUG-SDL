@@ -74,6 +74,9 @@ PreMgrLoadPre_NativeCall2 PreMgrLoadPre2 = (PreMgrLoadPre_NativeCall2)(0x0057FDD
 typedef uint8_t* __cdecl pipLoad_NativeCall(const char* p_fileName);
 pipLoad_NativeCall* pipLoad_Native = (pipLoad_NativeCall*)(0x0057E840);
 
+typedef uint8_t* __cdecl loadQb_maybe_NativeCall(const char* p_fileName, uint8_t* p_data);
+loadQb_maybe_NativeCall* loadQb_maybe_Native = (loadQb_maybe_NativeCall*)(0x0040D410);
+
 
 /* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=- Mod loader functions -=-=-=-=-=-=-=-=-=-=-=-=-=-= */
