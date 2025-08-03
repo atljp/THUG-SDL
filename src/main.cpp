@@ -129,6 +129,15 @@ bool GetResourcePointer(HINSTANCE Instance, int ResID, LPVOID* ppRes, DWORD* pdw
 	return false;
 }
 
+DWORD getResourceSize(int resID) {
+	LPVOID pResource;
+	DWORD pResourceSize;
+	if (GetResourcePointer(gl_hThisInstance, resID, &pResource, &pResourceSize))
+		return pResourceSize;
+	else
+		return NULL;
+}
+
 LPVOID getResource(int resID) {
 	LPVOID pResource;
 	DWORD pResourceSize;

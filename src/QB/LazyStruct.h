@@ -52,7 +52,7 @@ namespace Script
 		bool LazyStruct::GetArray(uint32_t nameChecksum, Script::LazyArray** pp_array);
 		void RedefineArrayItem(uint32_t qbKey, void* value); // Redefine an existing array item
 		int GetInteger(uint32_t qbKey);
-		float GetFloat(uint32_t qbKey);
+		float LazyStruct::GetFloat(uint32_t checksum, float* p_checksum, bool assert);
 		bool GetChecksum(uint32_t checksum, uint32_t* p_checksum, bool assert);
 		bool LazyStruct::GetText(uint32_t checksum, const char** pp_text, bool assert);
 		void AddInteger(uint32_t checksum, int value);

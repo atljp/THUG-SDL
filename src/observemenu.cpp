@@ -222,6 +222,34 @@ bool CFunc_UberFriggedThisFrame(Script::LazyStruct* pParams, DummyScript* pScrip
 	return false;
 }
 
+typedef float __cdecl CViewportManager_sSetScreenAngle_NativeCall(float fov);
+CViewportManager_sSetScreenAngle_NativeCall* CViewportManager_sSetScreenAngle_Native = (CViewportManager_sSetScreenAngle_NativeCall*)(0x00485480);
+
+bool CFunc_SetFOV(Script::LazyStruct* pParams) {
+
+	float fov = 0.0;
+	pParams->GetFloat(0x96715172, &fov, 0);
+
+	if (!fov) {
+		return false;
+	}
+
+	float fov_real = AdjustHorizontalFOV(fov, *(float*)0x00707860);
+
+
+	CViewportManager_sSetScreenAngle_Native(fov_real);
+	printf("DLL fov_real, float: %.2f\n", fov_real);
+
+	return true;
+	
+	//uint32_t p_checksum = 0;
+	//pParams->GetChecksum(0x6820459A/*val*/, &p_checksum, false);
+	//if (p_checksum == 0xBA1A4678) { /*camFOV*/
+	//	fov = pParams->GetFloat(0xE288A7CB); //value
+	//
+
+}
+
 
 /* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=- Observe functions =-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
@@ -417,6 +445,7 @@ void addObserveCFuncs() {
 	CFuncs::AddFunction("M_ObserveFunctionCall", CFunc_ObserveFunctionCall);
 	CFuncs::AddFunction("M_IsSurveying", CFunc_IsSurveying);
 	CFuncs::AddFunction("M_UberFriggedThisFrame", CFunc_UberFriggedThisFrame);
+	CFuncs::AddFunction("M_SetFOV", CFunc_SetFOV);
 
 	// Hook to get GameMode pointer
 	patchDWord((void*)(0x004FB95F + 3), (uint32_t)&get_gamemode_handle_wrapper);

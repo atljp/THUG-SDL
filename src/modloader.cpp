@@ -16,14 +16,22 @@ std::map<std::string, std::string> levelPreFilesMap_post;
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- Init -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= */
 /* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 
-void InitModloader()
-{
+void patchPreWrappers() {
+	patchCall((void*)0x0052CC7D, PIPLoadPre_Wrapper2);
+	patchCall((void*)0x0057E6EA, PIPLoadPre_Wrapper2);
+	patchCall((void*)0x00526D86, PIPLoadPre_Wrapper);
+	patchCall((void*)0x0052CD74, PIPLoadPre_Wrapper);
+}
+void InitModloader() {
 	// Get info to determine if the mod loader is active
 	// Get handles to thugsdl.ini, game dir and window title
 	loadModSettings(&mExtModsettings);
 
 	// Only load mods if it's activated in the ini
 	if (mExtModsettings.usemod) {
+
+		if (!(mExtModsettings.noadditionalscriptmods))
+			Log::TypedLog(CHN_MOD, "WARNING! SCRIPT MODS FROM THUG-SDL ARE ENABLED. COMPATIBILITY IS NOT GUARANTEED!\n");
 
 		// Check if modfolder and mod.ini are valid
 		// This will return a handle to the specified mod.ini and the mod folder.
@@ -32,13 +40,8 @@ void InitModloader()
 
 			// Get all defined pre files and store them in a map of form qb.pre=mycustomfile.pre
 			if (getAllPreFiles()) {
-
 				Log::TypedLog(CHN_MOD, "Patching PIP::LoadPre and PreMgr::LoadPre\n");
-
-				patchCall((void*)0x0052CC7D, PIPLoadPre_Wrapper2);
-				patchCall((void*)0x0057E6EA, PIPLoadPre_Wrapper2);
-				patchCall((void*)0x00526D86, PIPLoadPre_Wrapper);
-				patchCall((void*)0x0052CD74, PIPLoadPre_Wrapper);
+				patchPreWrappers();
 			}
 			else {
 				Log::TypedLog(CHN_MOD, "Failed to load Pre files\n");
@@ -50,6 +53,17 @@ void InitModloader()
 			else {
 				Log::TypedLog(CHN_MOD, "Failed to load Qb files\n");
 			}
+		}
+	}
+	else if (!(mExtModsettings.noadditionalscriptmods)) {
+		// Load custom qb.pre by default. 
+		// This contains most of the data that was previously loaded in script.cpp as well as the observe menu, in game menu, physics etc.
+		if (getModDefaultPreFile()) {
+			Log::TypedLog(CHN_DLL, "Patching PIP::LoadPre and PreMgr::LoadPre for default mod scripts\n");
+			patchPreWrappers();
+		}
+		else {
+			Log::TypedLog(CHN_MOD, "Failed to load default mod Pre file\n");
 		}
 	}
 }
@@ -207,6 +221,20 @@ bool getModIni() {
 	else {
 		Log::TypedLog(CHN_MOD, "ERROR: No mod folder specified!\n"); return false;
 	}
+}
+
+bool getModDefaultPreFile() {
+	
+	char preFile_fullpath[MAX_PATH];
+	sprintf_s(preFile_fullpath, "%s%s", mExtModsettings.workingdir, "thugsdl.pre");
+
+	if (checkFileExists(preFile_fullpath)) {
+		preFilesMap["qb.pre"] = "..\\..\\thugsdl.pre";
+		printf("Found file %s\n", preFile_fullpath);
+		return true;
+	}
+	printf("thugsdl.pre not found in game directory. Falling back to data\\pre\\qb.pre\n");
+	return false;
 }
 
 bool getAllPreFiles() {

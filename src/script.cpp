@@ -426,38 +426,10 @@ void editScriptsInMemory() {
 	uint32_t contentsChecksum = 0;
 
 	if (!mSettings.noadditionalscriptmods) {
-
-		//Longer text input in online chat
-		removeScript(0x3B4548B8); /*enter_kb_chat*/
-		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)enter_kb_chat_new);
-		sCreateScriptSymbol_Wrapper(sizeof(enter_kb_chat_new), 0x3B4548B8, contentsChecksum, (uint8_t*)enter_kb_chat_new, "scripts\\game\\game.qb");
-
-		//Increased color and saturation sliders
-		removeScript(0xB26B0D6F); /*colormenu_min_value*/
-		sCreateSymbolOfTheFormNameEqualsValue_Native((uint8_t*)colormenu_min_value_new, "scripts\\engine\\menu\\colormenu.qb");
-		removeScript(0x6580BF2E); /*colormenu_max_value*/
-		sCreateSymbolOfTheFormNameEqualsValue_Native((uint8_t*)colormenu_max_value_new, "scripts\\engine\\menu\\colormenu.qb");
-		removeScript(0x63BBA1ED); /*colormenu_min_saturation*/
-		sCreateSymbolOfTheFormNameEqualsValue_Native((uint8_t*)colormenu_min_saturation_new, "scripts\\engine\\menu\\colormenu.qb");
-		removeScript(0xDA9D3A9C); /*colormenu_min_saturation*/
-		sCreateSymbolOfTheFormNameEqualsValue_Native((uint8_t*)colormenu_max_saturation_new, "scripts\\engine\\menu\\colormenu.qb");
 		
 		//Show board during board scaling in C-A-S. New script: showboard_myan 0x3DBD296D
 		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)showboard_myan);
 		sCreateScriptSymbol_Wrapper(sizeof(showboard_myan), 0x3DBD296D, contentsChecksum, (uint8_t*)showboard_myan, "scripts\\myan.qb");
-
-		//Unlimited scale in C-A-S (no arrows)
-		removeScript(0x9F95228A); /*scalingmenu_get_limits*/
-		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)scalingmenu_get_limits_new);
-		sCreateScriptSymbol_Wrapper(sizeof(scalingmenu_get_limits_new), 0x9F95228A, contentsChecksum, (uint8_t*)scalingmenu_get_limits_new, "scripts\\engine\\menu\\scalingmenu.qb");
-
-		//Padding between axis sliders
-		removeScript(0xFAC8CE58); /*scalingmenu_spacing_between*/
-		sCreateSymbolOfTheFormNameEqualsValue_Native((uint8_t*)scalingmenu_spacing_between_new, "scripts\\engine\\menu\\scalingmenu.qb");
-
-		//Three axis scaling for all body parts and board
-		removeScript(0xD2BE4CAF); /*skateshop_scaling_options*/
-		sCreateSymbolOfTheFormNameEqualsValue_Native((uint8_t*)skateshop_scaling_options_new, "scripts\\engine\\menu\\scalingmenu.qb");
 
 		//Remove board when leaving board scale menu
 		removeScript(0xFA23D9E3); /*edit_skater_create_options_menu*/
@@ -488,40 +460,6 @@ void editScriptsInMemory() {
 		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)select_network_play_multi_new);
 		sCreateScriptSymbol_Wrapper(sizeof(select_network_play_multi_new), 0x40BB7409, 0x62EE909F, (uint8_t*)select_network_play_multi_new, "scripts\\myan.qb");
 
-		// No chat reset after games start/end in net games
-		if (mSettings.consolewaittime != 30) {
-			if (mSettings.consolewaittime && mSettings.consolewaittime <= 120) console_wait_time[7] = mSettings.consolewaittime;
-		}
-		removeScript(0x074DBDBB); /*console_wait_time*/
-		sCreateSymbolOfTheFormNameEqualsValue_Native((uint8_t*)console_wait_time, "engine\\menu\\consolemessage.qb");
-
-		removeScript(0x0C42890C); /*kill_net_panel_messages*/
-		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)kill_net_panel_messages_new);
-		sCreateScriptSymbol_Wrapper(sizeof(kill_net_panel_messages_new), 0x0C42890C, contentsChecksum, (uint8_t*)kill_net_panel_messages_new, "scripts\\game\\net\\net.qb");
-
-		removeScript(0xCCB19938); /*create_console_message*/
-		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)create_console_message_new);
-		sCreateScriptSymbol_Wrapper(sizeof(create_console_message_new), 0xCCB19938, contentsChecksum, (uint8_t*)create_console_message_new, "engine\\menu\\consolemessage.qb");
-
-		removeScript(0xF2F8DF40); /*console_message_wait_and_die*/
-		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)console_message_wait_and_die_new);
-		sCreateScriptSymbol_Wrapper(sizeof(console_message_wait_and_die_new), 0xF2F8DF40, contentsChecksum, (uint8_t*)console_message_wait_and_die_new, "engine\\menu\\consolemessage.qb");
-
-		removeScript(0x8c34fe0a); /*gameflow_startrun*/
-		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)gameflow_startrun_new);
-		sCreateScriptSymbol_Wrapper(sizeof(gameflow_startrun_new), 0x8C34FE0A, contentsChecksum, (uint8_t*)gameflow_startrun_new, "game\\gameflow.qb");
-
-		//No freeze when changing levels in net games
-		removeScript(0x39C58EA1); /*change_level*/
-		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)change_level_new);
-		sCreateScriptSymbol_Wrapper(sizeof(change_level_new), 0x39C58EA1, contentsChecksum, (uint8_t*)change_level_new, "game\\skutils.qb");
-
-		//Fix crash when connecting online right after leaving the lobby
-		removeScript(0xBD54C02B); /*connected_to_internet*/
-		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)connected_to_internet_new);
-		sCreateScriptSymbol_Wrapper(sizeof(connected_to_internet_new), 0xBD54C02B, contentsChecksum, (uint8_t*)connected_to_internet_new, "game\\net\\net.qb");
-		
-
 		if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
 	}
 
@@ -531,6 +469,11 @@ void editScriptsInMemory() {
 		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)pResource_keyboard_restored);
 		sCreateScriptSymbol_Wrapper(5896, 0xF0425254, contentsChecksum, (uint8_t*)pResource_keyboard_restored, "engine\\menu\\keyboard.qb");
 	}
+
+	// This loads M_InitializeMod which sets up all the script stuff - TODO Move inside noadditionalscriptmods check
+	removeScript(0xAE754239); /*load_permanent_assets*/
+	contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)load_permanent_assets_new);
+	sCreateScriptSymbol_Wrapper(0x6CB, 0xAE754239, contentsChecksum, (uint8_t*)load_permanent_assets_new, "game\\startup.qb");	
 }
 
 void __fastcall sCreateScriptSymbol_Wrapper(uint32_t size, uint32_t nameChecksum, uint32_t contentsChecksum, const uint8_t* p_data, const char* p_fileName) {

@@ -23,6 +23,8 @@
 #include "QB/malloc.h"
 #include "Resources/Resources.h"
 #include "modloader.h"
+#include "QB/QB.h"
+#include "QB/QBKey.h"
 
 #define CONFIG_FILE_NAME "thugsdl.ini"
 #define GRAPHICS_SECTION "Graphics"
@@ -128,6 +130,7 @@ struct extmodsettings {
 	char* configfile;
 	char* workingdir;
 	char* windowtitle;
+	bool noadditionalscriptmods;
 };
 
 typedef struct {
@@ -186,6 +189,7 @@ void __cdecl setAspectRatio(float aspect);
 float __cdecl setScreenAngleFactor(float fov);
 float getaspectratio();
 void patchWindow();
+float AdjustHorizontalFOV(float verticalFOV, float aspectRatio);
 int getIniBool(const char* section, const char* key, int def, char* file);
 int Rnd_fixed(int n);
 void patch_button_font(uint8_t sel);

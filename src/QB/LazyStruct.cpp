@@ -214,13 +214,12 @@ namespace Script {
 	// Get float item
 	//---------------------------------------
 
-	float LazyStruct::GetFloat(uint32_t qbKey)
+	typedef bool(__thiscall* GetFloat_NativeCall)(LazyStruct* struc, uint32_t checksum, float* p_checksum, bool assert);
+	GetFloat_NativeCall GetFloat_Native = (GetFloat_NativeCall)(0x00410E20);
+	
+	float LazyStruct::GetFloat(uint32_t checksum, float* p_checksum, bool assert)
 	{
-		LazyStructItem* item = GetItem(qbKey);
-		if (!item)
-			return 0;
-
-		return (float)item->value;
+		return GetFloat_Native(this, checksum, p_checksum, assert);
 	}
 
 	//---------------------------------------

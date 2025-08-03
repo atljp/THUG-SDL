@@ -660,6 +660,7 @@ void loadModSettings(struct extmodsettings* extmodsettingsOut) {
 	extmodsettingsOut->usemod = usemod;
 	extmodsettingsOut->configfile = configFile;
 	extmodsettingsOut->workingdir = (char*)executableDirectory;
+	extmodsettingsOut->noadditionalscriptmods = noadditionalscriptmods;
 
 }
 

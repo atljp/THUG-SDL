@@ -191,7 +191,7 @@ void build_general_page(pgui_control* parent) {
 	general_page.exception_handler = pgui_checkbox_with_tooltip_create(8, 24 + (24 * 5), 136, 24, "Exception Handler", misc_groupbox, "May not work on Windows 11");
 	general_page.intro_movies = pgui_checkbox_create(8, 24 + (24 * 6), 128, 24, "Intro movies", misc_groupbox);
 	general_page.boardscuffs = pgui_checkbox_create(8, 24 + (24 * 7), 128, 24, "Boardscuffs", misc_groupbox);
-	general_page.no_additional_script_mods = pgui_checkbox_create(8, 24 + (24 * 8), 128, 24, "No Additional Script Mods", misc_groupbox);
+	general_page.no_additional_script_mods = pgui_checkbox_create(8, 24 + (24 * 8), 128, 24, "Disable Script Mods", misc_groupbox);
 	general_page.game_run_respawns = pgui_checkbox_create(8, 24 + (24 * 9), 128, 24, "Respawn on new run", misc_groupbox);
 	general_page.chat_size_label = pgui_label_create(8, 24 + (24 * 10) + 9, 128, 24, "Chat size:", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox);
 	general_page.chat_size = pgui_combobox_create(8 + 82, 24 + (24 * 10) + 4, 80, 24, chatsize_options, 4, misc_groupbox);
