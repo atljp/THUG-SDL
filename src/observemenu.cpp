@@ -215,11 +215,8 @@ bool CFunc_UberFriggedThisFrame(Script::LazyStruct* pParams, DummyScript* pScrip
 
 	void* skater = GetLocalSkater();
 	Component* mComp = GetComponent_Native(skater, 0x9F9CC949 /*SkaterAdjustPhysics*/);
-	Log::TypedLog(CHN_OBS, "Uberfrigged: %d\n", mComp->uberfrigged);
 
-	if (mComp->uberfrigged)
-		return true;
-	return false;
+	return (mComp->uberfrigged) ? true : false;
 }
 
 typedef float __cdecl CViewportManager_sSetScreenAngle_NativeCall(float fov);
@@ -233,21 +230,9 @@ bool CFunc_SetFOV(Script::LazyStruct* pParams) {
 	if (!fov) {
 		return false;
 	}
-
 	float fov_real = AdjustHorizontalFOV(fov, *(float*)0x00707860);
-
-
 	CViewportManager_sSetScreenAngle_Native(fov_real);
-	printf("DLL fov_real, float: %.2f\n", fov_real);
-
 	return true;
-	
-	//uint32_t p_checksum = 0;
-	//pParams->GetChecksum(0x6820459A/*val*/, &p_checksum, false);
-	//if (p_checksum == 0xBA1A4678) { /*camFOV*/
-	//	fov = pParams->GetFloat(0xE288A7CB); //value
-	//
-
 }
 
 
@@ -278,7 +263,6 @@ bool Obs_ObserveNext() {
 	PlayerInfo* targetPlayer = nullptr;
 
 	Log::TypedLog(CHN_OBS, "Trying to get next player: 0x%08x\n", (uint32_t)GetNextPlayer(currentPlayer));
-
 	targetPlayer = GetNextPlayer(currentPlayer);
 
 	if (currentPlayer) {
@@ -287,10 +271,7 @@ bool Obs_ObserveNext() {
 			targetPlayer = GetNextPlayer(currentPlayer);
 			if (!targetPlayer) targetPlayer = getskaterinfo(); // Shouldn't happen
 
-			printf("lastPlayerState: %d, localPlayerState: %d\n", observerOrPendingPlayerState, localPlayerState);
-
 			if (targetPlayer->playerstate == observerOrPendingPlayerState) break;
-		
 			Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
 		}
 	}
@@ -316,9 +297,7 @@ bool Obs_ObservePrev() {
 	PlayerInfo* targetPlayer = nullptr;
 
 	Log::TypedLog(CHN_OBS, "Trying to get previous player: 0x%08x\n", (uint32_t)GetPrevPlayer(currentPlayer));
-
 	targetPlayer = GetPrevPlayer(currentPlayer);
-	//Log::TypedLog(CHN_OBS, "State: 0x%08x\n", targetPlayer->ps);
 
 	if (currentPlayer) {
 		for (int i = 0; i < 16; ++i) {
@@ -326,10 +305,7 @@ bool Obs_ObservePrev() {
 			targetPlayer = GetPrevPlayer(currentPlayer);
 			if (!targetPlayer) targetPlayer = getskaterinfo(); // Shouldn't happen
 
-			printf("lastPlayerState: %d, localPlayerState: %d\n", observerOrPendingPlayerState, localPlayerState);
-
 			if (targetPlayer->playerstate == observerOrPendingPlayerState) break;
-
 			Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
 		}
 	}
