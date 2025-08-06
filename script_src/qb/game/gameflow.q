@@ -191,22 +191,68 @@ ENDSCRIPT
 dont_restore_start_key_binding = 0 
 show_career_startup_menu = 1 
 SCRIPT GameFlow_StartRun 
+	Change AlreadyEndedRun = 0
+	index = number_of_console_lines 
+	BEGIN 
+		IF ScreenElementExists id = { console_message_vmenu child = ( number_of_console_lines - <index> ) } 
+			RunScriptOnScreenElement id = { console_message_vmenu child = ( number_of_console_lines - <index> ) } console_message_wait_and_die 
+		ELSE 
+		ENDIF 
+		<index> = ( <index> - 1 ) 
+	REPEAT number_of_console_lines 
 	IF NOT LevelIs load_skateshop 
 		IF GameModeEquals is_singlesession 
 			GoalManager_SetEndRunType name = TrickAttack EndOfRun 
 			GoalManager_EditGoal name = TrickAttack params = { time = 120 restart_node = %"P1: Restart" } 
 		ENDIF 
 	ENDIF 
-	IF InSplitScreenGame 
-		GetSkaterId Skater = 0 
-		<ObjId> : Obj_SpawnScript CleanUp_Scuffs 
-		GetSkaterId Skater = 1 
-		<ObjId> : Obj_SpawnScript CleanUp_Scuffs 
-	ELSE 
+	IF InNetGame 
 		IF NOT IsObserving 
 			Skater : Obj_SpawnScript CleanUp_Scuffs 
+			IF IsTrue M_ObserveOn 
+				IF Skater : Obj_FlagSet FLAG_SKATER_DROPPING_IN 
+					ResetSkaters 
+					Skater : Obj_WaitAnimFinished 
+				ENDIF 
+				IF IsTrue RejoinNextGame 
+					M_ObserveMode off 
+					Change RejoinNextGame = 0 
+					IF IsTrue M_EnteringNetLevel 
+						Change M_EnteringNetLevel = 0 
+						ResetSkaters 
+					ELSE 
+						M_ResetPhysics_or_ResetSkaters 
+					ENDIF 
+				ELSE 
+					M_ObserveMode on 
+				ENDIF 
+			ELSE 
+				IF IsTrue M_EnteringNetLevel 
+					Change M_EnteringNetLevel = 0 
+					ResetSkaters 
+				ELSE 
+					GetGameMode 
+					IF ArrayContains array = [ nettrickattack netgraffiti netcombomambo netlobby ] contains = <gamemode> 
+						M_ResetPhysics_or_ResetSkaters 
+					ELSE 
+						ResetSkaters 
+					ENDIF 
+				ENDIF 
+			ENDIF 
 		ENDIF 
-	ENDIF 
+	ELSE 
+		IF InSplitScreenGame 
+			GetSkaterId Skater = 0 
+			<ObjId> : Obj_SpawnScript CleanUp_Scuffs 
+			GetSkaterId Skater = 1 
+			<ObjId> : Obj_SpawnScript CleanUp_Scuffs 
+		ELSE 
+			IF NOT IsObserving 
+				Skater : Obj_SpawnScript CleanUp_Scuffs 
+			ENDIF 
+		ENDIF 
+	ENDIF
+	
 	IF NOT IsTrue Bootstrap_Build 
 		IF NOT InNetGame 
 			toggle_geo_nomenu toggle_comp_geo_params 
@@ -223,7 +269,9 @@ SCRIPT GameFlow_StartRun
 		PlaySkaterCamAnim Skater = 0 stop 
 	ENDIF 
 	DisablePause 
-	ResetSkaters 
+	//M_ResetPhysics_or_ResetSkaters
+	//ResetSkaters 
+	//M_ResetPhysics
 	IF IsCareerMode 
 		UnSetGlobalFlag flag = PROMPT_FOR_SAVE 
 	ENDIF 

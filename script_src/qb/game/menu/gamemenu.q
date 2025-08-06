@@ -2,6 +2,7 @@
 ALWAYSPLAYMUSIC = 1 
 HIDEHUD = 0 
 DEVKIT_LEVELS = 1 
+
 meta_button_map_ps2 = [ 
 	3 
 	0 
@@ -1000,6 +1001,9 @@ SCRIPT create_pause_menu
 	IF ( inside_pause = 1 ) 
 		pulse_blur 
 	ENDIF 
+	IF ScreenElementExists id = observe_input_handler 
+		DestroyScreenElement id = observe_input_handler 
+	ENDIF 
 	IF ObjectExists id = current_menu_anchor 
 		DestroyScreenElement id = current_menu_anchor 
 	ENDIF 
@@ -1384,6 +1388,15 @@ SCRIPT create_pause_menu
 					ENDIF 
 				ENDIF 
 			ELSE 
+				make_sprite_menu_item text = "Restart Game" id = menu_network_start_select pad_choose_script = network_game_options_selected 
+				make_text_sprite texture = <retry_icon> parent = menu_network_start_select 
+				SetScreenElementProps { 
+					id = menu_network_start_select 
+					event_handlers = [ 
+						{ focus PlayHelperDesc params = { start_game_helper_desc use_bg } } 
+						{ unfocus StopHelperDesc } 
+					] 
+				} 
 				make_sprite_menu_item text = "End Current Game" id = menu_network_end_select pad_choose_script = network_end_game_selected 
 				make_text_sprite texture = <end_icon> parent = menu_network_end_select 
 				SetScreenElementProps { 
@@ -1456,36 +1469,18 @@ SCRIPT create_pause_menu
 		] 
 	} 
 	IF InNetGame 
-		IF NOT IsObserving 
-			<firefight_active> = 0 
-			IF GoalManager_GoalExists name = firefight 
-				IF GoalManager_goalIsActive name = firefight 
-					<firefight_active> = 1 
-				ENDIF 
-			ENDIF 
-			IF ( <firefight_active> = 1 ) 
-				<trick_text> = "View Tricks" 
-				<trick_helper> = view_tricks_helper_desc 
-			ELSE 
-				IF NOT GoalManager_HasActiveGoals 
-					<trick_text> = "Edit Tricks" 
-					<trick_helper> = edit_tricks_helper_desc 
-				ELSE 
-					<trick_text> = "View Tricks" 
-					<trick_helper> = view_tricks_helper_desc 
-				ENDIF 
-			ENDIF 
-			FormatText ChecksumName = trick_icon "%i_trick" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
-			make_sprite_menu_item text = <trick_text> id = menu_cas pad_choose_script = create_edit_tricks_menu 
-			make_text_sprite texture = <trick_icon> parent = menu_cas 
-			SetScreenElementProps { 
-				id = menu_cas 
-				event_handlers = [ 
-					{ focus PlayHelperDesc params = { <trick_helper> use_bg } } 
-					{ unfocus StopHelperDesc } 
-				] 
-			} 
-		ENDIF 
+		<trick_text> = "Edit Tricks" 
+		<trick_helper> = edit_tricks_helper_desc 
+		FormatText ChecksumName = trick_icon "%i_trick" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
+		make_sprite_menu_item text = <trick_text> id = menu_cas pad_choose_script = create_edit_tricks_menu 
+		make_text_sprite texture = <trick_icon> parent = menu_cas 
+		SetScreenElementProps { 
+			id = menu_cas 
+			event_handlers = [ 
+				{ focus PlayHelperDesc params = { <trick_helper> use_bg } } 
+				{ unfocus StopHelperDesc } 
+			] 
+		} 
 	ENDIF 
 	FormatText ChecksumName = online_icon "%i_online" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
 	IF InNetGame 
@@ -1604,32 +1599,70 @@ SCRIPT create_pause_menu
 				{ unfocus StopHelperDesc } 
 			] 
 		} 
-		IF NOT OnServer 
-			IF NOT IsObserving 
-				IF InInternetMode 
-					IF IsTrue bootstrap_build 
-						IF NOT GoalManager_HasActiveGoals 
-							make_sprite_menu_item text = "Observe" id = menu_network_observe_select pad_choose_script = chose_observe not_focusable = not_focusable 
-							make_text_sprite texture = <options_icon> parent = menu_network_observe_select 
-						ENDIF 
-					ELSE 
-						IF NOT GoalManager_HasActiveGoals 
-							make_sprite_menu_item text = "Observe" id = menu_network_observe_select pad_choose_script = chose_observe 
-							make_text_sprite texture = <options_icon> parent = menu_network_observe_select 
+		IF NOT IsObserving 
+			IF NOT GameModeEquals is_lobby 
+				GoalManager_GetTimeLeftInNetGame 
+				IF ( <time_left> < 1 ) 
+					IF IsSurveying 
+						IF NOT IsTrue M_ObserveOn 
+							<InNormalObserveAfterZero> = 1 
 						ENDIF 
 					ENDIF 
-					IF ScreenElementExists id = menu_network_observe_select 
-						SetScreenElementProps { 
-							id = menu_network_observe_select 
-							event_handlers = [ 
-								{ focus PlayHelperDesc params = { observe_helper_desc use_bg } } 
-								{ unfocus StopHelperDesc } 
-							] 
-						} 
+				ENDIF 
+			ENDIF 
+			IF NOT GoalManager_HasActiveGoals 
+				IF IsTrue ReJoinNextGame 
+					make_sprite_menu_item text = "Rejoining Next Game" id = menu_rejoining_next_game not_focusable 
+				ELSE 
+					IF NOT skater : OnLip 
+						IF IsTrue M_ObserveOn 
+							IF GameModeEquals is_lobby 
+								make_sprite_menu_item text = "Exit Observe Mode" id = menu_rejoin_next_game pad_choose_script = M_ObserveMode pad_choose_params = { off FromPauseMenu } 
+								make_text_sprite texture = <options_icon> parent = menu_rejoin_next_game 
+								SetScreenElementProps { 
+									id = menu_rejoin_next_game 
+									event_handlers = [ 
+										{ focus PlayHelperDesc params = { "dummytext" use_bg } } 
+										{ unfocus StopHelperDesc } 
+									] 
+								} 
+							ELSE 
+								make_sprite_menu_item text = "Rejoin Next Game" id = menu_rejoin_next_game pad_choose_script = M_RejoinNextGame pad_choose_params = { FromPauseMenu } 
+								make_text_sprite texture = <options_icon> parent = menu_rejoin_next_game 
+								SetScreenElementProps { 
+									id = menu_rejoin_next_game 
+									event_handlers = [ 
+										{ focus PlayHelperDesc params = { "dummytext" use_bg } } 
+										{ unfocus StopHelperDesc } 
+									] 
+								} 
+							ENDIF 
+						ELSE 
+							IF NOT GotParam InNormalObserveAfterZero 
+								make_sprite_menu_item text = "Enter Observe Mode" id = menu_observe_mode pad_choose_script = M_ObserveMode pad_choose_params = { on FromPauseMenu } 
+								make_text_sprite texture = <options_icon> parent = menu_observe_mode 
+								SetScreenElementProps { 
+									id = menu_observe_mode 
+									event_handlers = [ 
+										{ focus PlayHelperDesc params = { "dummytext" use_bg } } 
+										{ unfocus StopHelperDesc } 
+									] 
+								} 
+							ENDIF 
+						ENDIF 
 					ENDIF 
 				ENDIF 
 			ENDIF 
 		ENDIF 
+		make_sprite_menu_item text = "Mod Options" id = mod_menu pad_choose_script = launch_mod_menu pad_choose_params = { NetGame }
+		make_text_sprite texture = <options_icon> parent = mod_menu 
+		SetScreenElementProps { 
+			id = mod_menu 
+			event_handlers = [ 
+				{ focus PlayHelperDesc params = { "dummytext" use_bg } } 
+				{ unfocus StopHelperDesc } 
+			] 
+		} 
 		make_sprite_menu_item text = "Quit" id = menu_quit pad_choose_script = generic_menu_pad_choose pad_choose_params = { callback = launch_quit_game_dialog } 
 		make_text_sprite texture = <quit_icon> parent = menu_quit 
 		SetScreenElementProps { 
@@ -1652,6 +1685,15 @@ SCRIPT create_pause_menu
 				] 
 			} 
 		ELSE 
+			make_sprite_menu_item text = "Mod Options" id = mod_menu pad_choose_script = launch_mod_menu
+			make_text_sprite texture = <options_icon> parent = mod_menu 
+			SetScreenElementProps { 
+				id = mod_menu 
+				event_handlers = [ 
+					{ focus PlayHelperDesc params = { "dummytext" use_bg } } 
+					{ unfocus StopHelperDesc } 
+				] 
+			} 
 			make_sprite_menu_item text = "Quit" id = menu_skateshop pad_choose_script = generic_menu_pad_choose pad_choose_params = { callback = menu_confirm_quit } 
 			make_text_sprite texture = <quit_icon> parent = menu_skateshop 
 			SetScreenElementProps { 
@@ -1662,7 +1704,7 @@ SCRIPT create_pause_menu
 				] 
 			} 
 		ENDIF 
-	ENDIF 
+	ENDIF
 	kill_blur start = 0 
 	build_pause_menu_parts show_deck = show_deck 
 ENDSCRIPT
@@ -1916,6 +1958,9 @@ SCRIPT exit_pause_menu menu_id = current_menu_anchor
 		ENDIF 
 	ENDIF 
 	restore_start_key_binding 
+	IF InNetGame 
+		exit_pause_menu_maybe_create_observe_menu 
+	ENDIF
 	IF ObjectExists id = console_message_vmenu 
 		DoScreenElementMorph id = console_message_vmenu time = 0 scale = 1 
 	ENDIF 
@@ -3455,40 +3500,8 @@ SCRIPT created_park_menu_add_item
 ENDSCRIPT
 
 SCRIPT created_park_launch 
-	IF ( in_server_options = 1 ) 
-		GetParkEditorMaxPlayers 
-		GetNetworkNumPlayers 
-		IF InNetGame 
-			IF ( <num_players> > <MaxPlayers> ) 
-				level_select_created_park_menu_exit from_server_options 
-				KillSpawnedScript name = level_select_scroll_map 
-				KillSpawnedScript name = chap_moving_bg 
-				KillSpawnedScript name = Level_Select_draw_line 
-				KillSpawnedScript name = Level_Select_star_effect 
-				IF ObjectExists id = current_menu_anchor 
-					DestroyScreenElement id = current_menu_anchor 
-				ENDIF 
-				load_level_select_textures_to_main_memory unload 
-				goto mcmess_ErrorbadParkMaxPlayers params = { num_players = <num_players> MaxPlayers = <MaxPlayers> back_script = return_to_created_park_menu back_params = { from_server_options } } 
-			ENDIF 
-		ENDIF 
-	ENDIF 
 	GetParkEditorMaxPlayers 
 	GetNetworkNumPlayers 
-	IF InNetGame 
-		IF ( <num_players> > <MaxPlayers> ) 
-			level_select_created_park_menu_exit from_server_options 
-			KillSpawnedScript name = level_select_scroll_map 
-			KillSpawnedScript name = chap_moving_bg 
-			KillSpawnedScript name = Level_Select_draw_line 
-			KillSpawnedScript name = Level_Select_star_effect 
-			IF ObjectExists id = current_menu_anchor 
-				DestroyScreenElement id = current_menu_anchor 
-			ENDIF 
-			load_level_select_textures_to_main_memory unload 
-			goto mcmess_ErrorbadParkMaxPlayers params = { num_players = <num_players> MaxPlayers = <MaxPlayers> back_script = return_to_created_park_menu back_params = { from_server_options } } 
-		ENDIF 
-	ENDIF 
 	IF ( in_server_options = 1 ) 
 		level_select_created_park_menu_exit from_server_options 
 		level = load_sk5ed_gameplay 
@@ -3679,21 +3692,6 @@ SCRIPT level_select_created_park_list
 ENDSCRIPT
 
 SCRIPT maybe_load_premade_park 
-	GetNetworkNumPlayers 
-	IF InNetGame 
-		IF ( <num_players> > <max> ) 
-			level_select_created_park_menu_exit from_server_options 
-			KillSpawnedScript name = level_select_scroll_map 
-			KillSpawnedScript name = chap_moving_bg 
-			KillSpawnedScript name = Level_Select_draw_line 
-			KillSpawnedScript name = Level_Select_star_effect 
-			IF ObjectExists id = current_menu_anchor 
-				DestroyScreenElement id = current_menu_anchor 
-			ENDIF 
-			load_level_select_textures_to_main_memory unload 
-			goto mcmess_ErrorbadParkMaxPlayers params = { num_players = <num_players> MaxPlayers = <max> back_script = return_to_created_park_menu back_params = { from_server_options } } 
-		ENDIF 
-	ENDIF 
 	level_select_created_park_list_exit <...> 
 ENDSCRIPT
 
@@ -7912,5 +7910,3 @@ SCRIPT create_end_run_menu
 	GoalManager_HidePoints 
 	FireEvent type = focus target = current_menu_anchor 
 ENDSCRIPT
-
-

@@ -187,9 +187,6 @@ SCRIPT change_level
 	IF InSplitScreenGame 
 		launch_two_player 
 	ENDIF 
-	IF IsXbox 
-		DisplayLoadingScreen freeze 
-	ENDIF 
 	ChangeLevel <...> 
 ENDSCRIPT
 

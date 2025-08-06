@@ -17,9 +17,9 @@ colormenu_hue_increment = 5
 colormenu_saturation_increment = 3 
 colormenu_value_increment = 2 
 colormenu_min_saturation = 0.00000000000 
-colormenu_max_saturation = 90.00000000000 
-colormenu_min_value = 12.00000000000 
-colormenu_max_value = 60.00000000000 
+colormenu_max_saturation = 100.00000000000 
+colormenu_min_value = 0.00000000000 
+colormenu_max_value = 100.00000000000 
 SCRIPT colormenu_focus rgba = [ 128 128 128 50 ] 
 	GetTags 
 	FormatText ChecksumName = highlighted_text_rgba "%i_HIGHLIGHTED_TEXT_COLOR" i = ( THEME_COLOR_PREFIXES [ current_theme_prefix ] ) 

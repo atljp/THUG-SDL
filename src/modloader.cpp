@@ -233,6 +233,13 @@ bool getModDefaultPreFile() {
 		printf("Found file %s\n", preFile_fullpath);
 		return true;
 	}
+	// Fallback
+	sprintf_s(preFile_fullpath, "%s%s", mExtModsettings.workingdir, "data\\pre\\thugsdl.pre");
+	if (checkFileExists(preFile_fullpath)) {
+		preFilesMap["qb.pre"] = "thugsdl.pre";
+		printf("Found file %s\n", preFile_fullpath);
+		return true;
+	}
 	printf("thugsdl.pre not found in game directory. Falling back to data\\pre\\qb.pre\n");
 	return false;
 }

@@ -21,6 +21,9 @@ SCRIPT do_backend_retry
 			Skater : RunStarted 
 		ENDIF 
 		ClearPowerups 
+		IF GotParam start_new 
+			chosen_host_game 
+		ENDIF
 	ENDIF 
 	SpawnScript do_screen_freeze 
 ENDSCRIPT
@@ -67,7 +70,9 @@ SCRIPT launch_chat_keyboard
 ENDSCRIPT
 
 SCRIPT enter_kb_chat 
-	create_onscreen_keyboard allow_cancel no_buttons pos = PAIR(320.00000000000, 260.00000000000) keyboard_done_script = entered_chat_message display_text = "ENTER MESSAGE: " keyboard_title = "ENTER MESSAGE" min_length = 1 max_length = 127 text_block 
+	change keyboard_text_block_width = 530 
+	create_onscreen_keyboard allow_cancel no_buttons pos = PAIR(320.00000000000, 260.00000000000) keyboard_done_script = entered_chat_message display_text = "ENTER MESSAGE: " keyboard_title = "ENTER MESSAGE" min_length = 1 max_length = 512 text_block 
+	change keyboard_text_block_width = 360 
 ENDSCRIPT
 
 SCRIPT send_chat_message 

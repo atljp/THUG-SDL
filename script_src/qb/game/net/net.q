@@ -135,6 +135,8 @@ SCRIPT quit_network_game
 		] 
 		replace_handlers 
 	} 
+	M_ClearAllObserveValues quit
+	Change RejoinNextGame = 0
 	IF InInternetMode 
 		IF OnServer 
 			ReportStats final 
@@ -827,18 +829,10 @@ SCRIPT chose_xbox_online
 	ENDIF 
 ENDSCRIPT
 
-SCRIPT connected_to_internet 
-	PauseMusicAndStreams 
-	IF NOT AlreadyGotMotd 
-		DownloadMotd 
-	ELSE 
-		IF ObjectExists id = current_menu_anchor 
-			DestroyScreenElement id = current_menu_anchor 
-		ENDIF 
-		IF NOT ProfileLogIn 
-			create_internet_options 
-		ENDIF 
-	ENDIF 
+SCRIPT connected_to_internet
+	printf "Successfully connected to OpenSpy"
+	create_internet_options
+	change NeedsToTestDNAS = 0 
 ENDSCRIPT
 
 SCRIPT failed_internet_connection 
@@ -972,6 +966,8 @@ ENDSCRIPT
 
 current_lobby_focus = 0 
 SCRIPT host_chosen 
+	Change JoinedGameInProgress = 0 
+	Change JoinedAsObserver = 0
 	console_hide 
 	GSDisableNet 
 	StopServerList 
@@ -980,6 +976,8 @@ SCRIPT host_chosen
 ENDSCRIPT
 
 SCRIPT host_net_chosen 
+	Change JoinedGameInProgress = 0 
+	Change JoinedAsObserver = 0
 	console_hide 
 	StopServerList 
 	FreeServerList 
@@ -3423,6 +3421,8 @@ SCRIPT create_refused_dialog
 ENDSCRIPT
 
 SCRIPT reattempt_join_server 
+	Change JoinedGameInProgress = 1 
+	Change JoinedAsObserver = 0
 	ReattemptJoinServer 
 	PlaySkaterCamAnim Name = SS_MenuCam play_hold 
 ENDSCRIPT
@@ -3741,7 +3741,7 @@ SCRIPT create_net_panel_message msg_time = 2000
 ENDSCRIPT
 
 SCRIPT kill_net_panel_messages 
-	console_clear 
+	//console_clear 
 	IF ObjectExists id = net_panel_msg 
 		DestroyScreenElement id = net_panel_msg 
 	ENDIF 
@@ -4464,7 +4464,7 @@ SCRIPT create_object_label
 		parent = root_window 
 		font = small 
 		text = "" 
-		scale = 1.00000000000 
+		scale = (m_playername_scale_real)
 		pos3D = VECTOR(0.00000000000, 0.00000000000, 0.00000000000) 
 		rgba = [ 128 128 0 128 ] 
 	} 

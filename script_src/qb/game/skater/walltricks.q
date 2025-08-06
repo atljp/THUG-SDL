@@ -19,7 +19,12 @@ SCRIPT WallRide
 		Goto Shoulders 
 	ENDIF 
 	BailOff 
-	SetQueueTricks WallRideTricks 
+	IF ( m_singletapbp = 1 )
+		<WallRideTricks> = WallRideTricks_SingleTap 
+	ELSE 
+		<WallRideTricks> = WallRideTricks_DoubleTap 
+	ENDIF 
+	SetQueueTricks <WallRideTricks> 
 	NollieOff 
 	PressureOff 
 	SetTrickScore 200 
@@ -86,9 +91,9 @@ SCRIPT Wallie
 	Goto Airborne BlendPeriod = 0 
 ENDSCRIPT
 
-WallRideTricks = 
-[ { Trigger = { TapTwiceRelease , Up , x , 500 } Scr = Trick_WallPlant } ] 
-SCRIPT Trick_WallPlant 
+WallRideTricks_SingleTap = [ { Trigger = { PressAndRelease , Up , x , 500 } Scr = Trick_WallPlant } ] 
+WallRideTricks_DoubleTap = [ { Trigger = { TapTwiceRelease , Up , x , 500 } Scr = Trick_WallPlant } ] 
+SCRIPT Trick_WallPlant
 	InAirExceptions 
 	Vibrate Actuator = 1 Percent = 50 Duration = 0.10000000149 
 	PlayAnim Anim = Boneless BlendPeriod = 0.00000000000 

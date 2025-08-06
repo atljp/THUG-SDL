@@ -916,7 +916,7 @@ bool CFunc_GetINIValue(Script::LazyStruct* pParams, DummyScript* pScript) {
 	Script::LazyStructItem* default_item = pParams->GetItem(Script::QbKey("default"));
 	if (default_item){
 		default_value = default_item->value;
-		printf("Default value: %d\n", default_value);
+		//printf("Default value: %d\n", default_value);
 	}
 
 	// Return it!

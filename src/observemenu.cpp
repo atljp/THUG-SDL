@@ -256,8 +256,7 @@ bool Obs_ObserveSelf() {
 
 bool Obs_ObserveNext() {
 
-	Log::TypedLog(CHN_OBS, "Observing next player\n");
-
+	//Log::TypedLog(CHN_OBS, "Observing next player\n");
 	GameNetMan* man = (GameNetMan*)GetNetManager();
 	PlayerInfo* currentPlayer = GetCurrentlyObservedPlayer_Native(man);
 	PlayerInfo* targetPlayer = nullptr;
@@ -272,7 +271,7 @@ bool Obs_ObserveNext() {
 			if (!targetPlayer) targetPlayer = getskaterinfo(); // Shouldn't happen
 
 			if (targetPlayer->playerstate == observerOrPendingPlayerState) break;
-			Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
+			//Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
 		}
 	}
 	else {
@@ -290,8 +289,7 @@ bool Obs_ObserveNext() {
 
 bool Obs_ObservePrev() {
 
-	Log::TypedLog(CHN_OBS, "Observing previous player\n");
-
+	//Log::TypedLog(CHN_OBS, "Observing previous player\n");
 	GameNetMan* man = (GameNetMan*)GetNetManager();
 	PlayerInfo* currentPlayer = GetCurrentlyObservedPlayer_Native(man);
 	PlayerInfo* targetPlayer = nullptr;
@@ -306,7 +304,7 @@ bool Obs_ObservePrev() {
 			if (!targetPlayer) targetPlayer = getskaterinfo(); // Shouldn't happen
 
 			if (targetPlayer->playerstate == observerOrPendingPlayerState) break;
-			Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
+			//Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
 		}
 	}
 	else {
@@ -325,7 +323,6 @@ bool Obs_ObservePrev() {
 bool Obs_ObserveLeader() {
 
 	Log::TypedLog(CHN_OBS, "Observing leader\n");
-
 	GameNetMan* man = (GameNetMan*)GetNetManager();
 	PlayerInfo* currentPlayer = GetCurrentlyObservedPlayer_Native(man);
 
@@ -341,7 +338,6 @@ bool Obs_ObserveLeader() {
 bool Obs_RefreshCamera() {
 
 	Log::TypedLog(CHN_OBS, "Refreshing camera\n");
-
 	GameNetMan* man = (GameNetMan*)GetNetManager();
 	PlayerInfo* player = GetCurrentlyObservedPlayer_Native(man);
 
@@ -361,7 +357,6 @@ bool Obs_GetCurrentPlayerName(void* pParams, DummyScript* pScript) {
 
 	GameNetMan* man = (GameNetMan*)*(uint32_t*)(0x0076914C);
 	PlayerInfo* currPlayer = GetCurrentlyObservedPlayer_Native(man);
-	// cleanup maybe: sub_1001ce60
 
 	if (!currPlayer) 
 		playername = man->GetLocalPlayer->m_Name;

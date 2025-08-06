@@ -134,6 +134,8 @@ ENDSCRIPT
 ANY_LEVEL_LOADED_YET = 0 
 SCRIPT load_level level_number = 0 
 	IF InNetGame 
+		Change M_EnteringNetLevel = 1 
+		Change restart_exists = 0
 		IF NOT IsObserving 
 			ExitSurveyorMode 
 		ENDIF 
@@ -245,7 +247,12 @@ SCRIPT load_level level_number = 0
 			IF gotparam park_editor 
 				LoadLevelPreFile <scnpre> 
 			ELSE 
-				LoadLevelPreFile ( <level> + "scn_net.pre" ) 
+				IF gotparam custom_folder
+					printf "@@@ LOADING SCN_NET FROM CUSTOM PATH" 
+					LoadLevelPreFile ( <custom_folder> + <level> + "scn_net.pre" )
+				ELSE
+					LoadLevelPreFile ( <level> + "scn_net.pre" )
+				  ENDIF
 			ENDIF 
 		ENDIF 
 	ENDIF 
@@ -278,7 +285,12 @@ SCRIPT load_level level_number = 0
 			IF gotparam park_editor 
 				UnloadPreFile <scnpre> dont_assert 
 			ELSE 
-				UnloadPreFile ( <level> + "scn_net.pre" ) dont_assert 
+				IF gotparam custom_folder
+					printf "@@@ UNLOADING SCN_NET FROM CUSTOM PATH" 
+					UnloadPreFile ( <custom_folder> + <level> + "scn_net.pre" ) dont_assert 
+				ELSE
+					UnloadPreFile ( <level> + "scn_net.pre" ) dont_assert 
+				ENDIF
 			ENDIF 
 		ENDIF 
 	ENDIF 
@@ -498,7 +510,12 @@ SCRIPT load_level level_number = 0
 				IF gotparam park_editor 
 					LoadPipPre <colpre> heap = bottomup 
 				ELSE 
-					LoadPipPre ( <level> + "col_net.pre" ) heap = bottomup 
+					IF gotparam custom_folder
+						printf "@@@ LOADING COL_NET FROM CUSTOM PATH" 
+						LoadPipPre ( <custom_folder> + <level> + "col_net.pre" ) heap = bottomup 
+					ELSE
+						LoadPipPre ( <level> + "col_net.pre" ) heap = bottomup 
+					ENDIF
 				ENDIF 
 			ENDIF 
 		ENDIF 

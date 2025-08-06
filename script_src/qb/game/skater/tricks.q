@@ -311,6 +311,17 @@ SCRIPT OnGroundAi Coasting = 0 Pushes = 0 PressureTimer = 0
 	IF NOT OnGround 
 		setstate ground 
 	ENDIF 
+	
+	IF IsTrue M_ObserveOn 
+		M_DisablePlayerInput 
+		IF NOT ScreenElementExists id = host_options_menu 
+			M_ObserveDestroyPauseMenu 
+			restore_start_key_binding 
+		ENDIF 
+		SlowSkaterToStop 
+		RETURN 
+	ENDIF 
+	
 	OnGroundExceptions 
 	NollieOff 
 	BEGIN 
@@ -1379,36 +1390,58 @@ SCRIPT EndOfRun
 	LandSkaterTricks 
 	ClearEventBuffer 
 	LaunchStateChangeEvent State = Skater_EndOfRun 
-	SetException Ex = LostGame Scr = LostGame 
+	//SetException Ex = LostGame Scr = LostGame 
 	DisablePlayerInput AllowCameraControl 
+	IF inNetGame 
+		SetException Ex = WonGame Scr = WonGame 
+		SetException Ex = LostGame Scr = LostGame 
+	ENDIF 
 	IF Skating 
 		setstate ground 
 		IF NOT GotParam NoBrake 
-			SetException Ex = SkaterCollideBail Scr = EndBail 
-			WaitOnGround 
-			SetRollingFriction 19 
-			wait 10 Frames 
-			WaitOnGround 
-			IF SpeedGreaterThan 250 
-				PlayCessSound 
-				PlayAnim Anim = CessSlide180_FS 
-				WaitAnim 50 Percent 
-				PlayAnim Anim = CessSlide180_FS From = Current To = 0 
-				Obj_WaitAnimFinished 
-			ELSE 
-				PlayAnim Anim = brake Blendperiod = 0.30000001192 
-				Obj_WaitAnimFinished 
-			ENDIF 
-			PlayAnim Anim = BrakeIdle Blendperiod = 0.30000001192 Cycle 
-			BEGIN 
-				SetRollingFriction 19 
-				IF SpeedLessThan 40 
-					IF OnGround 
-						BREAK 
-					ENDIF 
-				ENDIF 
+			IF GotParam Instant
+				SetException Ex = SkaterCollideBail Scr = EndBail 
+				WaitOnGround max_frames = 80 
 				waitonegameframe 
-			REPEAT 
+				IF SpeedGreaterThan 40 
+					BEGIN 
+						SetRollingFriction 100 
+						IF SpeedLessThan 40 
+							IF OnGround 
+								BREAK 
+							ENDIF 
+						ENDIF 
+						waitonegameframe 
+					REPEAT 
+					PlayAnim anim = BrakeIdle Blendperiod = 0.30000001192 cycle 
+				ENDIF 
+			ELSE
+				SetException Ex = SkaterCollideBail Scr = EndBail 
+				WaitOnGround 
+				SetRollingFriction 19 
+				wait 10 Frames 
+				WaitOnGround 
+				IF SpeedGreaterThan 250 
+					PlayCessSound 
+					PlayAnim Anim = CessSlide180_FS 
+					WaitAnim 50 Percent 
+					PlayAnim Anim = CessSlide180_FS From = Current To = 0 
+					Obj_WaitAnimFinished 
+				ELSE 
+					PlayAnim Anim = brake Blendperiod = 0.30000001192 
+					Obj_WaitAnimFinished 
+				ENDIF 
+				PlayAnim Anim = BrakeIdle Blendperiod = 0.30000001192 Cycle 
+				BEGIN 
+					SetRollingFriction 19 
+					IF SpeedLessThan 40 
+						IF OnGround 
+							BREAK 
+						ENDIF 
+					ENDIF 
+					waitonegameframe 
+				REPEAT 
+			ENDIF		
 		ENDIF 
 	ELSE 
 		IF Walking 
@@ -1420,42 +1453,47 @@ SCRIPT EndOfRun
 						Obj_WaitAnimFinished 
 					ENDIF 
 					PlayAnim Anim = WStand NoRestart Cycle Blendperiod = 0.30000001192 
-				ENDIF 
+				ELSE
+					IF Walk_Air 
+						PlayAnim anim = JumpLandToStand NoRestart Blendperiod = 0.30000001192 
+						Obj_WaitAnimFinished 
+						PlayAnim anim = WStand cycle Blendperiod = 0.30000001192 
+					ENDIF 
+				ENDIF
 			ENDIF 
 		ENDIF 
 	ENDIF 
-	IF inNetGame 
-		SetException Ex = WonGame Scr = WonGame 
-		SetException Ex = LostGame Scr = LostGame 
+	IF GotParam Instant 
+		Wait 0.20000000298 seconds 
+	ELSE 
+		Wait 1 seconds 
 	ENDIF 
-	wait 1 seconds 
-	FireEvent Type = EndofRunDone 
-	IF NOT GotParam FromTaxiGuy 
+	IF IsTrue AlreadyEndedRun 
+		Change AlreadyEndedRun = 0 
+	ELSE 
+		FireEvent type = EndofRunDone 
 		EndofRunDone 
 	ENDIF 
 	IF inNetGame 
 		IF NOT GameIsOver 
-			IF NOT GameModeEquals is_king 
-				IF NOT GameModeEquals is_score_challenge 
-					IF NOT GotParam FromTaxiGuy 
-						IF NOT GameModeEquals is_goal_attack 
-							wait 1 seconds 
-							IF GameModeEquals is_firefight 
-								IF NOT IsObserving 
-									Skater : remove_skater_from_world 
-								ENDIF 
-								Create_Panel_Message id = goal_message text = "You\'ve been eliminated!" style = panel_message_generic_loss time = 5000 
-							ELSE 
-								Create_Panel_Message id = goal_message text = "Waiting for others to finish. Press \\m0 to observe" style = panel_message_generic_loss time = 2000 
-							ENDIF 
-							IF NOT IsObserving 
-								EnterSurveyorMode 
-							ENDIF 
-						ENDIF 
-					ENDIF 
+			IF GameModeEquals show_waiting_message
+				Create_Panel_Message id = goal_message text = "Waiting for others to finish. Press \\m0 to observe" style = panel_message_generic_loss time = 2000 
+			ENDIF
+			IF GameModeEquals should_elimination_skater
+				IF NOT IsObserving 
+					Skater : remove_skater_from_world 
 				ENDIF 
+				Create_Panel_Message id = goal_message text = "You\'ve been eliminated!" style = panel_message_generic_loss time = 5000 
+			ELSE 
+			
+			ENDIF 
+			IF NOT IsObserving 
+				EnterSurveyorMode 
 			ENDIF 
 		ENDIF 
+		ENDIF 
+		M_ObserveSelf
+		create_observe_menu
 	ENDIF 
 ENDSCRIPT
 
@@ -1468,18 +1506,14 @@ SCRIPT Goal_EndOfRun
 	LandSkaterTricks 
 	ClearEventBuffer 
 	FireEvent Type = EndofRunDone 
-	IF NOT GotParam FromTaxiGuy 
-		Goal_EndOfRunDone 
-	ENDIF 
+	Goal_EndOfRunDone 
 	IF inNetGame 
 		IF GameIsOver 
 		ELSE 
 			IF GameModeEquals is_king 
 			ELSE 
-				IF NOT GotParam FromTaxiGuy 
-					IF NOT GameModeEquals is_goal_attack 
-						Create_Panel_Message id = goal_message text = "Waiting for other players to finish their runs..." style = panel_message_generic_loss 
-					ENDIF 
+				IF NOT GameModeEquals is_goal_attack 
+					Create_Panel_Message id = goal_message text = "Waiting for other players to finish their runs..." style = panel_message_generic_loss 
 				ENDIF 
 			ENDIF 
 		ENDIF 

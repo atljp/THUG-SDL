@@ -48,6 +48,11 @@ SCRIPT create_helper_text { anchor_id = helper_text_anchor
 ENDSCRIPT
 
 SCRIPT helper_text_update_element 
+	IF GotParam enabled 
+		IF ( ( <enabled> ) = 0 ) 
+			RETURN 
+		ENDIF 
+	ENDIF 
 	IF GotParam id 
 		IF ObjectExists <id> 
 			SetScreenElementProps { 

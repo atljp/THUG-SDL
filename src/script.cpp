@@ -197,50 +197,8 @@ bool CreateScreenElement_Patched(Script::LazyStruct* pParams, DummyScript* pScri
 	}
 
 	if (!mSettings.noadditionalscriptmods) {
-		if (pScript->mScriptNameChecksum == 0xCCB19938) { /*create_console_message*/
-
-			if (mSettings.chatsize && mSettings.chatsize < 5) {
-
-				//4 big: scale 1.0, padding_scale 0.85
-				//3 default: scale 0.8, padding_scale 0.65
-				//2 small: scale 0.5, padding_scale 0.45
-				//1 extra small scale 0.3, padding_scale 0.25
-				switch (mSettings.chatsize) {
-				case 1:
-					pParams->AddFloat(0x13B9DA7B, 0.3); /*scale*/
-					break;
-				case 2:
-					pParams->AddFloat(0x13B9DA7B, 0.5); /*scale*/
-					break;
-				case 3:
-					pParams->AddFloat(0x13B9DA7B, 0.8); /*scale*/
-					break;
-				case 4:
-					pParams->AddFloat(0x13B9DA7B, 1.0); /*scale*/
-					break;
-				}
-			}
-		}
-		else if (pScript->mScriptNameChecksum == 0xEBC4A74E) { /*create_console*/
-
-			if (mSettings.chatsize && mSettings.chatsize < 5) {
-				switch (mSettings.chatsize) {
-				case 1:
-					pParams->AddFloat(0x6D853B88, 0.25); /*padding_scale*/
-					break;
-				case 2:
-					pParams->AddFloat(0x6D853B88, 0.45); /*padding_scale*/
-					break;
-				case 3:
-					pParams->AddFloat(0x6D853B88, 0.65); /*padding_scale*/
-					break;
-				case 4:
-					pParams->AddFloat(0x6D853B88, 0.85); /*padding_scale*/
-					break;
-				}
-			}
-		}
-		else if (pScript->mScriptNameChecksum == 0x361F992E) { /*create_timeline_trick_info*/
+		
+		if (pScript->mScriptNameChecksum == 0x361F992E) { /*create_timeline_trick_info*/
 
 			const char* text_content_cat_info;
 
@@ -461,19 +419,21 @@ void editScriptsInMemory() {
 		sCreateScriptSymbol_Wrapper(sizeof(select_network_play_multi_new), 0x40BB7409, 0x62EE909F, (uint8_t*)select_network_play_multi_new, "scripts\\myan.qb");
 
 		if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
+
+		//Restore onscreen keyboard
+		if (pResource_keyboard_restored = getResource(IDR_KEYBOARD_RESTORED)) {
+			removeScript(0xF0425254); /*create_onscreen_keyboard*/
+			contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)pResource_keyboard_restored);
+			sCreateScriptSymbol_Wrapper(5896, 0xF0425254, contentsChecksum, (uint8_t*)pResource_keyboard_restored, "engine\\menu\\keyboard.qb");
+		}
+
+		// This loads M_InitializeMod which sets up all the script stuff
+		removeScript(0xAE754239); /*load_permanent_assets*/
+		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)load_permanent_assets_new);
+		sCreateScriptSymbol_Wrapper(0x6CB, 0xAE754239, contentsChecksum, (uint8_t*)load_permanent_assets_new, "game\\startup.qb");
 	}
 
-	//Restore onscreen keyboard
-	if (pResource_keyboard_restored = getResource(IDR_KEYBOARD_RESTORED)) {
-		removeScript(0xF0425254); /*create_onscreen_keyboard*/
-		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)pResource_keyboard_restored);
-		sCreateScriptSymbol_Wrapper(5896, 0xF0425254, contentsChecksum, (uint8_t*)pResource_keyboard_restored, "engine\\menu\\keyboard.qb");
-	}
-
-	// This loads M_InitializeMod which sets up all the script stuff - TODO Move inside noadditionalscriptmods check
-	removeScript(0xAE754239); /*load_permanent_assets*/
-	contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)load_permanent_assets_new);
-	sCreateScriptSymbol_Wrapper(0x6CB, 0xAE754239, contentsChecksum, (uint8_t*)load_permanent_assets_new, "game\\startup.qb");	
+	
 }
 
 void __fastcall sCreateScriptSymbol_Wrapper(uint32_t size, uint32_t nameChecksum, uint32_t contentsChecksum, const uint8_t* p_data, const char* p_fileName) {

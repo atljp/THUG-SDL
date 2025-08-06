@@ -334,12 +334,16 @@ SCRIPT ChooseTeamMessage
 	create_net_panel_message text = "Teams have been created. Choose a team by grabbing its flag." style = generic_net_panel_message 
 ENDSCRIPT
 
+DontShowEnteringFreeskateMessage = 1
 SCRIPT server_enter_free_skate 
-	IF InTeamGame 
-		create_net_panel_message text = "Choose a team by grabbing a flag. Press \\b8 to Begin Game." style = generic_net_panel_message 
-	ELSE 
-		create_net_panel_message text = "Entering Free Skate. Press \\b8 to Begin Game." style = generic_net_panel_message 
-	ENDIF 
+	IF NOT isTrue DontShowEnteringFreeskateMessage
+		IF InTeamGame 
+			create_net_panel_message text = "Choose a team by grabbing a flag. Press \\b8 to Begin Game." style = generic_net_panel_message 
+		ELSE 
+			create_net_panel_message text = "Entering Free Skate. Press \\b8 to Begin Game." style = generic_net_panel_message 
+		ENDIF 
+	ENDIF
+	Change DontShowEnteringFreeskateMessage = 0
 	IF OnServer 
 		LoadPendingPlayers 
 	ENDIF 

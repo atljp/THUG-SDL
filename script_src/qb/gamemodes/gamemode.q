@@ -161,6 +161,9 @@ mode_freeskate = {
 	is_net = 0 
 	is_freeskate = 1 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 mode_freeskate2p = { 
 	name = freeskate 
@@ -198,6 +201,8 @@ mode_freeskate2p = {
 	is_net = 0 
 	is_freeskate = 1 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 0 
 } 
 mode_singlesession = { 
 	name = singlesession 
@@ -235,6 +240,9 @@ mode_singlesession = {
 	is_net = 0 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 mode_career = { 
 	name = career 
@@ -272,6 +280,9 @@ mode_career = {
 	is_net = 0 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 mode_creategoals = { 
 	name = creategoals 
@@ -309,6 +320,9 @@ mode_creategoals = {
 	is_net = 0 
 	is_freeskate = 0 
 	is_creategoals = 1 
+	should_elimination_skater = 0
+	show_waiting_message = 1 
+	should_end_run_quickly = 0
 } 
 mode_net = { 
 	name = net 
@@ -346,6 +360,9 @@ mode_net = {
 	is_net = 1 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 mode_trickattack = { 
 	name = trickattack 
@@ -386,6 +403,9 @@ mode_trickattack = {
 	is_net = 0 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 mode_nettrickattack = { 
 	name = nettrickattack 
@@ -426,6 +446,9 @@ mode_nettrickattack = {
 	is_net = 1 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0
+	show_waiting_message = 1 
+	should_end_run_quickly = 1 
 } 
 mode_scorechallenge = { 
 	name = scorechallenge 
@@ -466,6 +489,8 @@ mode_scorechallenge = {
 	is_net = 0 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 0 
 } 
 mode_netscorechallenge = { 
 	name = netscorechallenge 
@@ -506,6 +531,8 @@ mode_netscorechallenge = {
 	is_net = 1 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 0 
 } 
 mode_combomambo = { 
 	name = combomambo 
@@ -547,6 +574,9 @@ mode_combomambo = {
 	is_net = 0 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 mode_netcombomambo = { 
 	name = netcombomambo 
@@ -588,6 +618,9 @@ mode_netcombomambo = {
 	is_net = 1 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0
+	show_waiting_message = 1 
+	should_end_run_quickly = 1 
 } 
 mode_graffiti = { 
 	name = graffiti 
@@ -628,6 +661,9 @@ mode_graffiti = {
 	is_net = 0 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 mode_netgraffiti = { 
 	name = netgraffiti 
@@ -668,6 +704,9 @@ mode_netgraffiti = {
 	is_net = 1 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0
+	show_waiting_message = 1 
+	should_end_run_quickly = 1 
 } 
 mode_netgoalattack = { 
 	name = netgoalattack 
@@ -708,6 +747,8 @@ mode_netgoalattack = {
 	is_net = 1 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 0 
 } 
 mode_slap = { 
 	name = slap 
@@ -747,7 +788,10 @@ mode_slap = {
 	num_teams = 0 
 	is_net = 0 
 	is_freeskate = 0 
-	is_creategoals = 0 
+	is_creategoals = 0
+	should_elimination_skater = 0
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 	
 } 
 mode_netslap = { 
 	name = netslap 
@@ -788,6 +832,9 @@ mode_netslap = {
 	is_net = 1 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 mode_firefight = { 
 	name = firefight 
@@ -828,6 +875,8 @@ mode_firefight = {
 	is_net = 0 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 1 
+	show_waiting_message = 0 
 } 
 mode_netfirefight = { 
 	name = netfirefight 
@@ -868,6 +917,8 @@ mode_netfirefight = {
 	is_net = 1 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 1 
+	show_waiting_message = 0 
 } 
 mode_netking = { 
 	name = netking 
@@ -908,6 +959,8 @@ mode_netking = {
 	is_net = 1 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 0 
 } 
 mode_king = { 
 	name = king 
@@ -948,6 +1001,8 @@ mode_king = {
 	is_net = 0 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 0 
 } 
 mode_netctf = { 
 	name = netctf 
@@ -987,6 +1042,9 @@ mode_netctf = {
 	is_net = 1 
 	is_freeskate = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 targetScoreArray = [ 
 	{ type = target_score score = 10000 } 
@@ -1030,6 +1088,8 @@ mode_netlobby = {
 	is_freeskate = 0 
 	is_net = 1 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 0 
 } 
 mode_skateshop = { 
 	name = skateshop 
@@ -1104,6 +1164,9 @@ mode_parkeditor = {
 	is_freeskate = 0 
 	is_net = 0 
 	is_creategoals = 1 
+	should_elimination_skater = 0 
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 mode_horse = { 
 	name = horse 
@@ -1141,6 +1204,9 @@ mode_horse = {
 	is_freeskate = 0 
 	is_net = 0 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 mode_nethorse = { 
 	name = nethorse 
@@ -1178,6 +1244,9 @@ mode_nethorse = {
 	is_freeskate = 0 
 	is_net = 1 
 	is_creategoals = 0 
+	should_elimination_skater = 0 
+	show_waiting_message = 1 
+	should_end_run_quickly = 0 
 } 
 SCRIPT force_close_rankings 
 	printf "************************* FORCE CLOSING RANKINGS ******************************" 
@@ -1222,6 +1291,12 @@ SCRIPT close_rankings
 	ENDIF 
 ENDSCRIPT
 
+SCRIPT rankings_quick_restart 
+	force_close_rankings 
+	Change DontShowEnteringFreeskateMessage = 1 
+	do_backend_retry start_new 
+ENDSCRIPT
+
 SCRIPT wait_then_force_close_rankings 
 	wait 5 seconds 
 	force_close_rankings 
@@ -1250,12 +1325,29 @@ SCRIPT create_rankings score_title_text = "SCORE"
 	GoalManager_DeactivateAllGoals force_all 
 	GoalManager_UninitializeAllGoals 
 	GoalManager_SetCanStartGoal 0 
+	IF IsTrue JoinedGameInProgress 
+		close_rankings 
+		RETURN 
+	ENDIF 
+	IF IsTrue JoinedAsObserver 
+		close_rankings 
+		RETURN 
+	ENDIF 
+	IF IsTrue M_ObserveOn 
+		close_rankings 
+		RETURN 
+	ENDIF 
 	IF InNetGame 
 		IF NOT IsObserving 
 			Skater : add_skater_to_world 
-			ExitSurveyorMode 
+			IF NOT IsTrue M_ObserveOn 
+				IF IsSurveying 
+					ExitSurveyorMode 
+				ENDIF 
+			ENDIF 
 		ENDIF 
 	ENDIF 
+	m_observe_hud_set_visible 
 	IF ObjectExists id = current_menu_anchor 
 		DestroyScreenElement id = current_menu_anchor 
 	ENDIF 
@@ -1287,6 +1379,10 @@ SCRIPT create_rankings score_title_text = "SCORE"
 	ENDIF 
 	pause_trick_text 
 	exit_pause_menu 
+	IF ScreenElementExists id = observe_input_handler 
+		DestroyScreenElement id = observe_input_handler 
+	ENDIF 
+	M_ObserveMode off
 	IF InSplitScreenGame 
 		PauseGame 
 		pause_trick_text 
@@ -1425,7 +1521,11 @@ SCRIPT create_rankings score_title_text = "SCORE"
 	SetScreenElementLock id = player_list_menu on 
 	GetStackedScreenElementPos Y id = player_list_menu offset = PAIR(210.00000000000, 20.00000000000) 
 	SetScreenElementLock id = player_list_menu off 
-	create_speech_box text = "Press \\bm to continue" pos = PAIR(320.00000000000, 400.00000000000) pad_choose_script = close_rankings 
+	IF IsHost
+		create_speech_box text = "Press \\bm to continue\\nor \\bo to restart" pos = PAIR(320.00000000000, 400.00000000000) pad_choose_script = close_rankings pad_option_script = rankings_quick_restart
+	ELSE
+		create_speech_box text = "Press \\bm to continue" pos = PAIR(320.00000000000, 400.00000000000) pad_choose_script = close_rankings 
+	ENDIF	
 	RunScriptOnScreenElement id = current_menu_anchor dialog_box_delay_input params = { delay_input_time = 2000 } 
 	RunScriptOnScreenElement id = current_menu_anchor menu_onscreen 
 ENDSCRIPT

@@ -11,7 +11,7 @@ SCRIPT create_console
 			type = VMenu 
 			parent = root_window 
 			id = console_message_vmenu 
-			padding_scale = 0.64999997616 
+			padding_scale = (m_chat_padding_real) 
 			font = dialog 
 			just = [ left top ] 
 			internal_just = [ left center ] 
@@ -56,7 +56,7 @@ SCRIPT create_console_message text = "Default console message" rgba = [ 113 121 
 			text = <text> 
 			internal_just = [ left top ] 
 			rgba = <rgba> 
-			scale = 0.80000001192 
+			scale = (m_chat_scale_real) 
 			not_focusable 
 			dims = <dims> 
 			allow_expansion 
@@ -81,12 +81,12 @@ SCRIPT create_console_message text = "Default console message" rgba = [ 113 121 
 			ENDIF 
 		REPEAT 
 		IF GotParam wait_and_die 
-			RunScriptOnScreenElement id = <id> console_message_wait_and_die params = { time = <time> } 
+			RunScriptOnScreenElement id = <id> console_message_wait_and_die params = { time = <time> <...> } 
 			RETURN 
 		ENDIF 
 		IF NOT LevelIs load_skateshop 
 			IF NOT GotParam dont_die 
-				RunScriptOnScreenElement id = <id> console_message_wait_and_die 
+				RunScriptOnScreenElement id = <id> console_message_wait_and_die <...>
 			ENDIF 
 		ENDIF 
 	ENDIF 
@@ -166,9 +166,11 @@ SCRIPT console_destroy
 	ENDIF 
 ENDSCRIPT
 
-SCRIPT console_message_wait_and_die time = 30 
+SCRIPT console_message_wait_and_die time = ( console_wait_time ) 
+	DoMorph time = 0.00000000000 alpha = 0 
+	DoMorph time = 0.30000001192 alpha = 1 
 	wait <time> seconds 
-	DoMorph time = 0.50000000000 alpha = 0 
+	DoMorph time = 0.40000000596 alpha = 0 
 	Die 
 ENDSCRIPT
 

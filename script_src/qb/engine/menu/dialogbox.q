@@ -28,6 +28,9 @@ SCRIPT create_snazzy_dialog_box { title = "Title"
 		IF NOT LevelIs load_skateshop 
 		ENDIF 
 	ENDIF 
+	IF ScreenElementExists id = observe_input_handler 
+		DestroyScreenElement id = observe_input_handler 
+	ENDIF 
 	SetScreenElementLock id = root_window off 
 	CreateScreenElement { 
 		type = ContainerElement 

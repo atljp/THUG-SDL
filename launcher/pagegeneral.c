@@ -191,14 +191,14 @@ void build_general_page(pgui_control* parent) {
 	general_page.exception_handler = pgui_checkbox_with_tooltip_create(8, 24 + (24 * 5), 136, 24, "Exception Handler", misc_groupbox, "May not work on Windows 11");
 	general_page.intro_movies = pgui_checkbox_create(8, 24 + (24 * 6), 128, 24, "Intro movies", misc_groupbox);
 	general_page.boardscuffs = pgui_checkbox_create(8, 24 + (24 * 7), 128, 24, "Boardscuffs", misc_groupbox);
-	general_page.no_additional_script_mods = pgui_checkbox_create(8, 24 + (24 * 8), 128, 24, "Disable Script Mods", misc_groupbox);
-	general_page.game_run_respawns = pgui_checkbox_create(8, 24 + (24 * 9), 128, 24, "Respawn on new run", misc_groupbox);
-	general_page.chat_size_label = pgui_label_create(8, 24 + (24 * 10) + 9, 128, 24, "Chat size:", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox);
-	general_page.chat_size = pgui_combobox_create(8 + 82, 24 + (24 * 10) + 4, 80, 24, chatsize_options, 4, misc_groupbox);
-	general_page.chat_wait_time_label = pgui_label_with_tooltip_create(8, 24 + (24 * 11) + 11, 128, 24, "Message time (seconds): ", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox, "Value between 1 and 120");
-	general_page.chat_wait_time = pgui_textbox_create(8 + 132, 24 + (24 * 11) + 9, 30, 20, "", misc_groupbox);
-	general_page.additional_mods_checkbox = pgui_checkbox_create(8, 24 + (24 * 13) - 10, 128, 24, "Additional mods:", misc_groupbox);
-	general_page.additional_mods = pgui_textbox_create(8, 24 + (24 * 14) - 5, (parent->w / 2) - 32, 24, "", misc_groupbox);
+	general_page.game_run_respawns = pgui_checkbox_create(8, 24 + (24 * 8), 128, 24, "Respawn on new run", misc_groupbox);
+	general_page.chat_size_label = pgui_label_create(8, 24 + (24 * 9) + 9, 128, 24, "Chat size:", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox);
+	general_page.chat_size = pgui_combobox_create(8 + 82, 24 + (24 * 9) + 4, 80, 24, chatsize_options, 4, misc_groupbox);
+	general_page.chat_wait_time_label = pgui_label_with_tooltip_create(8, 24 + (24 * 10) + 11, 128, 24, "Message time (seconds): ", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox, "Value between 1 and 120");
+	general_page.chat_wait_time = pgui_textbox_create(8 + 132, 24 + (24 * 10) + 9, 30, 20, "", misc_groupbox);
+	general_page.no_additional_script_mods = pgui_checkbox_create(8, 24 + (24 * 14) - 10, 128, 24, "Disable Script Mods", misc_groupbox);
+	general_page.additional_mods_checkbox = pgui_checkbox_create(8, 24 + (24 * 15) - 10, 128, 24, "Additional mods:", misc_groupbox);
+	general_page.additional_mods = pgui_textbox_create(8, 24 + (24 * 16) - 5, (parent->w / 2) - 32, 24, "", misc_groupbox);
 
 	// **************************
 	// SET SETTINGS

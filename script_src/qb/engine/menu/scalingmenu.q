@@ -4,7 +4,7 @@ scalingmenu_bar_focus_rgba = [ 128 128 128 128 ]
 scalingmenu_bar_unfocus_rgba = [ 40 40 40 128 ] 
 scalingmenu_bar_pos = PAIR(12.00000000000, 0.00000000000) 
 scalingmenu_text_pos = PAIR(-102.00000000000, 0.00000000000) 
-scalingmenu_spacing_between = 25 
+scalingmenu_spacing_between = 20 
 scalingmenu_arrow_pos_up = PAIR(0.00000000000, 7.00000000000) 
 scalingmenu_arrow_pos_down = PAIR(0.00000000000, -7.00000000000) 
 scalingmenu_arrow_rgba = [ 128 128 128 128 ] 
@@ -107,18 +107,18 @@ board_bone_group = [
 skateshop_scaling_options = [ 
 	{ 
 		group_title = "SCALE OPTIONS" 
-		text = #"Body" 
+		text = "Body" 
 		submenu = face_scale_menu 
 		should_add_scaling_options 
-		scaling_params = { affectXYZ } 
-		bone_group = object_scaling 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
+		bone_group = object_scaling
 		is_visible_script = currently_editing_custom 
 	} 
 	{ 
-		text = #"Head Top" 
+		text = "Head Top" 
 		submenu = face_scale_menu 
 		should_add_scaling_options 
-		scaling_params = { affectX affectY affectZ } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		bone_group = headtop_bone_group 
 		is_visible_script = currently_editing_custom 
 		is_enabled_script = check_if_group_editable 
@@ -126,10 +126,10 @@ skateshop_scaling_options = [
 		cam_anim_sub = head 
 	} 
 	{ 
-		text = #"Head" 
+		text = "Head" 
 		submenu = face_scale_menu 
 		should_add_scaling_options 
-		scaling_params = { affectX affectY affectZ } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		bone_group = head_bone_group 
 		is_visible_script = currently_editing_custom 
 		is_enabled_script = check_if_group_editable 
@@ -137,10 +137,10 @@ skateshop_scaling_options = [
 		cam_anim_sub = head 
 	} 
 	{ 
-		text = #"Nose" 
+		text = "Nose" 
 		submenu = face_scale_menu 
 		should_add_scaling_options 
-		scaling_params = { affectX affectY affectZ } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		bone_group = nose_bone_group 
 		is_visible_script = currently_editing_custom 
 		is_enabled_script = check_if_group_editable 
@@ -148,10 +148,10 @@ skateshop_scaling_options = [
 		cam_anim_sub = head 
 	} 
 	{ 
-		text = #"jaw" 
+		text = "jaw" 
 		submenu = face_scale_menu 
 		should_add_scaling_options 
-		scaling_params = { affectX affectY affectZ } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		bone_group = Jaw_bone_group 
 		is_visible_script = currently_editing_custom 
 		is_enabled_script = check_if_group_editable 
@@ -159,78 +159,86 @@ skateshop_scaling_options = [
 		cam_anim_sub = head 
 	} 
 	{ 
-		text = #"Chest" 
+		text = "Chest" 
 		submenu = torso_scale_menu 
-		scaling_params = { affectXY } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		is_visible_script = currently_editing_custom 
 		should_add_scaling_options 
 		bone_group = torso_bone_group 
 		cam_anim_sub = adjtorso 
 	} 
 	{ 
-		text = #"Waist" 
+		text = "Waist" 
 		submenu = stomach_scale_menu 
-		scaling_params = { affectXY } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		is_visible_script = currently_editing_custom 
 		should_add_scaling_options 
 		bone_group = stomach_bone_group 
 		cam_anim_sub = adjtorso 
 	} 
 	{ 
-		text = #"Biceps" 
+		text = "Biceps" 
 		submenu = upper_arm_scale_menu 
-		scaling_params = { affectXY } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		is_visible_script = currently_editing_custom 
 		should_add_scaling_options 
 		bone_group = upper_arm_bone_group 
 		cam_anim_sub = adjtorso 
 	} 
 	{ 
-		text = #"Forearms" 
+		text = "Forearms" 
 		submenu = lower_arm_scale_menu 
-		scaling_params = { affectXY } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		is_visible_script = currently_editing_custom 
 		should_add_scaling_options 
 		bone_group = lower_arm_bone_group 
 		cam_anim_sub = adjtorso 
 	} 
 	{ 
-		text = #"Hands" 
+		text = "Hands" 
 		submenu = hands_scale_menu 
-		scaling_params = { affectXY } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		is_visible_script = currently_editing_custom 
 		should_add_scaling_options 
 		bone_group = hands_bone_group 
 		cam_anim_sub = legs 
 	} 
 	{ 
-		text = #"Thighs" 
+		text = "Thighs" 
 		submenu = upper_leg_scale_menu 
-		scaling_params = { affectXY } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		is_visible_script = currently_editing_custom 
 		should_add_scaling_options 
 		bone_group = upper_leg_bone_group 
 		cam_anim_sub = legs 
 	} 
 	{ 
-		text = #"Calves" 
+		text = "Calves" 
 		submenu = lower_leg_scale_menu 
-		scaling_params = { affectXY } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		is_visible_script = currently_editing_custom 
 		should_add_scaling_options 
 		bone_group = lower_leg_bone_group 
-		cam_anim_sub = Feet 
+		cam_anim_sub = feet 
 	} 
 	{ 
-		text = #"Feet" 
+		text = "Feet" 
 		submenu = feet_scale_menu 
-		scaling_params = { affectXY } 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
 		is_visible_script = currently_editing_custom 
 		should_add_scaling_options 
 		bone_group = feet_bone_group 
-		cam_anim_sub = Feet 
+		cam_anim_sub = feet 
 	} 
-] 
+	{ 
+		text = "Board" 
+		submenu = face_scale_menu 
+		scaling_params = { affectX affectY affectZ affectXYZ } 
+		is_visible_script = currently_editing_custom 
+		should_add_scaling_options 
+		bone_group = board_bone_group 
+	} 
+]
 SCRIPT scalingmenu_refresh_skaters 
 	GetCurrentSkaterProfileIndex 
 	RefreshSkaterScale skater = 0 profile = <currentSkaterProfileIndex> 
@@ -251,22 +259,17 @@ SCRIPT scalingmenu_get_limits
 	<index> = 0 
 	BEGIN 
 		IF ChecksumEquals a = ( ( scalingmenu_constraints [ <index> ] ) . part ) b = <part> 
-			IF ( <is_male> = 1 ) 
-				<min> = ( ( scalingmenu_constraints [ <index> ] ) . male_min ) 
-				<max> = ( ( scalingmenu_constraints [ <index> ] ) . male_max ) 
-			ELSE 
-				<min> = ( ( scalingmenu_constraints [ <index> ] ) . female_min ) 
-				<max> = ( ( scalingmenu_constraints [ <index> ] ) . female_max ) 
-			ENDIF 
+			<min> = 0.00000000000 
+			<max> = -1.0 // 5E 07 1A 00 00 00 00 01 2D 16 76 DD 89 62 07 1A FF FF FF FF
 			BREAK 
 		ENDIF 
 		<index> = ( <index> + 1 ) 
 	REPEAT <array_size> 
-	IF NOT gotParam min 
-		<min> = 90.00000000000 
+	IF NOT GotParam min 
+		<min> = 0.00000000000 
 	ENDIF 
-	IF NOT gotParam max 
-		<max> = 150.00000000000 
+	IF NOT GotParam max 
+		<max> = -nan 
 	ENDIF 
 	RETURN min = <min> max = <max> 
 ENDSCRIPT
