@@ -350,11 +350,29 @@ SCRIPT server_enter_free_skate
 ENDSCRIPT
 
 SCRIPT client_enter_free_skate 
+	IF isTrue JoinedGameInProgress 
+		Change JoinedGameInProgress = 0 
+		IF ScreenElementExists id = observe_input_handler 
+			DestroyScreenElement id = observe_input_handler 
+		ENDIF 
+		show_all_hud_items
+		M_ClearAllObserveValues
+	ENDIF 
+	IF IsObserving 
+		RETURN 
+	ENDIF 
+	IF isTrue M_ObserveOn 
+		RETURN 
+	ENDIF 
+	IF M_IsSurveying 
+		RETURN 
+	ENDIF 
 	IF InTeamGame 
 		create_net_panel_message text = "Choose a team by grabbing a flag." style = generic_net_panel_message 
 	ELSE 
 		create_net_panel_message text = "Entering Free Skate." style = generic_net_panel_message 
 	ENDIF 
+	
 ENDSCRIPT
 
 netmessageprops = { 

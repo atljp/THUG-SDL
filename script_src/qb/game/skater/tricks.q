@@ -1491,7 +1491,6 @@ SCRIPT EndOfRun
 				EnterSurveyorMode 
 			ENDIF 
 		ENDIF 
-		ENDIF 
 		M_ObserveSelf
 		create_observe_menu
 	ENDIF 

@@ -240,7 +240,7 @@ bool getModDefaultPreFile() {
 		printf("Found file %s\n", preFile_fullpath);
 		return true;
 	}
-	printf("thugsdl.pre not found in game directory. Falling back to data\\pre\\qb.pre\n");
+	printf("Could not find thugsdl.pre. Falling back to data\\pre\\qb.pre\n");
 	return false;
 }
 

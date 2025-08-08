@@ -3,22 +3,28 @@ select_shift = 1
 memcard_screenshots = 0 
 skater_cam_0_mode = 2 
 skater_cam_1_mode = 2 
+disable_user_button_scripts = 0
+
 SCRIPT UserSelectSelect 
-	IF NOT isngc 
-		IF ObjectExists id = skatercam0 
-			SWITCH skater_cam_0_mode 
-				CASE 1 
-					change skater_cam_0_mode = 2 
-				CASE 2 
-					change skater_cam_0_mode = 3 
-				CASE 3 
-					change skater_cam_0_mode = 4 
-				CASE 4 
-					change skater_cam_0_mode = 1 
-			ENDSWITCH 
-			skatercam0 : sc_setmode mode = skater_cam_0_mode 
-		ENDIF 
-	ENDIF 
+	IF ( m_freecam_select = 1 )
+		UserSelectX
+	ELSE
+		IF NOT isngc 
+			IF ObjectExists id = skatercam0 
+				SWITCH skater_cam_0_mode 
+					CASE 1 
+						change skater_cam_0_mode = 2 
+					CASE 2 
+						change skater_cam_0_mode = 3 
+					CASE 3 
+						change skater_cam_0_mode = 4 
+					CASE 4 
+						change skater_cam_0_mode = 1 
+				ENDSWITCH 
+				skatercam0 : sc_setmode mode = skater_cam_0_mode 
+			ENDIF 
+		ENDIF
+	ENDIF
 ENDSCRIPT
 
 SCRIPT UserSelectSelect2 
@@ -67,6 +73,9 @@ SCRIPT UserSelectSquare
 ENDSCRIPT
 
 SCRIPT UserSelectCircle 
+	IF ( ( IsTrue disable_user_button_scripts ) | ( InNetGame ) ) 
+		RETURN
+	ENDIF
 	IF NotCD 
 		IF ( render_mode ) 
 			SWITCH wireframe_mode 
@@ -123,69 +132,136 @@ SCRIPT UserSelectStart
 ENDSCRIPT
 
 SCRIPT ToggleViewMode 
-	SWITCH view_mode 
-		CASE 0 
-			change view_mode = 1 
-		CASE 1 
-			change view_mode = 2 
-		CASE 2 
-			change view_mode = 0 
-	ENDSWITCH 
-	SetViewMode view_mode 
-ENDSCRIPT
-
-SCRIPT UserSelectX 
-	change viewer_rotation_angle = 0 
-	ToggleViewMode 
-ENDSCRIPT
-
-viewer_rotation_angle = 0 
-SCRIPT UserViewerX 
-	IF ( viewer_rotation_angle = 0 ) 
-		change viewer_rotation_angle = 1 
-		CenterCamera scale = 0.50000000000 y = -45 
-	ELSE 
-		IF ( viewer_rotation_angle = 1 ) 
-			CenterCamera scale = 0.50000000000 y = -135 
-			change viewer_rotation_angle = 2 
+	<can_use_viewer> = 1 
+	IF InNetGame 
+		IF IsObserving 
+			<can_use_viewer> = 1 
 		ELSE 
-			IF ( viewer_rotation_angle = 2 ) 
-				change viewer_rotation_angle = 3 
-				CenterCamera scale = 0.50000000000 y = -225 
+			IF NOT IsTrue M_ObserveOn 
+				<can_use_viewer> = 0 
+				IF M_IsSurveying 
+					<can_use_viewer> = 1 
+				ENDIF 
+			ENDIF 
+			IF Skater : Skating 
+				IF NOT Skater : OnGround 
+					<can_use_viewer> = 0 
+				ENDIF 
 			ELSE 
-				IF ( viewer_rotation_angle = 3 ) 
-					change viewer_rotation_angle = 0 
-					CenterCamera scale = 0.50000000000 y = -315 
+				IF Skater : Walking 
+					IF Skater : Walk_Air 
+						<can_use_viewer> = 0 
+					ENDIF 
 				ENDIF 
 			ENDIF 
 		ENDIF 
 	ENDIF 
-ENDSCRIPT
-
-SCRIPT UserViewerSquare 
-	IF ( viewer_rotation_angle = 0 ) 
-		change viewer_rotation_angle = 1 
-		CenterCamera x = -10 y = -90 scale = 0.69999998808 
-	ELSE 
-		IF ( viewer_rotation_angle = 1 ) 
-			CenterCamera x = -10 y = -180 scale = 0.69999998808 
-			change viewer_rotation_angle = 2 
+	IF ScreenElementExists id = current_menu_anchor 
+		<can_use_viewer> = 0 
+	ENDIF 
+	IF ScreenElementExists id = cat_menu_anchor 
+		<can_use_viewer> = 0 
+	ENDIF 
+	IF ScreenElementExists id = dialog_box_anchor 
+		<can_use_viewer> = 0 
+	ENDIF 
+	IF LevelIs Load_Sk5Ed 
+		<can_use_viewer> = 0 
+	ENDIF 
+	IF LevelIs load_mainmenu 
+		<can_use_viewer> = 0 
+	ENDIF 
+	IF IsTrue view_mode 
+		Change view_mode = 0 
+		SetViewMode 0 
+		IF CustomParkMode editing 
+			RETURN
 		ELSE 
-			IF ( viewer_rotation_angle = 2 ) 
-				change viewer_rotation_angle = 3 
-				CenterCamera x = -10 y = -270 scale = 0.69999998808 
+			IF NOT IsObserving 
+				GoalManager_ShowPoints 
+				unpause_trick_text 
+			ENDIF 
+			IF InNetGame 
 			ELSE 
-				IF ( viewer_rotation_angle = 3 ) 
-					change viewer_rotation_angle = 0 
-					CenterCamera x = -10 y = 0 scale = 0.69999998808 
+				UnPauseSkaters 
+				MakeSkaterGoto M_EnablePlayerInput 
+				IF Skater : Walking 
+					M_ResetPhysics Walk 
+				ELSE 
+					M_ResetPhysics 
 				ENDIF 
 			ENDIF 
 		ENDIF 
+	ELSE 
+		IF ( <can_use_viewer> = 1 ) 
+			Change view_mode = 1 
+			SetViewMode 1 
+			IF CustomParkMode editing 
+				RETURN
+			ELSE 
+				IF NOT IsObserving 
+					GoalManager_HidePoints 
+					pause_trick_text 
+				ENDIF 
+				IF NOT InNetGame 
+					PauseSkaters 
+					MakeSkaterGoto M_DisablePlayerInput 
+				ENDIF 
+			ENDIF 
+		ENDIF 
+	ENDIF 	
+ENDSCRIPT
+
+SCRIPT UserSelectX 
+	IF IsTrue disable_user_button_scripts 
+		RETURN 
+	ENDIF 
+	change viewer_rotation_angle = 0 
+	IF InNetGame 
+		IF IsTrue M_ObserveOn 
+			IF SkaterSpeedGreaterThan 1 
+				RETURN 
+			ENDIF 
+			ToggleViewMode 
+		ELSE 
+			IF IsObserving 
+				ToggleViewMode 
+			ELSE 
+				IF M_IsSurveying 
+					IF SkaterSpeedGreaterThan 1 
+						RETURN 
+					ENDIF 
+					ToggleViewMode 
+				ENDIF 
+			ENDIF 
+		ENDIF 
+	ELSE 
+		ToggleViewMode 
+	ENDIF
+ENDSCRIPT
+
+viewer_rotation_angle = 0 
+SCRIPT UserViewerX 
+	IF IsTrue disable_user_button_scripts 
+		RETURN 
+	ENDIF
+	IF NOT InNetGame 
+		Skater : PlaceBeforeCamera 
+		M_ResetViewer unfreeze 
+	ENDIF
+ENDSCRIPT
+
+SCRIPT UserViewerSquare 
+	IF IsTrue disable_user_button_scripts 
+		RETURN 
 	ENDIF 
 ENDSCRIPT
 
 Viewer_move_mode = 0 
 SCRIPT UserViewerCircle 
+	IF IsTrue disable_user_button_scripts 
+		RETURN 
+	ENDIF
 	change viewer_rotation_angle = 0 
 	SWITCH Viewer_move_mode 
 		CASE 0 
@@ -207,8 +283,11 @@ SCRIPT UserViewerCircle
 ENDSCRIPT
 
 SCRIPT UserViewerTriangle 
-	change viewer_rotation_angle = 0 
-	CenterCamera x = -90 y = 0 scale = 0.69999998808 
+	IF IsTrue disable_user_button_scripts 
+		RETURN 
+	ENDIF 
+	//change viewer_rotation_angle = 0 
+	//CenterCamera x = -90 y = 0 scale = 0.69999998808 
 ENDSCRIPT
 
 SCRIPT show_wireframe_mode 

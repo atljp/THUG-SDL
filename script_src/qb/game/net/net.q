@@ -192,6 +192,8 @@ SCRIPT quit_network_game
 ENDSCRIPT
 
 SCRIPT spawned_chosen_host_game 
+	Change JoinedGameInProgress = 0 
+	Change JoinedAsObserver = 0
 	IF IsXbox 
 		DisplayLoadingScreen "loadscrn_system_link_x" 
 	ENDIF 

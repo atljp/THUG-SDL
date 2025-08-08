@@ -991,6 +991,7 @@ SCRIPT unpause_rain
 ENDSCRIPT
 
 SCRIPT create_pause_menu 
+	M_ResetViewer force_reset
 	dialog_box_exit 
 	IF CustomParkMode editing 
 		SetParkEditorPauseMode pause 

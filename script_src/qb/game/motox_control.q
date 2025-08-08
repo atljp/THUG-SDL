@@ -25,6 +25,7 @@ m_chat_scale_real = 0.80000001192 // 1: extra small / 2: small / 3: default / 4:
 m_chat_padding_real = 0.64999997616
 m_playername_scale = 3
 m_playername_scale_real = 1.0
+m_freecam_select = 0
 
 
 SCRIPT M_RejoinNextGame
@@ -323,9 +324,9 @@ SCRIPT m_observe_toggle_hud
 ENDSCRIPT
 
 SCRIPT m_observe_hud_set_visible 
-	//IF NOT ScreenElementExists id = rankings_anchor 
-	//	show_all_hud_items 
-	//ENDIF 
+	IF NOT ScreenElementExists id = rankings_anchor 
+		show_all_hud_items 
+	ENDIF 
 	Change m_observe_hud_visible = 1 
 	IF ObjectExists id = root_window 
 		DoScreenElementMorph { 
@@ -336,7 +337,7 @@ SCRIPT m_observe_hud_set_visible
 ENDSCRIPT
 
 SCRIPT m_observe_hud_set_invisible 
-	//hide_all_hud_items 
+	hide_all_hud_items 
 	Change m_observe_hud_visible = 0 
 	
 	IF ObjectExists id = root_window 
@@ -344,6 +345,148 @@ SCRIPT m_observe_hud_set_invisible
 			id = root_window 
 			scale = 0 
 		} 
+	ENDIF 
+ENDSCRIPT
+
+SCRIPT hide_all_hud_items 
+	dialog_box_exit no_pad_start <...> 
+	IF ScreenElementExists id = console_message_vmenu 
+		DoScreenElementMorph id = console_message_vmenu time = 0 scale = 0 
+	ENDIF 
+	IF ScreenElementExists id = first_time_goal_info 
+		DestroyScreenElement id = first_time_goal_info 
+	ENDIF 
+	IF ScreenElementExists id = cutscene_camera_hud_anchor 
+		change camera_hud_is_hidden = 1 
+		DoScreenElementMorph id = cutscene_camera_hud_anchor alpha = 0 
+	ENDIF 
+	IF ScreenElementExists id = nightvision_hud_anchor 
+		change nightvision_hud_is_hidden = 1 
+		DoScreenElementMorph id = nightvision_hud_anchor alpha = 0 
+	ENDIF 
+	IF ScreenElementExists id = the_time 
+		SetScreenElementProps id = the_time hide 
+	ENDIF 
+	IF NOT GotParam ignore_speech_boxes 
+		hide_speech_boxes 
+	ENDIF 
+	IF ScreenElementExists id = digital_timer_anchor 
+		SetScreenElementProps id = digital_timer_anchor hide 
+	ENDIF 
+	IF ScreenElementExists id = new_ammo_message 
+		DestroyScreenElement id = new_ammo_message 
+	ENDIF 
+	IF ScreenElementExists id = new_ammo_message2 
+		DestroyScreenElement id = new_ammo_message2 
+	ENDIF 
+	hide_panel_messages 
+	menu3d_hide 
+	pause_special_meter 
+	pause_balance_meter 
+	pause_run_timer 
+	hide_goal_panel_messages 
+	GoalManager_HideGoalPoints 
+	GoalManager_HidePoints 
+	hide_3d_goal_arrow 
+	hide_landing_msg 
+	hide_console_window 
+	goal_skate_hide_letters 
+	hide_combo_letters 
+	hide_net_scores 
+	hide_stat_message 
+	MaybeHideLensFlare 
+	IF NOT LevelIs Load_MainMenu 
+		IF NOT InMultiPlayerGame 
+			change lens_flare_visible_before_pause = ( DoUpdateLensFlare ) 
+			change DoUpdateLensFlare = 0 
+		ENDIF 
+	ENDIF 
+	hide_tips 
+	pause_trick_text 
+	hide_death_msg 
+	GoalListReminderHide 
+	TantrumMessageHide 
+	IF NOT GotParam dont_disable_screen_effects 
+		pause_bloom_off 
+	ENDIF 
+	kill_blur 
+ENDSCRIPT
+
+SCRIPT show_all_hud_items 
+	show_panel_messages 
+	GoalManager_ShowGoalPoints 
+	GoalManager_ShowPoints 
+	unhide_3d_goal_arrow 
+	unhide_landing_msg 
+	unhide_stat_message 
+	unhide_tips 
+	goal_skate_unhide_letters 
+	unhide_combo_letters 
+	unhide_death_msg 
+	GoalListReminderShow 
+	TantrumMessageShow 
+	unpause_trick_text 
+	IF NOT InNetGame 
+		unpause_trick_text 
+	ENDIF 
+	unpause_special_meter 
+	Unpause_Balance_Meter 
+	unpause_run_timer 
+	pause_bloom_on 
+	unhide_speech_boxes 
+	IF ScreenElementExists id = cutscene_camera_hud_anchor 
+		IF ( camera_hud_is_hidden = 1 ) 
+			change camera_hud_is_hidden = 0 
+			DoScreenElementMorph id = cutscene_camera_hud_anchor alpha = 1 
+		ENDIF 
+	ENDIF 
+	IF ScreenElementExists id = nightvision_hud_anchor 
+		IF ( nightvision_hud_is_hidden = 1 ) 
+			change nightvision_hud_is_hidden = 0 
+			DoScreenElementMorph id = nightvision_hud_anchor alpha = 1 
+		ENDIF 
+	ENDIF 
+	IF ScreenElementExists id = the_time 
+		SetScreenElementProps id = the_time unhide 
+	ENDIF 
+	IF ScreenElementExists id = digital_timer_anchor 
+		SetScreenElementProps id = digital_timer_anchor unhide 
+	ENDIF 
+	show_goal_panel_messages 
+	IF NOT LevelIs Load_MainMenu 
+		IF NOT InMultiPlayerGame 
+			change DoUpdateLensFlare = 1 
+			UnHideLensFlare 
+		ENDIF 
+	ENDIF 
+	IF NOT InMultiPlayerGame 
+		GoalManager_ShowPoints 
+		IF NOT GoalManager_HasActiveGoals 
+			GoalManager_ShowGoalPoints 
+		ELSE 
+			GoalManager_HideGoalPoints 
+		ENDIF 
+	ENDIF 
+	IF ObjectExists id = console_message_vmenu 
+		DoScreenElementMorph id = console_message_vmenu time = 0 scale = 1 
+	ENDIF 
+	IF ( HIDEHUD = 1 ) 
+		printf "hiding" 
+		hide_root_window 
+	ENDIF 
+	IF GetGlobalFlag flag = NO_DISPLAY_HUD 
+		GoalManager_HideGoalPoints 
+		GoalManager_HidePoints 
+	ENDIF 
+	IF NOT GetGlobalFlag flag = NO_DISPLAY_CHATWINDOW 
+		unhide_console_window 
+	ELSE 
+		hide_console_window 
+	ENDIF 
+	IF NOT GetGlobalFlag flag = NO_DISPLAY_NET_SCORES 
+		unhide_net_scores 
+	ELSE 
+		hide_net_scores 
 	ENDIF 
 ENDSCRIPT
 
@@ -434,6 +577,9 @@ SCRIPT M_WarpToPlayer
 					M_ObserveMode off 
 				ENDIF
 				wait 12 frames
+				IF M_UberFriggedThisFrame 
+					ResetSkaters 
+				ENDIF
 			ENDIF
 		ENDIF
 	ENDIF
@@ -520,6 +666,12 @@ SCRIPT M_InitializeMod
 			Change console_wait_time = <value>
 		ENDIF
 	ENDIF
+	// FREE CAM SELECT
+	M_GetINIValue section = "Miscellaneous" key = "FreeCamOnSelect" default = 0
+	IF IsTrue <value> 
+		change m_freecam_select = 1
+	ENDIF
+
 	//Aspect Ratio, manual bps, wp input, bhra
 ENDSCRIPT
 
@@ -622,6 +774,18 @@ SCRIPT launch_mod_menu
 			pad_choose_script = change_playernamesize
 		}
 		
+		// FREE CAM SELECT
+		M_GetINIValue section = "Miscellaneous" key = "FreeCamOnSelect" default = 0
+		IF IsTrue <value> 
+			hud_text = "Free Cam" 
+		ELSE 
+			hud_text = "Default"
+		ENDIF
+		theme_menu_add_item { text = "Select Button" 
+			extra_text = <hud_text> 
+			id = menu_selectbutton
+			pad_choose_script = toggle_gameitem pad_choose_params  = { freecamselect }
+		}
 	ELSE 
 		// SINGLEPLAYER OPTIONS
 		printf "Mod menu: Single player options"
@@ -661,6 +825,18 @@ SCRIPT toggle_gameitem
 			Change m_singletapbp = 1			
 		ENDIF 	
 	ENDIF
+	IF GotParam freecamselect
+		M_GetINIValue section = "Miscellaneous" key = "FreeCamOnSelect" default = 0
+		IF IsTrue <value>
+			SetScreenElementProps id = { menu_selectbutton child = 3 } text = "Default" 
+			M_SetINIValue section = "Miscellaneous" key = "FreeCamOnSelect" value = 0
+			Change m_freecam_select = 0
+		ELSE 
+			SetScreenElementProps id = { menu_selectbutton child = 3 } text = "Free Cam" 
+			M_SetINIValue section = "Miscellaneous" key = "FreeCamOnSelect" value = 1				
+			Change m_freecam_select = 1
+		ENDIF
+	ENDIF
 ENDSCRIPT
 
 SCRIPT menu_camera_fov_get_string 
@@ -684,6 +860,8 @@ ENDSCRIPT
 
 SCRIPT playername_size_get_string
 	SWITCH m_playername_scale
+		CASE 0
+			FormatText TextName = playername_size_text "Off"
 		CASE 1
 			FormatText TextName = playername_size_text "Extra small"
 		CASE 2
@@ -772,6 +950,9 @@ ENDSCRIPT
 
 SCRIPT change_playernamesize
 	SWITCH m_playername_scale
+		CASE 0
+			Change m_playername_scale = 1
+			Change m_playername_scale_real = 0.3
 		CASE 1
 			Change m_playername_scale = 2
 			Change m_playername_scale_real = 0.5
@@ -782,8 +963,8 @@ SCRIPT change_playernamesize
 			Change m_playername_scale = 4
 			Change m_playername_scale_real = 1.5
 		CASE 4
-			Change m_playername_scale = 1
-			Change m_playername_scale_real = 0.3
+			Change m_playername_scale = 0
+			Change m_playername_scale_real = 0.0
 	ENDSWITCH
 	playername_size_get_string
 	SetScreenElementProps { 
@@ -796,6 +977,8 @@ ENDSCRIPT
 
 SCRIPT set_playernamesize
 	SWITCH m_playername_scale
+		CASE 0
+			Change m_playername_scale_real = 0.0
 		CASE 1
 			Change m_playername_scale_real = 0.3
 		CASE 2

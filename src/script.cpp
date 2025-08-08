@@ -27,7 +27,6 @@ bool boardscuffpatched = false;
 uint32_t addr_sCreateScriptSymbol = 0x0040AF40;
 uint32_t addr_sCreateSymbolOfTheFormNameEqualsValue = 0x0040D1D0;
 LPVOID pResource_oslogo;
-LPVOID pResource_keyboard_restored;
 
 struct CGoalManagerInstance
 {
@@ -420,20 +419,12 @@ void editScriptsInMemory() {
 
 		if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
 
-		//Restore onscreen keyboard
-		if (pResource_keyboard_restored = getResource(IDR_KEYBOARD_RESTORED)) {
-			removeScript(0xF0425254); /*create_onscreen_keyboard*/
-			contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)pResource_keyboard_restored);
-			sCreateScriptSymbol_Wrapper(5896, 0xF0425254, contentsChecksum, (uint8_t*)pResource_keyboard_restored, "engine\\menu\\keyboard.qb");
-		}
-
-		// This loads M_InitializeMod which sets up all the script stuff
-		removeScript(0xAE754239); /*load_permanent_assets*/
-		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)load_permanent_assets_new);
-		sCreateScriptSymbol_Wrapper(0x6CB, 0xAE754239, contentsChecksum, (uint8_t*)load_permanent_assets_new, "game\\startup.qb");
-	}
-
-	
+		
+	}	
+	// This loads M_InitializeMod which sets up all the script stuff
+	removeScript(0xAE754239); /*load_permanent_assets*/
+	contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)load_permanent_assets_new);
+	sCreateScriptSymbol_Wrapper(0x6CB, 0xAE754239, contentsChecksum, (uint8_t*)load_permanent_assets_new, "game\\startup.qb");
 }
 
 void __fastcall sCreateScriptSymbol_Wrapper(uint32_t size, uint32_t nameChecksum, uint32_t contentsChecksum, const uint8_t* p_data, const char* p_fileName) {

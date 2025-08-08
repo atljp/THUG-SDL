@@ -50,7 +50,7 @@ struct GameNetMan {
 };
 
 struct Component {
-	char padding[0x18];
+	char padding[0x1C];
 	uint8_t uberfrigged;
 };
 
@@ -215,8 +215,11 @@ bool CFunc_UberFriggedThisFrame(Script::LazyStruct* pParams, DummyScript* pScrip
 
 	void* skater = GetLocalSkater();
 	Component* mComp = GetComponent_Native(skater, 0x9F9CC949 /*SkaterAdjustPhysics*/);
+	printf("Uberfrigged: %d, Addr: 0x%08x\n", mComp->uberfrigged, (uint32_t)mComp);
 
-	return (mComp->uberfrigged) ? true : false;
+	if (mComp->uberfrigged)
+		return true;
+	return false;
 }
 
 typedef float __cdecl CViewportManager_sSetScreenAngle_NativeCall(float fov);
@@ -246,7 +249,7 @@ bool Obs_ObserveSelf() {
 
 	if (!mInfo) {
 		Log::TypedLog(CHN_OBS, "No Skater info to observe self\n");
-		return 0;
+		return false;
 	}
 
 	Obs_Helper_SetPlayerName(mInfo);
@@ -259,6 +262,7 @@ bool Obs_ObserveNext() {
 	//Log::TypedLog(CHN_OBS, "Observing next player\n");
 	GameNetMan* man = (GameNetMan*)GetNetManager();
 	PlayerInfo* currentPlayer = GetCurrentlyObservedPlayer_Native(man);
+	Log::TypedLog(CHN_OBS, "currentPlayer State: %d\n", currentPlayer->playerstate);
 	PlayerInfo* targetPlayer = nullptr;
 
 	Log::TypedLog(CHN_OBS, "Trying to get next player: 0x%08x\n", (uint32_t)GetNextPlayer(currentPlayer));
@@ -270,8 +274,9 @@ bool Obs_ObserveNext() {
 			targetPlayer = GetNextPlayer(currentPlayer);
 			if (!targetPlayer) targetPlayer = getskaterinfo(); // Shouldn't happen
 
-			if (targetPlayer->playerstate == observerOrPendingPlayerState) break;
-			//Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
+			if (targetPlayer->playerstate == 5) break;
+			Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
+			Log::TypedLog(CHN_OBS, "Target Player State: %d\n", targetPlayer->playerstate);
 		}
 	}
 	else {
@@ -280,7 +285,7 @@ bool Obs_ObserveNext() {
 
 	if (!(targetPlayer)) return 0;
 	if (targetPlayer == currentPlayer) return 0;
-	if (targetPlayer->playerstate == observerOrPendingPlayerState) return 0;
+	if (targetPlayer->playerstate == 5) return 0;
 
 	Obs_Helper_SetPlayerName(targetPlayer);
 	ObservePlayer_Native(man, targetPlayer);
@@ -292,6 +297,7 @@ bool Obs_ObservePrev() {
 	//Log::TypedLog(CHN_OBS, "Observing previous player\n");
 	GameNetMan* man = (GameNetMan*)GetNetManager();
 	PlayerInfo* currentPlayer = GetCurrentlyObservedPlayer_Native(man);
+	Log::TypedLog(CHN_OBS, "currentPlayer State: %d\n", currentPlayer->playerstate);
 	PlayerInfo* targetPlayer = nullptr;
 
 	Log::TypedLog(CHN_OBS, "Trying to get previous player: 0x%08x\n", (uint32_t)GetPrevPlayer(currentPlayer));
@@ -303,8 +309,9 @@ bool Obs_ObservePrev() {
 			targetPlayer = GetPrevPlayer(currentPlayer);
 			if (!targetPlayer) targetPlayer = getskaterinfo(); // Shouldn't happen
 
-			if (targetPlayer->playerstate == observerOrPendingPlayerState) break;
-			//Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
+			if (targetPlayer->playerstate == 5) break;
+			Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
+			Log::TypedLog(CHN_OBS, "Target Player State: %d\n", targetPlayer->playerstate);
 		}
 	}
 	else {
@@ -313,7 +320,7 @@ bool Obs_ObservePrev() {
 
 	if (!(targetPlayer)) return 0;
 	if (targetPlayer == currentPlayer) return 0;
-	if (targetPlayer->playerstate == observerOrPendingPlayerState) return 0;
+	if (targetPlayer->playerstate == 5) return 0;
 
 	Obs_Helper_SetPlayerName(targetPlayer);
 	ObservePlayer_Native(man, targetPlayer);
