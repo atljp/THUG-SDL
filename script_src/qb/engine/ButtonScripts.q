@@ -268,13 +268,18 @@ SCRIPT UserViewerCircle
 			change Viewer_move_mode = 1 
 			SetMovementVelocity 400 
 			SetRotateVelocity 120 
-			create_panel_message id = viewermovemode text = "Med cam" pos = PAIR(320.00000000000, 50.00000000000) 
+			create_panel_message id = viewermovemode text = "Slow cam" pos = PAIR(320.00000000000, 50.00000000000) 
 		CASE 1 
 			change Viewer_move_mode = 2 
+			SetMovementVelocity 2000 
+			SetRotateVelocity 300 
+			create_panel_message id = viewermovemode text = "Med cam" pos = PAIR(320.00000000000, 50.00000000000) 
+		CASE 2 
+			change Viewer_move_mode = 3 
 			SetMovementVelocity 6000 
 			SetRotateVelocity 300 
 			create_panel_message id = viewermovemode text = "Fast cam" pos = PAIR(320.00000000000, 50.00000000000) 
-		CASE 2 
+		CASE 3 
 			change Viewer_move_mode = 0 
 			SetMovementVelocity 100 
 			SetRotateVelocity 50 

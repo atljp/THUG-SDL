@@ -277,9 +277,10 @@ SCRIPT M_ObserveMenuRefreshHelperText
 	helper_text_freeskate = 1 
 	IF NOT GameModeEquals is_lobby
 		helper_text_freeskate = 0 
-	ELSE 
-		helper_text_freeskate = 1 
 	ENDIF 
+	IF IsTrue JoinedAsObserver
+		helper_text_freeskate = 0
+	ENDIF
 	IF ScreenElementExists id = observe_input_handler 
 		create_helper_text { 
 			parent = observe_input_handler 
@@ -287,7 +288,7 @@ SCRIPT M_ObserveMenuRefreshHelperText
 			helper_pos = PAIR(320.00000000000, 464.00000000000) 
 			helper_text_elements = [ 
 				{ text = "\\b3/\\b2 = Cycle Cameras" } 
-				{ enabled = <helper_text_freeskate> text = "\\b0 = Warp to player" } 
+				{ enabled = <helper_text_freeskate> text = "\\b0 = Warp" } 
 				{ enabled = 1 text = "\\b1 = Toggle HUD" } 
 			] 
 		} 
@@ -367,9 +368,6 @@ SCRIPT hide_all_hud_items
 	IF ScreenElementExists id = the_time 
 		SetScreenElementProps id = the_time hide 
 	ENDIF 
-	IF NOT GotParam ignore_speech_boxes 
-		hide_speech_boxes 
-	ENDIF 
 	IF ScreenElementExists id = digital_timer_anchor 
 		SetScreenElementProps id = digital_timer_anchor hide 
 	ENDIF 
@@ -379,9 +377,6 @@ SCRIPT hide_all_hud_items
 	IF ScreenElementExists id = new_ammo_message2 
 		DestroyScreenElement id = new_ammo_message2 
 	ENDIF 
-	hide_panel_messages 
-	menu3d_hide 
-	pause_special_meter 
 	pause_balance_meter 
 	pause_run_timer 
 	hide_goal_panel_messages 
@@ -394,26 +389,13 @@ SCRIPT hide_all_hud_items
 	hide_combo_letters 
 	hide_net_scores 
 	hide_stat_message 
-	MaybeHideLensFlare 
-	IF NOT LevelIs Load_MainMenu 
-		IF NOT InMultiPlayerGame 
-			change lens_flare_visible_before_pause = ( DoUpdateLensFlare ) 
-			change DoUpdateLensFlare = 0 
-		ENDIF 
-	ENDIF 
 	hide_tips 
 	pause_trick_text 
 	hide_death_msg 
-	GoalListReminderHide 
-	TantrumMessageHide 
-	IF NOT GotParam dont_disable_screen_effects 
-		pause_bloom_off 
-	ENDIF 
 	kill_blur 
 ENDSCRIPT
 
 SCRIPT show_all_hud_items 
-	show_panel_messages 
 	GoalManager_ShowGoalPoints 
 	GoalManager_ShowPoints 
 	unhide_3d_goal_arrow 
@@ -423,17 +405,12 @@ SCRIPT show_all_hud_items
 	goal_skate_unhide_letters 
 	unhide_combo_letters 
 	unhide_death_msg 
-	GoalListReminderShow 
-	TantrumMessageShow 
 	unpause_trick_text 
 	IF NOT InNetGame 
 		unpause_trick_text 
 	ENDIF 
-	unpause_special_meter 
 	Unpause_Balance_Meter 
 	unpause_run_timer 
-	pause_bloom_on 
-	unhide_speech_boxes 
 	IF ScreenElementExists id = cutscene_camera_hud_anchor 
 		IF ( camera_hud_is_hidden = 1 ) 
 			change camera_hud_is_hidden = 0 
@@ -453,12 +430,6 @@ SCRIPT show_all_hud_items
 		SetScreenElementProps id = digital_timer_anchor unhide 
 	ENDIF 
 	show_goal_panel_messages 
-	IF NOT LevelIs Load_MainMenu 
-		IF NOT InMultiPlayerGame 
-			change DoUpdateLensFlare = 1 
-			UnHideLensFlare 
-		ENDIF 
-	ENDIF 
 	IF NOT InMultiPlayerGame 
 		GoalManager_ShowPoints 
 		IF NOT GoalManager_HasActiveGoals 

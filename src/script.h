@@ -46,6 +46,7 @@ bool CreateScreenElement_Patched(Script::LazyStruct* pParams, DummyScript* pScri
 bool SetScreenElementProps_Patched(Script::LazyStruct* pParams, DummyScript* pScript);
 bool SetButtonEventMappings_Patched(Script::LazyStruct* pParams, DummyScript* pScript);
 void editScriptsInMemory();
+void hook_obs_chosen();
 void __fastcall sCreateScriptSymbol_Wrapper(uint32_t size, uint32_t nameChecksum, uint32_t contentsChecksum, const uint8_t* p_data, const char* p_fileName);
 uint32_t __fastcall removeScript(uint32_t partChecksum);
 void setCavemanKeys();

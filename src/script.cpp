@@ -59,6 +59,7 @@ void patchScripts() {
 	loadSettings(&mSettings); /*get config from INI. struct defined in config.h*/
 	patchCall((void*)0x0052CDDD, &patchCFuncs);
 	patchCall((void*)0x004BFD5C, &initScriptPatch);
+	patchCall((void*)0x00521667, &hook_obs_chosen); // 0x00430329 0x0052173D, probably timing related. Adding this to the above patching function doesn't update observe_chosen
 }
 
 void patchCFuncs() {
@@ -128,6 +129,10 @@ ScriptCleanUpAndRemoveSymbol_NativeCall* ScriptCleanUpAndRemoveSymbol_Native = (
 
 typedef void(__thiscall* LoadTextureFromBuffer_NativeCall)(int sp_sprite_tex_dict, uint8_t* p_buffer, uint32_t buffer_size, uint32_t texture_checksum, bool sprite, bool alloc_vram, bool perm);
 LoadTextureFromBuffer_NativeCall LoadTextureFromBuffer_Native = (LoadTextureFromBuffer_NativeCall)(0x00484CF0);
+
+typedef uint32_t __cdecl RemoveScripts_NativeCall(uint32_t partChecksum);
+RemoveScripts_NativeCall* RemoveScripts_Native = (RemoveScripts_NativeCall*)(0x0040BBB0);
+
 
 
 /* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
@@ -383,7 +388,6 @@ void editScriptsInMemory() {
 	uint32_t contentsChecksum = 0;
 
 	if (!mSettings.noadditionalscriptmods) {
-		
 		//Show board during board scaling in C-A-S. New script: showboard_myan 0x3DBD296D
 		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)showboard_myan);
 		sCreateScriptSymbol_Wrapper(sizeof(showboard_myan), 0x3DBD296D, contentsChecksum, (uint8_t*)showboard_myan, "scripts\\myan.qb");
@@ -419,12 +423,17 @@ void editScriptsInMemory() {
 
 		if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
 
-		
+		// This loads M_InitializeMod which sets up all the script stuff
+		removeScript(0xAE754239); /*load_permanent_assets*/
+		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)load_permanent_assets_new);
+		sCreateScriptSymbol_Wrapper(0x6CB, 0xAE754239, contentsChecksum, (uint8_t*)load_permanent_assets_new, "game\\startup.qb");		
 	}	
-	// This loads M_InitializeMod which sets up all the script stuff
-	removeScript(0xAE754239); /*load_permanent_assets*/
-	contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)load_permanent_assets_new);
-	sCreateScriptSymbol_Wrapper(0x6CB, 0xAE754239, contentsChecksum, (uint8_t*)load_permanent_assets_new, "game\\startup.qb");
+}
+
+void hook_obs_chosen() {
+	// TOOD, doesnt update
+	removeScript(0x7436C06E); /*observe_chosen*/
+	sCreateScriptSymbol_Wrapper(sizeof(observe_chosen_new), 0x7436C06E, CalculateScriptContentsChecksum_Native((uint8_t*)observe_chosen_new), (uint8_t*)observe_chosen_new, "scripts\\myan.qb");
 }
 
 void __fastcall sCreateScriptSymbol_Wrapper(uint32_t size, uint32_t nameChecksum, uint32_t contentsChecksum, const uint8_t* p_data, const char* p_fileName) {

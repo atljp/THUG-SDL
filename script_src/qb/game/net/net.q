@@ -74,7 +74,7 @@ mp_game_type_info = [
 ] 
 num_observers_info = [ 
 	{ Name = "No Observers" checksum = num_0 } 
-	{ Name = "1 Observer" checksum = num_1 broadband_only } 
+	{ Name = "8 Observers" checksum = num_8 broadband_only } 
 ] 
 net_goal_info = [ 
 	{ Name = "Story Mode" checksum = goals_story } 

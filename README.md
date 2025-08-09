@@ -18,12 +18,14 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 - Replaced input system entirely with new, modern system using the SDL2 library
 - Improved window handling allowing for custom resolutions and configurable windowing (4k resolution, (borderless) windowed mode)
 - Minimal launcher to configure game and mod settings
+- In game mod settings menu
+ - Saves to and loads from thugsdl.ini automatically
 - Stability fixes
 - Increased default clipping distance for large levels
 - Added pause buffer for speedrunning (menu to game transition with pause button held)
 - Option to toggle blur effects
 - Option to toggle the fullscreen gamma correction which makes the game looks too dark
-- Restored the onscreen keyboard (gamepad only)
+- Restored the onscreen keyboard
 - Increased speed when exiting the game
 - Modloader for script mods: [Section Modloader](#modloader)
 - Supported languages: English, French, German
@@ -33,12 +35,14 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 - Intro movie skip
 - Higher quality shadows
 - Toggle for boardscuffs
-- NoAdditionalScriptMods flag (disables additional modifications)
+- Option to disable all script mods (speedrunner mode)
 - Option to store the window position
 - Create-A-Skater: Unlimited 3 axes scaling
 - Create-A-Skater: Increased color ranges
 - Create-A-Skater: Board scaling
 - Exception Handler to generate crash reports (may not work on Windows 11)
+- Removed player limits for Created Parks
+- Option to enable free cam from the Select button (only during observe mode in net games)
 
 ### Controls
 - Native gamepad support
@@ -52,15 +56,21 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 - Option to invert the x and/or y camera axis
 - Option to disable the x and/or y camera axis
 
-### Online
+### Multiplayer
 - Openspy support
 - Replace GameSpy with OpenSpy in texts and images
+- Multiplayer Observe menu 
+ - Choose next / previous on ollie / grab or arrow keys
+ - Warp to players during freeskate
+ - Toggle hud
+ - Possible to start observe during games and rejoin freeskate after a round ended
 - Menu to load online settings
 - Longer text input in quick chat
 - No chat reset after net games started / ended
 - Removed short freeze time before level changes
 - Option for chat size scaling
 - Option for chat message time
+- Restart game option added to the ranking screen and pause menu
 
 
 ## MODLOADER
@@ -178,7 +188,7 @@ Then install vcpkg via git as described in the Microsoft documentation:
 Install SDL2 via vcpkg: `.\vcpkg.exe install SDL2:x86-windows`, for x64: `.\vcpkg.exe install SDL2`
 
 ### Generating the project file
-Create a thug2-sdl/build directory. Then build the VS Solution with CMake from that directory via Powershell:
+Create a THUG-SDL/build directory. Then build the VS Solution with CMake from that directory via Powershell:
 ```
 cmake .. -A win32 -DCMAKE_TOOLCHAIN_FILE=C:/[vcpkg directory]/scripts/buildsystems/vcpkg.cmake
 ```
