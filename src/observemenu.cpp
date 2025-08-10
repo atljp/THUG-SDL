@@ -163,18 +163,18 @@ void* GetNetManager() {
 void* get_gamemode_handle_wrapper(uint8_t* a) {
 	// No singleton so we get the handle like this, gross
 	if (!handle_received) {
-		GameMode = GameMode = *(CGameMode**)(*(uint8_t**)(a + 0x1C) + 0x5C);
+		GameMode = *(CGameMode**)(*(uint8_t**)(a + 0x1C) + 0x5C);
 		handle_received = true;
 	}
 	return Unkn_Func_Native(a);
 }
 
 PlayerInfo* getskaterinfo() {
-	uint32_t b_joinedasobserver = GetInt_Native(0x4724568A); //JoinedAsObserver
-	uint32_t b_joinedgameinprogress = GetInt_Native(0x55001E9A); // JoinedGameInProgress
-	uint32_t crc_gamemode = GetGamemode_Native(GameMode);
-	bool firefight = IsTrue(GameMode, 0x3A952920 /*is_firefight*/);
-	PlayerInfo* man = {};
+
+	uint32_t b_joinedasobserver = GetInt_Native(0x4724568A); /*JoinedAsObserver*/
+	uint32_t b_joinedgameinprogress = GetInt_Native(0x55001E9A); /*JoinedGameInProgress*/
+
+	PlayerInfo* man = GetLocalPlayer_Native((GameNetMan*)GetNetManager());
 
 	if (b_joinedasobserver || b_joinedgameinprogress) {
 		Log::TypedLog(CHN_OBS, "JOINEDASOBSERVER or JOINEDGAMEINPROGRESS\n");
@@ -307,33 +307,41 @@ bool Obs_ObserveSelf() {
 
 bool Obs_ObserveNext() {
 
-	//Log::TypedLog(CHN_OBS, "Observing next player\n");
+	Log::TypedLog(CHN_OBS, "Observing next player\n");
 	GameNetMan* man = (GameNetMan*)GetNetManager();
 	PlayerInfo* currentPlayer = GetCurrentlyObservedPlayer_Native(man);
-	//Log::TypedLog(CHN_OBS, "currentPlayer State: %d\n", currentPlayer->playerstate);
 	PlayerInfo* targetPlayer = nullptr;
 
-	Log::TypedLog(CHN_OBS, "Trying to get next player: 0x%08x\n", (uint32_t)GetNextPlayer(currentPlayer));
-	targetPlayer = GetNextPlayer(currentPlayer);
+	//Log::TypedLog(CHN_OBS, "currentPlayer State: %d\n", currentPlayer->playerstate);
+	//Log::TypedLog(CHN_OBS, "Trying to get next player: 0x%08x\n", (uint32_t)GetNextPlayer(currentPlayer));
 
 	if (currentPlayer) {
 		for (int i = 0; i < 16; ++i) {
 
 			targetPlayer = GetNextPlayer(currentPlayer);
-			if (!targetPlayer) targetPlayer = getskaterinfo(); // Shouldn't happen
+			
+			if (!targetPlayer) {
+				printf("INVALID 220!!\n");
+				targetPlayer = getskaterinfo();
+			}
 
-			if (targetPlayer->playerstate == 5 || targetPlayer->playerstate == 76 || targetPlayer->playerstate == 68) break;
+			if ((targetPlayer->playerstate & 0xC) == 0) {
+				break;
+			}
+
+			currentPlayer = targetPlayer;
 			//Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
 			//Log::TypedLog(CHN_OBS, "Target Player State: %d\n", targetPlayer->playerstate);
 		}
 	}
 	else {
+		printf("INVALID 221!!\n");
 		currentPlayer = getskaterinfo();
 	}
 
 	if (!(targetPlayer)) return 0;
 	if (targetPlayer == currentPlayer) return 0;
-	if (targetPlayer->playerstate == 5 || targetPlayer->playerstate == 76 || targetPlayer->playerstate == 68) return 0;
+	if ((targetPlayer->playerstate & 0xC) != 0) return 0;
 
 	Obs_Helper_SetPlayerName(targetPlayer);
 	ObservePlayer_Native(man, targetPlayer);
@@ -342,33 +350,42 @@ bool Obs_ObserveNext() {
 
 bool Obs_ObservePrev() {
 
-	//Log::TypedLog(CHN_OBS, "Observing previous player\n");
+	Log::TypedLog(CHN_OBS, "Observing previous player\n");
+
 	GameNetMan* man = (GameNetMan*)GetNetManager();
 	PlayerInfo* currentPlayer = GetCurrentlyObservedPlayer_Native(man);
-	//Log::TypedLog(CHN_OBS, "currentPlayer State: %d\n", currentPlayer->playerstate);
 	PlayerInfo* targetPlayer = nullptr;
 
-	Log::TypedLog(CHN_OBS, "Trying to get previous player: 0x%08x\n", (uint32_t)GetPrevPlayer(currentPlayer));
-	targetPlayer = GetPrevPlayer(currentPlayer);
+	//Log::TypedLog(CHN_OBS, "currentPlayer State: %d\n", currentPlayer->playerstate);
+	//Log::TypedLog(CHN_OBS, "Trying to get previous player: 0x%08x\n", (uint32_t)GetPrevPlayer(currentPlayer));
 
 	if (currentPlayer) {
 		for (int i = 0; i < 16; ++i) {
 
 			targetPlayer = GetPrevPlayer(currentPlayer);
-			if (!targetPlayer) targetPlayer = getskaterinfo(); // Shouldn't happen
 
-			if (targetPlayer->playerstate == 5 || targetPlayer->playerstate == 76 || targetPlayer->playerstate == 68) break;
+			if (!targetPlayer) {
+				printf("INVALID 120!!\n");
+				targetPlayer = getskaterinfo();
+			}
+
+			if ((targetPlayer->playerstate & 0xC) == 0) {
+				break;
+			}
+
+			currentPlayer = targetPlayer;
 			//Log::TypedLog(CHN_OBS, "Target Player: 0x%08x\n", targetPlayer);
 			//Log::TypedLog(CHN_OBS, "Target Player State: %d\n", targetPlayer->playerstate);
 		}
 	}
 	else {
+		printf("INVALID 121!!\n");
 		currentPlayer = getskaterinfo();
 	}
 
-	if (!(targetPlayer)) return 0;
+	if ((targetPlayer==0)) return 0;
 	if (targetPlayer == currentPlayer) return 0;
-	if (targetPlayer->playerstate == 5 || targetPlayer->playerstate == 76 || targetPlayer->playerstate == 68) return 0;
+	if ((targetPlayer->playerstate & 0xC) != 0) return 0;
 
 	Obs_Helper_SetPlayerName(targetPlayer);
 	ObservePlayer_Native(man, targetPlayer);
