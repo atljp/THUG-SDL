@@ -83,6 +83,11 @@ void defaultSettings() {
 	settings.additionalmods = 0;
 	strcpy(settings.additionalmods_folder, "data/pre/mymod");
 
+	settings.fov = 72;
+	settings.singletapbp = 0;
+	settings.freecamonselect = 0;
+	settings.playernamesize = 3;
+
 	controls.ps2_controls = 1;
 	controls.dropdownkey = 1;
 	controls.laddergrabkey = 1;
@@ -188,6 +193,11 @@ void defaultSettings_tabonly(int tab) {
 		settings.chatwaittime = 30;
 		settings.additionalmods = 0;
 		strcpy(settings.additionalmods_folder, "data/pre/mymod");
+
+		settings.fov = 72;
+		settings.singletapbp = 0;
+		settings.freecamonselect = 0;
+		settings.playernamesize = 3;
 	}
 	else if (tab == 1) {
 		keybinds.ollie = SDL_SCANCODE_KP_2;
@@ -334,6 +344,11 @@ void loadSettings() {
 	settings.additionalmods = getIniBool("AdditionalMods", "UseMod", 0, configFile);
 	GetPrivateProfileString("AdditionalMods", "Folder", "data/pre/mymod", &settings.additionalmods_folder, MAX_PATH, configFile);
 
+	// IN GAME MENU
+	settings.fov = GetPrivateProfileInt("Graphics", "FOV", 72, configFile);
+	settings.singletapbp = GetPrivateProfileInt("Miscellaneous", "SingleTapBP", 0, configFile);
+	settings.freecamonselect = GetPrivateProfileInt("Miscellaneous", "FreeCamOnSelect", 0, configFile);
+	settings.playernamesize = GetPrivateProfileInt("Multiplayer", "PlayerNameSize", 3, configFile);
 
 	// KEYBINDS
 	keybinds.ollie = GetPrivateProfileInt("Keybinds", "Ollie", SDL_SCANCODE_KP_2, configFile);
@@ -453,6 +468,11 @@ void saveSettings() {
 	writeIniInt("Chat", "ChatWaitTime", mSettings.chatwaittime, configFile);
 	writeIniInt("AdditionalMods", "UseMod", mSettings.additionalmods, configFile);
 	writeIniString("AdditionalMods", "Folder", mSettings.additionalmods_folder, configFile);
+
+	writeIniInt("Graphics", "FOV", mSettings.fov, configFile);
+	writeIniInt("Miscellaneous", "SingleTapBP", mSettings.singletapbp, configFile);
+	writeIniInt("Miscellaneous", "FreeCamOnSelect", mSettings.freecamonselect, configFile);
+	writeIniInt("Multiplayer", "PlayerNameSize", mSettings.playernamesize, configFile);
 
 	writeIniInt("Keybinds", "Ollie", mKeybinds.ollie, configFile);
 	writeIniInt("Keybinds", "Grab", mKeybinds.grab, configFile);

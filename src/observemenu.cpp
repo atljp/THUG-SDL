@@ -58,8 +58,6 @@ struct CGameMode {
 	char unk[100];
 };
 
-int observerOrPendingPlayerState = (mOBSERVER | mPENDING_PLAYER);
-int localPlayerState = (mHAS_PLAYER_INFO | mLOCAL_PLAYER);
 bool handle_received = false;
 CGameMode* GameMode = {};
 char* playername = "---";
@@ -325,7 +323,7 @@ bool Obs_ObserveNext() {
 				targetPlayer = getskaterinfo();
 			}
 
-			if ((targetPlayer->playerstate & 0xC) == 0) {
+			if ((targetPlayer->playerstate & (mOBSERVER | mPENDING_PLAYER)) == 0) {
 				break;
 			}
 
@@ -341,7 +339,7 @@ bool Obs_ObserveNext() {
 
 	if (!(targetPlayer)) return 0;
 	if (targetPlayer == currentPlayer) return 0;
-	if ((targetPlayer->playerstate & 0xC) != 0) return 0;
+	if ((targetPlayer->playerstate & (mOBSERVER | mPENDING_PLAYER)) != 0) return 0;
 
 	Obs_Helper_SetPlayerName(targetPlayer);
 	ObservePlayer_Native(man, targetPlayer);
@@ -369,7 +367,7 @@ bool Obs_ObservePrev() {
 				targetPlayer = getskaterinfo();
 			}
 
-			if ((targetPlayer->playerstate & 0xC) == 0) {
+			if ((targetPlayer->playerstate & (mOBSERVER | mPENDING_PLAYER)) == 0) {
 				break;
 			}
 
@@ -385,7 +383,7 @@ bool Obs_ObservePrev() {
 
 	if ((targetPlayer==0)) return 0;
 	if (targetPlayer == currentPlayer) return 0;
-	if ((targetPlayer->playerstate & 0xC) != 0) return 0;
+	if ((targetPlayer->playerstate & (mOBSERVER | mPENDING_PLAYER)) != 0) return 0;
 
 	Obs_Helper_SetPlayerName(targetPlayer);
 	ObservePlayer_Native(man, targetPlayer);

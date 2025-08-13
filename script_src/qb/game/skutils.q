@@ -152,6 +152,9 @@ SCRIPT change_level
 	IF LevelIs load_sk5ed 
 		SwitchOffRailEditor 
 	ENDIF 
+	IF IsTrue view_mode 
+		M_ResetViewer force_reset 
+	ENDIF
 	ResetScore 
 	SetMusicLooping 0 
 	IF NOT IsObserving 

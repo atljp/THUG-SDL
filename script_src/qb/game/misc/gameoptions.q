@@ -23,6 +23,7 @@ splitscreen_game_type_info = [
 ] 
 time_limit_options = [ 
 	{ name = "5 seconds" checksum = time_5 time = 5 } 
+	{ name = "10 seconds" checksum = time_10 time = 10 } 
 	{ name = "30 seconds" checksum = time_30 time = 30 } 
 	{ name = "1 minute" checksum = time_60 time = 60 } 
 	{ name = "2 minutes" checksum = time_120 time = 120 } 

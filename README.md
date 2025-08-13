@@ -19,7 +19,7 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 - Improved window handling allowing for custom resolutions and configurable windowing (4k resolution, (borderless) windowed mode)
 - Minimal launcher to configure game and mod settings
 - In game mod settings menu
- - Saves to and loads from thugsdl.ini automatically
+  - Saves to and loads from thugsdl.ini automatically
 - Stability fixes
 - Increased default clipping distance for large levels
 - Added pause buffer for speedrunning (menu to game transition with pause button held)
@@ -60,10 +60,10 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 - Openspy support
 - Replace GameSpy with OpenSpy in texts and images
 - Multiplayer Observe menu 
- - Choose next / previous on ollie / grab or arrow keys
- - Warp to players during freeskate
- - Toggle hud
- - Possible to start observe during games and rejoin freeskate after a round ended
+  - Choose next / previous on ollie / grab or arrow keys
+  - Warp to players during freeskate
+  - Toggle hud
+  - Possible to start observe during games and rejoin freeskate after a round ended
 - Menu to load online settings
 - Longer text input in quick chat
 - No chat reset after net games started / ended
@@ -76,9 +76,10 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 ## MODLOADER
 This allows you to load user-defined `.pre` and `.qb` files from a separate folder. 
 Activate "Additional Mods" in the launcher's General Page and define your folder path relative to the game folder: `data/pre/mymod`.
-- Place mod contents inside your mod folder at `C:\<thug2-install-path>\Game\Data\pre\mymod`  
-- Add the file `mod.ini` to your folder (it defines which original files you want to replace with your custom ones)
-- Level data has to be treated differently which is described below
+- Place mod contents inside your mod folder at `C:\<thug-install-path>\Game\Data\pre\mymod`  
+- Create a `mod.ini` file in that folder (it defines which original files you want to replace with your custom ones)
+
+**THUG-SDL uses its own script mods by default. Select "Disable Script Mods" in the launcher or your changes could get overwritten!**<br><br>
 
 Example mod.ini:
 ```
@@ -91,18 +92,20 @@ anims.pre=modded_anims.pre
 netanims.pre=modded_netanims.pre
 
 [QB]
-game\skater\airtricks.qb=modded_airtricks.qb
-levels\mainmenu\mainmenu_scripts.qb=modded_mainmenu_scripts.qb
+scripts\game\skater\airtricks.qb=modded_airtricks.qb
 scripts\game\skater\manualtricks.qb=modded_manualtricks.qb
+levels\mainmenu\mainmenu_scripts.qb=modded_mainmenu_scripts.qb
 ```
-It should look like this:
+The folder contents should look like this:
 <br>![image](https://github.com/atljp/thps-modding-resources/blob/main/img/custommod_screenshot1.png)
 
 ### Levels
-For this example it is assumed that level files are placed inside the `data\pre\mymod\Levels` folder.<br><br>
-The paths for levels are defined in the `scripts\Game\Levels.q` script.<br>
-To make the game load a level from your new folder, add the path to the pre file names and also add the `custom_folder` parameter:
+Level files cannot be loaded automatically from the mod folder without adjusting the `load_level` script.<br>
+There need to be additional checks for a "custom_folder" parameter, see the example file here: [Levels.q](https://github.com/atljp/THUG-SDL/blob/main/src/Mod/Levels.q)<br><br>
+When creating the level struct, add the paths and the "custom_folder" parameter like this:
 ```
+File: scripts\Game\Levels.q
+
 Level_AU = { 
 	 pre = "mymod\\Levels\\AU.pre"
 	 scnpre = "mymod\\Levels\\AUscn.pre"
@@ -112,37 +115,6 @@ Level_AU = {
 	 custom_folder = "mymod\\Levels\\"
 }
 ```
-
-
-For netgames, the "scn_net" and "scn_col" suffixes are automatically added to the pre filename in the `load_level` script. <br>It needs to be adjusted so that it adds the custom path for these files as well. **This only needs to be done once.**
-
-```
-SCRIPT load_level
-  [...]
-  IF gotparam custom_folder
-    printf "@@@ LOADING SCN_NET FROM CUSTOM PATH" 
-    LoadLevelPreFile ( <custom_folder> + <level> + "scn_net.pre" )
-  ELSE
-    LoadLevelPreFile ( <level> + "scn_net.pre" )
-  ENDIF
-  [...]
-  IF gotparam custom_folder
-    printf "@@@ UNLOADING SCN_NET FROM CUSTOM PATH" 
-    UnloadPreFile ( <custom_folder> + <level> + "scn_net.pre" ) dont_assert 
-  ELSE
-    UnloadPreFile ( <level> + "scn_net.pre" ) dont_assert 
-  ENDIF
-  [...]		
-  IF gotparam custom_folder
-    printf "@@@ LOADING COL_NET FROM CUSTOM PATH" 
-    LoadPipPre ( <custom_folder> + <level> + "col_net.pre" ) heap = bottomup 
-  ELSE
-    LoadPipPre ( <level> + "col_net.pre" ) heap = bottomup 
-  ENDIF
-  [...]
-ENDSCRIPT
-``` 
-An example file can be found here: [Levels.q](https://github.com/atljp/THUG-SDL/blob/main/src/Mod/Levels.q)
 
 ## TROUBLESHOOTING
 

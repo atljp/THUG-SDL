@@ -596,10 +596,16 @@ SCRIPT StandardGameFlowToggleView
 ENDSCRIPT
 
 SCRIPT StandardGameFlowBody 
+	IF NOT LevelIs Load_Sk5ed
+		M_ResetViewer
+	ENDIF
 	BEGIN 
 		GameFlow_StartRun 
 		GameFlow_PlayRun 
 		GameFlow_WaitEnd 
+		IF NOT LevelIs Load_Sk5ed
+			M_ResetViewer
+		ENDIF
 		IF GameModeEquals is_horse 
 			IF EndRunSelected 
 				BREAK 

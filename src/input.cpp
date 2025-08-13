@@ -115,7 +115,7 @@ uint8_t isInMenu = 0;
 // Check for key_on_screen flag: If a text entry prompt is on-screen, keybinds don't interfere with text entry confirmation/cancellation
 uint8_t* keyboard_on_screen = (uint8_t*)0x0076A7A6;
 
-// Create-A-Goal should technically be detected as a menu. By default is uses default keybindings
+// Create-A-Goal should technically be detected as a menu. By default it uses default keybindings
 uint8_t* isCAG = (uint8_t*)0x0076A7A4; //0x006A0350;
 
 SDL_GameController** controllerList;

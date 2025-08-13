@@ -35,6 +35,11 @@ struct settings {
 	int chatwaittime;
 	int additionalmods;
 	char additionalmods_folder[MAX_PATH];
+
+	int fov;
+	int singletapbp;
+	int freecamonselect;
+	int playernamesize;
 };
 
 struct displayMode {

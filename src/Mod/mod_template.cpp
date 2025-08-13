@@ -1,7 +1,9 @@
 #include "mod_template.h"
 /*
 * Add custom CFuncs or patches for your mod here!
-* The added CFuncs can be called from the scripts, in this example: MYMOD_ToggleWallrideAnywhere
+* The added CFuncs can be called from the scripts, in this example: 
+	MYMOD_ToggleWallrideAnywhere On
+	MYMOD_ToggleWallrideAnywhere Off
 * 
 * 
 * 

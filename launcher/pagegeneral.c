@@ -445,4 +445,9 @@ void set_general_settings(struct settings* mSettingsOut) {
 	mSettingsOut->chatwaittime = settings.chatwaittime;
 	mSettingsOut->additionalmods = settings.additionalmods;
 	strcpy(mSettingsOut->additionalmods_folder, settings.additionalmods_folder);
+
+	mSettingsOut->fov = settings.fov;
+	mSettingsOut->singletapbp = settings.singletapbp;
+	mSettingsOut->freecamonselect = settings.freecamonselect;
+	mSettingsOut->playernamesize = settings.playernamesize;
 }
