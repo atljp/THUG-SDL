@@ -582,90 +582,99 @@ SCRIPT launch_career_options_menu
 ENDSCRIPT
 
 SCRIPT create_career_options_menu 
-	dialog_box_exit 
-	pulse_blur speed = 2 start = 255 
-	IF GotParam change_gamemode 
-		<change_gamemode> 
-	ENDIF 
-	make_new_menu { 
-		pos = PAIR(120.00000000000, 100.00000000000) 
-		internal_just = [ center center ] 
-		menu_id = career_options_menu 
-		vmenu_id = career_options_vmenu 
-		menu_title = "" 
-		helper_text = generic_helper_text 
-	} 
-	FormatText ChecksumName = title_icon "%i_career_ops" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
-	build_theme_sub_title title_icon = <title_icon> title = "STORY OPTIONS" 
-	build_top_and_bottom_blocks 
-	make_mainmenu_3d_plane model = "mainmenu_bg\\mainmenu_bg.mdl" scale = PAIR(1.25000000000, 1.25000000000) pos = PAIR(360.00000000000, 217.00000000000) 
-	CreateScreenElement { 
-		Type = SpriteElement 
-		parent = current_menu_anchor 
-		id = mm_building 
-		texture = mm_building 
-		just = [ left top ] 
-		pos = PAIR(0.00000000000, 62.00000000000) 
-		scale = PAIR(1.20000004768, 1.25000000000) 
-		z_priority = -3 
-		alpha = 1 
-	} 
-	make_mainmenu_clouds 
-	kill_start_key_binding 
-	SetScreenElementProps { id = career_options_vmenu event_handlers = [ 
-			{ pad_back generic_menu_pad_back params = { callback = career_options_menu_exit new_menu_script = create_main_menu } } 
-		] 
-	} 
-	FormatText ChecksumName = bracket_texture "%i_sub_frame" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
-	IF NOT cd 
-		make_main_menu_item { text = #"Level Select" 
-			id = ss_play_level 
-			pad_choose_script = career_options_menu_exit 
-			pad_choose_params = { new_menu_script = launch_level_select_menu kill_all } 
+	IF ( m_using_custom_pre = 1 )
+		create_snazzy_dialog_box { 
+			title = #"INFORMATION"
+			text = #"It is currently not possible to play the story mode with script mods enabled.\\nPlease disable them in the launcher." text_dims = PAIR(400.00000000000, 0.00000000000) 
+			pad_back_script = career_options_menu_exit pad_back_params = { new_menu_script = launch_main_menu }
+			buttons = [ { font = small text = #"OK" pad_choose_script = career_options_menu_exit pad_choose_params = { new_menu_script = launch_main_menu } } ]
 		} 
-	ENDIF 
-	IF GetGlobalFlag flag = CAREER_STARTED 
-		GoalManager_GetCurrentChapterAndStage 
-		IF NOT ( ( <currentChapter> = 9 ) | ( <currentChapter> = 24 ) | ( <currentChapter> = 25 ) ) 
-			level = ( ( CHAPTER_LEVELS [ <currentChapter> ] ) . checksum ) 
-		ELSE 
-			level = load_nj 
+	ELSE
+		dialog_box_exit 
+		pulse_blur speed = 2 start = 255 
+		IF GotParam change_gamemode 
+			<change_gamemode> 
 		ENDIF 
-		make_main_menu_item { text = #"Continue Story" 
-			pad_choose_script = career_options_menu_exit 
-			pad_choose_params = { new_menu_script = story_options_change_level level = <level> kill_all continue_story } 
+		make_new_menu { 
+			pos = PAIR(120.00000000000, 100.00000000000) 
+			internal_just = [ center center ] 
+			menu_id = career_options_menu 
+			vmenu_id = career_options_vmenu 
+			menu_title = "" 
+			helper_text = generic_helper_text 
 		} 
-		make_main_menu_item { text = #"Start New Story" 
-			pad_choose_script = career_overwrite_warning 
-			pad_choose_params = { title = #"Create New" } 
+		FormatText ChecksumName = title_icon "%i_career_ops" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
+		build_theme_sub_title title_icon = <title_icon> title = "STORY OPTIONS" 
+		build_top_and_bottom_blocks 
+		make_mainmenu_3d_plane model = "mainmenu_bg\\mainmenu_bg.mdl" scale = PAIR(1.25000000000, 1.25000000000) pos = PAIR(360.00000000000, 217.00000000000) 
+		CreateScreenElement { 
+			Type = SpriteElement 
+			parent = current_menu_anchor 
+			id = mm_building 
+			texture = mm_building 
+			just = [ left top ] 
+			pos = PAIR(0.00000000000, 62.00000000000) 
+			scale = PAIR(1.20000004768, 1.25000000000) 
+			z_priority = -3 
+			alpha = 1 
 		} 
-		make_main_menu_item { text = #"Load Story" 
-			pad_choose_script = career_overwrite_warning 
-			pad_choose_params = { title = #"Load Story" pad_choose_script = launch_career_menu_load_game_sequence } 
+		make_mainmenu_clouds 
+		kill_start_key_binding 
+		SetScreenElementProps { id = career_options_vmenu event_handlers = [ 
+				{ pad_back generic_menu_pad_back params = { callback = career_options_menu_exit new_menu_script = create_main_menu } } 
+			] 
 		} 
-	ELSE 
-		make_main_menu_item { text = #"Continue Story" 
-			pad_choose_script = null_script 
-			not_focusable = not_focusable 
-		} 
-		make_main_menu_item { text = #"Start New Story" 
-			pad_choose_script = career_options_menu_exit 
-			pad_choose_params = { new_menu_script = create_career_difficulty_menu level = load_cas kill_all } 
-		} 
-		make_main_menu_item { text = #"Load Story" 
-			pad_choose_script = career_options_menu_exit 
-			pad_choose_params = { new_menu_script = launch_career_menu_load_game_sequence from_career } 
-		} 
-	ENDIF 
-	IF cd 
-		GetStackedScreenElementPos Y id = <id> offset = PAIR(180.00000000000, 0.00000000000) 
-	ELSE 
-		GetStackedScreenElementPos Y id = <id> offset = PAIR(180.00000000000, 20.00000000000) 
-	ENDIF 
-	FireEvent Type = focus target = current_menu_anchor 
-	IF GotParam from_skater_select 
-		SpawnScript shadow_skater_script2 params = { make_it_safe } 
-	ENDIF 
+		FormatText ChecksumName = bracket_texture "%i_sub_frame" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
+		IF NOT cd 
+			make_main_menu_item { text = #"Level Select" 
+				id = ss_play_level 
+				pad_choose_script = career_options_menu_exit 
+				pad_choose_params = { new_menu_script = launch_level_select_menu kill_all } 
+			} 
+		ENDIF 
+		IF GetGlobalFlag flag = CAREER_STARTED 
+			GoalManager_GetCurrentChapterAndStage 
+			IF NOT ( ( <currentChapter> = 9 ) | ( <currentChapter> = 24 ) | ( <currentChapter> = 25 ) ) 
+				level = ( ( CHAPTER_LEVELS [ <currentChapter> ] ) . checksum ) 
+			ELSE 
+				level = load_nj 
+			ENDIF 
+			make_main_menu_item { text = #"Continue Story" 
+				pad_choose_script = career_options_menu_exit 
+				pad_choose_params = { new_menu_script = story_options_change_level level = <level> kill_all continue_story } 
+			} 
+			make_main_menu_item { text = #"Start New Story" 
+				pad_choose_script = career_overwrite_warning 
+				pad_choose_params = { title = #"Create New" } 
+			} 
+			make_main_menu_item { text = #"Load Story" 
+				pad_choose_script = career_overwrite_warning 
+				pad_choose_params = { title = #"Load Story" pad_choose_script = launch_career_menu_load_game_sequence } 
+			} 
+		ELSE 
+			make_main_menu_item { text = #"Continue Story" 
+				pad_choose_script = null_script 
+				not_focusable = not_focusable 
+			} 
+			make_main_menu_item { text = #"Start New Story" 
+				pad_choose_script = career_options_menu_exit 
+				pad_choose_params = { new_menu_script = create_career_difficulty_menu level = load_cas kill_all } 
+			} 
+			make_main_menu_item { text = #"Load Story" 
+				pad_choose_script = career_options_menu_exit 
+				pad_choose_params = { new_menu_script = launch_career_menu_load_game_sequence from_career } 
+			} 
+		ENDIF 
+		IF cd 
+			GetStackedScreenElementPos Y id = <id> offset = PAIR(180.00000000000, 0.00000000000) 
+		ELSE 
+			GetStackedScreenElementPos Y id = <id> offset = PAIR(180.00000000000, 20.00000000000) 
+		ENDIF 
+		FireEvent Type = focus target = current_menu_anchor 
+		IF GotParam from_skater_select 
+			SpawnScript shadow_skater_script2 params = { make_it_safe } 
+		ENDIF 
+	ENDIF
 ENDSCRIPT
 
 SCRIPT career_options_menu_exit 

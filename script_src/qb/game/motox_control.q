@@ -27,6 +27,8 @@ m_playername_scale = 3
 m_playername_scale_real = 1.0
 m_freecam_select = 0
 
+m_using_custom_pre = 0
+
 
 SCRIPT M_RejoinNextGame
 	IF GotParam FromPauseMenu 
@@ -70,7 +72,7 @@ SCRIPT M_ObserveMode
 		ELSE 
 			IF IsTrue RejoinNextGame 
 				ExitSurveyorMode 
-				MakeSkaterGoto EnablePlayerInput 
+				MakeSkaterGoto M_EnablePlayerInput 
 			ENDIF 
 		ENDIF 
 		Change M_ObserveOn = 0 
@@ -580,6 +582,7 @@ SCRIPT M_ResetPhysics_or_ResetSkaters
 ENDSCRIPT
 
 SCRIPT M_InitializeMod
+	Change m_using_custom_pre = 1
 	// GAMERUNRESPAWNS
 	M_GetINIValue section = "Multiplayer" key = "GameRunRespawns" default = 1
 	IF NOT IsTrue <value> 

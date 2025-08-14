@@ -1229,7 +1229,7 @@ void __stdcall initManager() {
 
 	// Fast exit
 	registerEventHandler(handleQuitEvent);
-	if (!(inputsettings.savewindowposition)) patchCall((void*)0x004BFF1E, fastExit);
+	patchCall((void*)0x004BFF1E, fastExit);
 
 	if (inputsettings.isPs2Controls) {
 		patchPs2Buttons();

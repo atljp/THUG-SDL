@@ -232,6 +232,11 @@ ENDSCRIPT
 SCRIPT chosen_host_game 
 	change in_server_options = 0 
 	IF InNetGame 
+		IF IsTrue RejoinNextGame 
+			ExitSurveyorMode 
+			M_ClearAllObserveValues quit
+			Change RejoinNextGame = 0
+		ENDIF
 		network_start_selected 
 	ELSE 
 		IF InSplitScreenGame 
