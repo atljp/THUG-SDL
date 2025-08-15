@@ -121,6 +121,7 @@ ENDSCRIPT
 SCRIPT M_ClearAllObserveValues
 	m_observe_hud_set_visible 
 	Change M_ObserveOn = 0 
+	Change JoinedAsObserver = 0
 	M_ResetViewer 
 	IF NOT GotParam quit 
 		M_ObserveFunctionCall func = ObserveSelf 
