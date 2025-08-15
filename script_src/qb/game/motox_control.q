@@ -747,23 +747,22 @@ SCRIPT launch_mod_menu
 			id = menu_playernamesize
 			pad_choose_script = change_playernamesize
 		}
-		
-		// FREE CAM SELECT
-		M_GetINIValue section = "Miscellaneous" key = "FreeCamOnSelect" default = 0
-		IF IsTrue <value> 
-			hud_text = "Free Cam" 
-		ELSE 
-			hud_text = "Default"
-		ENDIF
-		theme_menu_add_item { text = "Select Button" 
-			extra_text = <hud_text> 
-			id = menu_selectbutton
-			pad_choose_script = toggle_gameitem pad_choose_params  = { freecamselect }
-		}
 	ELSE 
 		// SINGLEPLAYER OPTIONS
 		printf "Mod menu: Single player options"
 	ENDIF 
+	// FREE CAM SELECT
+	M_GetINIValue section = "Miscellaneous" key = "FreeCamOnSelect" default = 0
+	IF IsTrue <value> 
+		hud_text = "Free Cam" 
+	ELSE 
+		hud_text = "Default"
+	ENDIF
+	theme_menu_add_item { text = "Select Button" 
+		extra_text = <hud_text> 
+		id = menu_selectbutton
+		pad_choose_script = toggle_gameitem pad_choose_params  = { freecamselect }
+	}
 	// SET AND GOTO RESTART
 	IF ( restart_exists = 0 ) 
 		theme_menu_add_item text = "Set Restart" id = set_restart_custom pad_choose_script = m_set_custom_restart last_menu_item = 1
