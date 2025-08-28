@@ -46,6 +46,7 @@ EXPERT_MODE_NO_REVERTS = 0
 EXPERT_MODE_NO_WALKING = 0 
 EXPERT_MODE_NO_MANUALS = 0 
 perfect_landing_slop = 5 
+BSCount = 0
 SCRIPT DumpSkaterEventHandlerTable 
 	PrintEventHandlerTable 
 ENDSCRIPT
@@ -71,6 +72,7 @@ SCRIPT SkaterInit
 	NollieOff 
 	PressureOff 
 	NotifyBailDone 
+    Change BSCount = 0
 	Obj_KillSpawnedScript name = BailBoardControl 
 	SetSkaterCamLerpReductionTimer time = 0 
 	ClearLipCombos 
@@ -174,6 +176,9 @@ SCRIPT OnGroundExceptions
 			ClearException WallPush 
 		ENDIF 
 	ENDIF 
+    IF ( BSCount > 0 ) 
+        Change BSCount = 0
+	ENDIF
 	SetSkaterGroundTricks 
 	LaunchStateChangeEvent State = Skater_OnGround 
 	VibrateOff 
@@ -985,7 +990,28 @@ SCRIPT WaitFramesLateOllie
 ENDSCRIPT
 
 SCRIPT TrickOllie 
+    Change BSCount = ( BSCount + 1 )
 	Jump 
+    IF NOT InSplitscreenGame
+        IF ( IsTrue m_enable_bscounter )
+            create_panel_message { 
+                text = "Buttslap!" 
+                id = buttslap 
+                style = buttslap_style 
+                rgba = [ 50 120 200 128 ]
+                pos = PAIR(530.00000000000, 340.00000000000)
+                style = perfect_style
+            } 
+            FormatText TextName = text "x %a" a = BSCount 
+            create_panel_message { 
+                text = <text> 
+                id = buttslap2 
+                rgba = [ 50 120 200 128 ] 
+                pos = PAIR(512.00000000000, 360.00000000000)
+                style = perfect_style
+            } 
+        ENDIF 
+    ENDIF 
 ENDSCRIPT
 
 AirAnimParams = { Hold Blendperiod = 0.30000001192 NoRestart } 

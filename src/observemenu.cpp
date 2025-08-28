@@ -366,7 +366,7 @@ bool Obs_ObservePrev() {
 				printf("INVALID 120!!\n");
 				targetPlayer = getskaterinfo();
 			}
-
+			//Log::TypedLog(CHN_OBS, "TargetPlayer Name: %s, TargetPlayer state: %d, Address: 0x%08x\n", targetPlayer->m_Name, targetPlayer->playerstate, (uint32_t)targetPlayer);
 			if ((targetPlayer->playerstate & (mOBSERVER | mPENDING_PLAYER)) == 0) {
 				break;
 			}

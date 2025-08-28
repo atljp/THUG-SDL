@@ -28,7 +28,8 @@ m_playername_scale_real = 1.0
 m_freecam_select = 0
 
 m_using_custom_pre = 0
-
+m_enable_bscounter = 0
+m_enable_landpivots = 0
 
 SCRIPT M_RejoinNextGame
 	IF GotParam FromPauseMenu 
@@ -646,7 +647,16 @@ SCRIPT M_InitializeMod
 	IF IsTrue <value> 
 		change m_freecam_select = 1
 	ENDIF
-
+    // BSCOUNTER
+    M_GetINIValue section = "Miscellaneous" key = "BSCounter" default = 0
+	IF IsTrue <value> 
+		change m_enable_bscounter = 1
+	ENDIF
+    // BHRA
+    M_GetINIValue section = "Miscellaneous" key = "BHRA" default = 0
+	IF IsTrue <value> 
+		change m_enable_landpivots = 1
+	ENDIF
 	//Aspect Ratio, manual bps, wp input, bhra
 ENDSCRIPT
 
@@ -750,8 +760,32 @@ SCRIPT launch_mod_menu
 		}
 	ELSE 
 		// SINGLEPLAYER OPTIONS
-		printf "Mod menu: Single player options"
+		printf "Mod menu: Single player options: Empty"
 	ENDIF 
+    // BUTTSLAP COUNTER
+    M_GetINIValue section = "Miscellaneous" key = "BSCounter" default = 0
+    IF IsTrue <value> 
+        hud_text = "On" 
+    ELSE 
+        hud_text = "Off"
+    ENDIF
+    theme_menu_add_item { text = "Buttslap Counter" 
+        extra_text = <hud_text> 
+        id = menu_bscounter
+        pad_choose_script = toggle_gameitem pad_choose_params  = { bscounter }
+    }
+    // BHRA
+    M_GetINIValue section = "Miscellaneous" key = "BHRA" default = 0
+    IF IsTrue <value> 
+        hud_text = "On" 
+    ELSE 
+        hud_text = "Off"
+    ENDIF
+    theme_menu_add_item { text = "Land Pivots" 
+        extra_text = <hud_text> 
+        id = menu_bhra
+        pad_choose_script = toggle_gameitem pad_choose_params  = { bhra }
+    }
 	// FREE CAM SELECT
 	M_GetINIValue section = "Miscellaneous" key = "FreeCamOnSelect" default = 0
 	IF IsTrue <value> 
@@ -811,6 +845,30 @@ SCRIPT toggle_gameitem
 			Change m_freecam_select = 1
 		ENDIF
 	ENDIF
+    IF GotParam bscounter
+        M_GetINIValue section = "Miscellaneous" key = "BSCounter" default = 0
+        IF IsTrue <value>
+            SetScreenElementProps id = { menu_bscounter child = 3 } text = "Off" 
+            M_SetINIValue section = "Miscellaneous" key = "BSCounter" value = 0
+            Change m_enable_bscounter = 0
+        ELSE 
+            SetScreenElementProps id = { menu_bscounter child = 3 } text = "On" 
+            M_SetINIValue section = "Miscellaneous" key = "BSCounter" value = 1				
+            Change m_enable_bscounter = 1
+        ENDIF
+    ENDIF
+    IF GotParam bhra
+        M_GetINIValue section = "Miscellaneous" key = "BHRA" default = 0
+        IF IsTrue <value>
+            SetScreenElementProps id = { menu_bhra child = 3 } text = "Off" 
+            M_SetINIValue section = "Miscellaneous" key = "BHRA" value = 0
+            Change m_enable_landpivots = 0
+        ELSE 
+            SetScreenElementProps id = { menu_bhra child = 3 } text = "On" 
+            M_SetINIValue section = "Miscellaneous" key = "BHRA" value = 1				
+            Change m_enable_landpivots = 1
+        ENDIF
+    ENDIF
 ENDSCRIPT
 
 SCRIPT menu_camera_fov_get_string 

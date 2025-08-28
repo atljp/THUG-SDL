@@ -176,4 +176,5 @@ When building the launcher, make sure to set the SubSystem to Windows. In Visual
 - %.gone.: Clownjob'd mod for THUG which provided useful insights
 - Zedek the Plague Doctor ™: LazyStruct and LazyArray classes, Logger and ExceptionHandler and lots of script-related helper code
 - Hardronix: DirectX9 and general code support
+- Edem: Gameplay and script support
 - Thanks to everyone who tested this mod during development!
