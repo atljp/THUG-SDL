@@ -250,10 +250,11 @@ ENDSCRIPT
 
 SCRIPT SetSkaterAirManualTricks 
 	IF NOT GetGlobalFlag flag = FLAG_EXPERT_MODE_NO_MANUALS 
-		IF NOT ( ( inNetGame ) & ( GetGlobalFlag flag = FLAG_G_EXPERT_MODE_NO_MANUALS ) ) 
-			SetManualTricks special = SpecialManualTricks Manualtricks 
-		ENDIF 
-	ENDIF 
+    IF InAir 
+        SetManualTricks special = SpecialManualTricks Manualtricks 
+    ELSE 
+        SetManualTricks LandPivotManualTricks 
+    ENDIF 
 ENDSCRIPT
 
 SCRIPT SetSkaterAirTricks 
@@ -1145,9 +1146,15 @@ SCRIPT Land2 RevertTime = 5
 			CopingHit Terrain = 3 
 		ENDIF 
 	ELSE 
+		IF ( IsTrue m_enable_landpivots )
+            GetSpeed 
+            IF ( <Speed> > 250 ) 
+                SetExtraTricks tricks = LandPivot Duration = <RevertTime> 
+            ENDIF 
+        ENDIF 
 		DoNextManualTrick FromAir 
 	ENDIF 
-	Vibrate Actuator = 1 Percent = 80 Duration = 0.10000000149 
+	//Vibrate Actuator = 1 Percent = 80 Duration = 0.10000000149 
 	GetAirtime 
 	SpawnClothingLandScript 
 	IF Crouched 

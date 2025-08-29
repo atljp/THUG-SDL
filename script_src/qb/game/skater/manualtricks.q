@@ -40,6 +40,11 @@ ManualTricks =
 	{ Trigger = { InOrder , Up , Down , 400 } Duration = 700 Trick_Manual } 
 	{ Trigger = { InOrder , Down , Up , 400 } Duration = 700 Trick_NoseManual } 
 ] 
+LandPivotManualTricks = 
+[ 
+	{ Trigger = { InOrder , Up , Down , 220 } Trick_Manual } 
+	{ Trigger = { InOrder , Down , Up , 220 } Trick_Manual } 
+] 
 GroundManualTricks = 
 [ 
 	{ Trigger = { InOrder , Up , Down , 220 } Trick_Manual } 
@@ -262,18 +267,24 @@ SCRIPT Manual BlendPeriod = 0.30000001192 Speed = 1.00000000000
 			DoBalanceTrick ButtonA = Up ButtonB = Down Type = Manual Tweak = 1 
 		ENDIF 
 	ENDIF 
-	IF GotParam FromAir 
-		IF backwards 
-			FlipAndRotate 
-			printf "PLAYING FLIPPED FROM MANUAL SCRIPT =======================================" 
-			PlayAnim Anim = <FromAirAnim> BlendPeriod = 0.00000000000 Speed = <Speed> 
-		ELSE 
-			PlayAnim Anim = <FromAirAnim> BlendPeriod = 0.00000000000 Speed = <Speed> 
-		ENDIF 
-	ELSE 
-		printf " PLAYING INIT ANIM >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" 
-		PlayAnim Anim = <InitAnim> BlendPeriod = 0.30000001192 Speed = <Speed> 
+	IF GotParam LandPivotManual 
+		printf "LAND PIVOT MANUAL =======================================" 
+		SetManualTricks Special = SpecialManualTricks ManualTricks
 	ENDIF 
+    IF NOT GotParam SkipInitAnim
+        IF GotParam FromAir 
+            IF backwards 
+                FlipAndRotate 
+                printf "PLAYING FLIPPED FROM MANUAL SCRIPT =======================================" 
+                PlayAnim Anim = <FromAirAnim> BlendPeriod = 0.00000000000 Speed = <Speed> 
+            ELSE 
+                PlayAnim Anim = <FromAirAnim> BlendPeriod = 0.00000000000 Speed = <Speed> 
+            ENDIF 
+        ELSE 
+            printf " PLAYING INIT ANIM >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" 
+            PlayAnim Anim = <InitAnim> BlendPeriod = 0.30000001192 Speed = <Speed> 
+        ENDIF 
+    ENDIF
 	IF Obj_FlagSet FLAG_SKATER_MANUALCHEESE 
 		IF AirTimeLessThan 1 second 
 			IF GotParam CheckCheese 

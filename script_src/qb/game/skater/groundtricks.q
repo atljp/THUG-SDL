@@ -31,6 +31,10 @@ Reverts =
 	{ Trigger = { Press , R2 , 200 } TrickSlot = ExtraSlot1 NGC_Trigger = { Press , R1 , 200 } } 
 	{ Trigger = { Press , L2 , 200 } TrickSlot = ExtraSlot2 NGC_Trigger = { Press , L1 , 200 } } 
 ] 
+LandPivot = 
+[ 
+	{ Trigger = { Press , R2 , 200 } Scr = Revert Params = { LandPivot } } 
+] 
 SCRIPT SetExtraTricks_Reverts duration = 20 
 	IF NOT GetGlobalFlag flag = FLAG_EXPERT_MODE_NO_REVERTS 
 		IF NOT ( ( inNetGame ) & ( GetGlobalFlag flag = FLAG_G_EXPERT_MODE_NO_REVERTS ) ) 
@@ -41,6 +45,7 @@ ENDSCRIPT
 
 SCRIPT Revert FSName = #"FS Revert" BSName = #"BS Revert" FSAnim = RevertFS BSAnim = RevertBS 
 	OnExitRun ExitRevert 
+    //InRevert 
 	ClearLipCombos 
 	KillExtraTricks 
 	SetTrickScore 100 
@@ -55,43 +60,75 @@ SCRIPT Revert FSName = #"FS Revert" BSName = #"BS Revert" FSAnim = RevertFS BSAn
 	ClearException Ollied 
 	SetSpecialFriction [ 0 , 0 , 5 , 10 , 15 , 25 ] duration = 0.66699999571 
 	CanKickOff 
-	SetQueueTricks NoTricks 
-	SetSkaterAirManualTricks 
+	SetQueueTricks SkateToWalkTricks
 	NollieOff 
 	PressureOff 
-	IF Obj_FlagSet FLAG_SKATER_REVERTFS 
-		Obj_ClearFlag FLAG_SKATER_REVERTFS 
-		PlayAnim Anim = <FSAnim> 
-		SetTrickName <FSName> 
-	ELSE 
-		IF Obj_FlagSet FLAG_SKATER_REVERTBS 
-			Obj_ClearFlag FLAG_SKATER_REVERTBS 
-			PlayAnim Anim = <BSAnim> 
-			SetTrickName <BSName> 
+	IF GotParam LandPivot 
+		PlayAnim Anim = Gturn 
+		IF InAir 
+			SetTrickName #"Bunny Hop Revert" 
 		ELSE 
-			IF LastSpinWas Frontside 
-				PlayAnim Anim = <FSAnim> 
-				SetTrickName <FSName> 
-			ELSE 
+			SetTrickName #"Land Pivot" 
+		ENDIF 
+        Obj_SetFlag FLAG_SKATER_IN_LAND_PIVOT
+	ELSE 
+        IF Inair 
+			FSName = #"Bunny Hop Revert" 
+			BSName = #"Bunny Hop Revert" 
+		ENDIF 
+		IF Obj_FlagSet FLAG_SKATER_REVERTFS 
+			Obj_ClearFlag FLAG_SKATER_REVERTFS 
+			PlayAnim Anim = <FSAnim> 
+			SetTrickName <FSName> 
+		ELSE 
+			IF Obj_FlagSet FLAG_SKATER_REVERTBS 
+				Obj_ClearFlag FLAG_SKATER_REVERTBS 
 				PlayAnim Anim = <BSAnim> 
 				SetTrickName <BSName> 
+			ELSE 
+				IF LastSpinWas Frontside 
+					PlayAnim Anim = <FSAnim> 
+					SetTrickName <FSName> 
+				ELSE 
+					PlayAnim Anim = <BSAnim> 
+					SetTrickName <BSName> 
+				ENDIF 
 			ENDIF 
 		ENDIF 
 	ENDIF 
+    SetSkaterAirManualTricks
 	Display Blockspin 
 	FlipAfter 
 	BoardRotateAfter 
 	BlendPeriodOut 0.00000000000 
 	Wait 0.10000000149 seconds 
 	SetException Ex = Ollied Scr = Ollie 
-	ResetLandedFromVert 
-	WaitAnimFinished 
+	IF NOT GotParam LandPivot 
+		ResetLandedFromVert 
+	ENDIF 
+	//WaitAnim 100 Percent 
+    WaitAnimFinished
 	CanKickOn 
-	DoNextManualTrick FromAir 
+    IF GotParam LandPivot 
+		PlayAnim Anim = manual_range From = middle BlendPeriod = 0.00000000000 
+		DoNextManualTrick SkipInitAnim LandPivotManual 
+	ELSE 
+		DoNextManualTrick FromAir 
+	ENDIF 
+	DoNextTrick
 	OnGroundExceptions 
 	LandSkaterTricks 
 	ClearEventBuffer 
-	PlayAnim Anim = CrouchIdle BlendPeriod = 0.30000001192 
+	IF GotParam LandPivot 
+		PlayAnim Anim = PutDownManual BlendPeriod = 0.30000001192 speed = 2.50000000000 
+	ELSE 
+		IF NOT held X 
+			PlayAnim Anim = CrouchIdleToIdle BlendPeriod = 0.00000000000 speed = 0.69999998808 
+		ELSE 
+			PlayAnim Anim = CrouchIdle BlendPeriod = 0.00000000000 From = 0.00000000000 To = 0.30000001192 seconds 
+			BlendPeriodOut 0.30000001192 
+		ENDIF 
+	ENDIF 
 	WaitAnimWhilstChecking AndManuals 
 	Goto OnGroundAI 
 ENDSCRIPT
