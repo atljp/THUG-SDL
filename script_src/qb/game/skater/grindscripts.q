@@ -1,6 +1,24 @@
 
+
+SCRIPT M_SpinkeyDebounce 
+	SWITCH ( m_dd_buttons ) // Swap R1/L1 with R2/L2
+		CASE 6 
+			Debounce L1 time = 0.10000000149 clear = 1 
+			Debounce R1 time = 0.10000000149 clear = 1 
+		CASE 7 
+            Debounce L2 time = 0.10000000149 clear = 1 
+			Debounce R2 time = 0.10000000149 clear = 1 
+		CASE R1_R2 
+			Debounce R1 time = 0.10000000149 clear = 1 
+			Debounce R2 time = 0.10000000149 clear = 1 
+		CASE L1_L2 
+			Debounce L1 time = 0.10000000149 clear = 1 
+			Debounce L2 time = 0.10000000149 clear = 1 
+	ENDSWITCH 
+ENDSCRIPT
+
 SCRIPT SkateInOrBail moveleft = 1 moveright = -1 movey = -5 
-	GetTags 
+   	GetTags 
 	NoRailTricks 
 	StopBalanceTrick 
 	KillExtraTricks 
@@ -10,31 +28,88 @@ SCRIPT SkateInOrBail moveleft = 1 moveright = -1 movey = -5
 	OnExceptionRun SkateInOrBail_Out 
 	SetQueueTricks NoTricks 
 	ClearManualTrick 
-	IF GotParam Fallingright 
-		Goto SkateIn_Right Params = { <...> } 
-	ENDIF 
-	IF GotParam FallingLeft 
-		Goto SkateIn_Left Params = { <...> } 
-	ENDIF 
-	IF GotParam GrindRelease 
-		IF Held Right 
-			Goto SkateIn_Right Params = { <...> } 
-		ENDIF 
-		IF Held Left 
-			Goto SkateIn_Left Params = { <...> } 
-		ENDIF 
-		IF SkateInAble Left 
-			Goto SkateIn_Left Params = { <...> } 
-		ELSE 
-			Goto SkateIn_Right Params = { <...> } 
-		ENDIF 
-	ENDIF 
-	printf "Missing a FallingLeft or FallingRight ?" 
-	IF GotParam GrindBail 
-		Goto <GrindBail> 
-	ELSE 
-		Goto FiftyFiftyFall 
-	ENDIF 
+    IF ( IsTrue m_directional_dd )
+        IF ( IsTrue m_dd_sping_lag )
+            M_SpinkeyDebounce 
+        ENDIF 
+        IF GotParam Fallingright 
+            movex = -5 
+            movey = 5 
+            Goto SkateIn_Right_Directional Params = { <...> } 
+        ENDIF 
+        IF GotParam FallingLeft 
+            movex = 5 
+            movey = 5 
+            Goto SkateIn_Left_Directional Params = { <...> } 
+        ENDIF 
+        IF GotParam GrindRelease 
+            IF Held Right 
+                movex = -5 
+                movey = 5 
+                Goto SkateIn_Right_Directional Params = { <...> } 
+            ENDIF 
+            IF Held Left 
+                movex = 5 
+                movey = 5 
+                Goto SkateIn_Left_Directional Params = { <...> } 
+            ENDIF 
+            IF Held R2
+                movex = -5 
+                movey = 5 
+                goto SkateIn_Right_Directional params = { <...> }
+            ENDIF
+            IF Held L2
+                movex = 5 
+                movey = 5 
+                goto SkateIn_Left_Directional params = { <...> }
+            ENDIF
+            IF Held black
+                movex = -5 
+                movey = 5 
+                goto SkateIn_Right_Directional params = { <...> }
+            ENDIF
+            IF Held white
+                movex = 5 
+                movey = 5 
+                goto SkateIn_Left_Directional params = { <...> }
+            ENDIF
+            IF SkateInAble Left 
+                movex = 5 
+                movey = 5 
+                Goto SkateIn_Left_Directional Params = { <...> } 
+            ELSE 
+                movex = -5 
+                movey = 5
+                Goto SkateIn_Right_Directional Params = { <...> } 
+            ENDIF 
+        ENDIF 
+    ELSE
+        IF GotParam Fallingright 
+            Goto SkateIn_Right Params = { <...> } 
+        ENDIF 
+        IF GotParam FallingLeft 
+            Goto SkateIn_Left Params = { <...> } 
+        ENDIF 
+        IF GotParam GrindRelease 
+            IF Held Right 
+                Goto SkateIn_Right Params = { <...> } 
+            ENDIF 
+            IF Held Left 
+                Goto SkateIn_Left Params = { <...> } 
+            ENDIF 
+            IF SkateInAble Left 
+                Goto SkateIn_Left Params = { <...> } 
+            ELSE 
+                Goto SkateIn_Right Params = { <...> } 
+            ENDIF 
+        ENDIF 
+    ENDIF
+    printf "Missing a FallingLeft or FallingRight ?" 
+    IF GotParam GrindBail 
+        Goto <GrindBail> 
+    ELSE 
+        Goto FiftyFiftyFall 
+    ENDIF 
 ENDSCRIPT
 
 SCRIPT SkateIn_Right 
@@ -93,6 +168,90 @@ SCRIPT SkateIn_Left
 		printf "Not skateinable left >>>>>>>>>>>>>>>>>>>>>>>>" 
 		Move y = <movey> 
 		Move x = <moveright> 
+		SkateIn_Bail <...> 
+	ENDIF 
+ENDSCRIPT
+
+SCRIPT SkateIn_Right_Directional 
+	IF skateinable RIGHT
+		skatein = 1
+	ELSE
+		IF GotParam Swerve
+			IF nearground right
+				skatein = 1
+				params = { no_land_anim = 1 }
+				Obj_MoveToPos <NearGroundPos> 
+			ENDIF
+		ENDIF
+	ENDIF
+	IF GotParam skatein 
+		printf "SkateInable RIGHT >>>>>>>>>>>>>>>>>>>>>>>>" 
+		SetLandedFromVert 
+		SetState ground 
+		Move y = -5 
+		Move x = -5 
+		OrientToNormal 
+		Rotate y = -30 Duration = 0.20000000298 seconds 
+		OnGroundExceptions NoEndRun 
+		ClearException GroundGone 
+		OnExceptionRun SkateInOrBail_Out 
+		SetQueueTricks NoTricks 
+		SetManualTricks NoTricks 
+		SetExtraTricks_Reverts 
+		IF GotParam OutAnim 
+			PlayAnim Anim = <OutAnim> BlendPeriod = 0.30000001192 
+		ELSE 
+			PlayAnim Anim = <initanim> Backwards BlendPeriod = 0.30000001192 
+		ENDIF 
+		WaitAnimWhilstChecking 
+		Goto SkateInLand 
+	ELSE 
+		Move y = <movey> 
+        wait 1 frame
+		Move x = -5 
+		SkateIn_Bail <...> 
+	ENDIF
+ENDSCRIPT
+
+SCRIPT SkateIn_Left_Directional
+   IF skateinable left
+        skatein = 1
+    ELSE
+        IF GotParam Swerve
+            IF nearground left
+                skatein = 1
+                params = { no_land_anim = 1 }
+                Obj_MoveToPos <NearGroundPos> 
+            ENDIF
+        ENDIF
+    ENDIF
+	IF GotParam skatein
+		SetLandedFromVert 
+		printf "SkateInable LEFT >>>>>>>>>>>>>>>>>>>>>>>>" 
+		SetState ground 
+		Move x = 5 
+		Move y = -5 
+		OrientToNormal 
+		Rotate y = 30 Duration = 0.20000000298 seconds 
+		SetState ground 
+		OnGroundExceptions NoEndRun 
+		ClearException GroundGone 
+		OnExceptionRun SkateInOrBail_Out 
+		SetQueueTricks NoTricks 
+		SetManualTricks NoTricks 
+		SetExtraTricks_Reverts 
+		IF GotParam OutAnim 
+			PlayAnim Anim = <OutAnim> BlendPeriod = 0.30000001192 
+		ELSE 
+			PlayAnim Anim = <initanim> Backwards BlendPeriod = 0.30000001192 
+		ENDIF 
+		WaitAnimWhilstChecking 
+		Goto SkateInLand 
+	ELSE 
+		printf "Not skateinable left >>>>>>>>>>>>>>>>>>>>>>>>" 
+		Move y = <movey> 
+        wait 1 frame
+		Move x = 5
 		SkateIn_Bail <...> 
 	ENDIF 
 ENDSCRIPT
@@ -168,7 +327,7 @@ Extra_BS_Grinds =
 	{ Trigger = { InOrder , Square , Circle , 300 } Scr = Trick_5_0_BS Params = { Name = #"BS 5-0" IsExtra = yes } } 
 ] 
 GrindRelease = 
-[ 
+[    	
 	{ Trigger = { Press , R2 , 100 } Scr = SkateInOrBail Params = { GrindRelease GrindBail = Airborne moveright = -5 movey = 5 } } 
 ] 
 GRINDTAP_TIME = 1000 

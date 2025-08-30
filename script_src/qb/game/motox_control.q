@@ -30,6 +30,9 @@ m_freecam_select = 0
 m_using_custom_pre = 0
 m_enable_bscounter = 0
 m_enable_landpivots = 0
+m_dd_buttons = 0
+m_dd_sping_lag = 0
+m_directional_dd = 0
 
 SCRIPT M_RejoinNextGame
 	IF GotParam FromPauseMenu 
@@ -657,6 +660,18 @@ SCRIPT M_InitializeMod
 	IF IsTrue <value> 
 		change m_enable_landpivots = 1
 	ENDIF
+    
+    // DROP DOWNS
+    M_GetINIValue section = "Controls" key = "DropDownControl" default = 0
+    IF ( ( <value> ) > 5 )
+        change m_dd_buttons = <value>
+        change m_directional_dd = 1
+    ENDIF
+    M_GetINIValue section = "Controls" key = "DDSpinLag" default = 0
+    IF IsTrue <value>
+        change m_dd_sping_lag = 1
+    ENDIF
+    
 	//Aspect Ratio, manual bps, wp input, bhra
 ENDSCRIPT
 

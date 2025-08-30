@@ -120,6 +120,11 @@ target_include_directories(tsdl-launcher PUBLIC
 	${INCLUDES}
 )
 
+set_target_properties(tsdl-launcher 
+	PROPERTIES 
+	    OUTPUT_NAME "THUG-SDL Launcher"
+)
+
 add_executable(thugsdlpatcher)
 
 target_sources(thugsdlpatcher PUBLIC

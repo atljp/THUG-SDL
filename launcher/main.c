@@ -90,6 +90,7 @@ void defaultSettings() {
 
 	controls.ps2_controls = 1;
 	controls.dropdownkey = 1;
+	controls.ddspinlag = 0;
 	controls.laddergrabkey = 1;
 	controls.cavemankey = 1;
 	controls.menubuttons = 1;
@@ -267,6 +268,7 @@ void defaultSettings_tabonly(int tab) {
 	else if (tab == 3) {
 		controls.ps2_controls = 1;
 		controls.dropdownkey = 1;
+		controls.ddspinlag = 0;
 		controls.laddergrabkey = 1;
 		controls.cavemankey = 1;
 		controls.menubuttons = 1;
@@ -328,6 +330,7 @@ void loadSettings() {
 	// CONTROLS
 	controls.ps2_controls = getIniBool("Controls", "Ps2Controls", 1, configFile);
 	controls.dropdownkey = GetPrivateProfileInt("Controls", "DropDownControl", 1, configFile);
+	controls.ddspinlag = GetPrivateProfileInt("Controls", "DDSpinLag", 0, configFile);
 	controls.laddergrabkey = GetPrivateProfileInt("Controls", "LadderGrabKey", 1, configFile);
 	controls.cavemankey = GetPrivateProfileInt("Controls", "CavemanKey", 1, configFile);
 	controls.menubuttons = GetPrivateProfileInt("Controls", "MenuButtons", 1, configFile);
@@ -446,6 +449,7 @@ void saveSettings() {
 
 	writeIniBool("Controls", "PS2Controls", mControls.ps2_controls, configFile);
 	writeIniInt("Controls", "DropDownControl", mControls.dropdownkey, configFile);
+	writeIniInt("Controls", "DDSpinLag", mControls.ddspinlag, configFile);
 	writeIniInt("Controls", "CavemanKey", mControls.cavemankey, configFile);
 	writeIniInt("Controls", "LadderGrabKey", mControls.laddergrabkey, configFile);
 	writeIniInt("Controls", "MenuButtons", mControls.menubuttons, configFile);

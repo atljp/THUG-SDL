@@ -85,6 +85,7 @@ struct keybinds {
 struct controls {
 	int ps2_controls;
 	int dropdownkey;
+	int ddspinlag;
 	int laddergrabkey;
 	int cavemankey;
 	int menubuttons;
@@ -197,6 +198,7 @@ struct control_page {
 	pgui_control* invertryp1;
 	pgui_control* disablerxp1;
 	pgui_control* disableryp1;
+	pgui_control* ddspinlag;
 };
 
 

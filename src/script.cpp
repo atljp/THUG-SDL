@@ -426,7 +426,7 @@ void editScriptsInMemory() {
 		// This loads M_InitializeMod which sets up all the script stuff
 		removeScript(0xAE754239); /*load_permanent_assets*/
 		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)load_permanent_assets_new);
-		sCreateScriptSymbol_Wrapper(0x6CB, 0xAE754239, contentsChecksum, (uint8_t*)load_permanent_assets_new, "game\\startup.qb");		
+		sCreateScriptSymbol_Wrapper(0x6CB, 0xAE754239, contentsChecksum, (uint8_t*)load_permanent_assets_new, "game\\startup.qb");
 	}	
 }
 
@@ -470,10 +470,11 @@ void setDropDownKeys() {
 
 	PC controls: white = L2 / black = R2 / L1 = L1 / R1 = R1
 	*/
-	if (mSettings.dropdowncontrol && mSettings.dropdowncontrol < 6)
+	if (mSettings.dropdowncontrol && mSettings.dropdowncontrol < 8)
 	{
 		Script::LazyStruct* grindrelease = Script::LazyStruct::s_create();
 		Script::LazyStruct* trigger = Script::LazyStruct::s_create();
+		Script::LazyStruct* alt_trigger = Script::LazyStruct::s_create();
 		Script::LazyStruct* params = Script::LazyStruct::s_create();
 
 		if (mSettings.isPs2Controls)
@@ -501,6 +502,22 @@ void setDropDownKeys() {
 				/*Set L2*/
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
 				trigger->AddChecksum(0, 0xBFB9982B); /*L2*/
+			}
+			else if (mSettings.dropdowncontrol == 6)
+			{
+				/*Set L2 or R2*/
+				trigger->AddChecksum(0, 0x823B8342); /*press*/
+				trigger->AddChecksum(0, 0xBFB9982B); /*L2*/
+				alt_trigger->AddChecksum(0, 0x823B8342); /*press*/
+				alt_trigger->AddChecksum(0, 0x6BF8A7F4); /*R2*/
+			}
+			else if (mSettings.dropdowncontrol == 7)
+			{
+				/*Set L1 or R1*/
+				trigger->AddChecksum(0, 0x823B8342); /*press*/
+				trigger->AddChecksum(0, 0x26B0C991); /*L1*/
+				alt_trigger->AddChecksum(0, 0x823B8342); /*press*/
+				alt_trigger->AddChecksum(0, 0xF2F1F64E); /*R1*/
 			}
 		}
 		else {
@@ -536,9 +553,26 @@ void setDropDownKeys() {
 				trigger->AddChecksum(0, 0x823B8342); /*press*/
 				trigger->AddChecksum(0, 0x6BF8A7F4); /*R2*/
 			}
+			else if (mSettings.dropdowncontrol == 6)
+			{
+				/*Set L2 or R2*/
+				trigger->AddChecksum(0, 0x823B8342); /*press*/
+				trigger->AddChecksum(0, 0xBFB9982B); /*L2*/
+				alt_trigger->AddChecksum(0, 0x823B8342); /*press*/
+				alt_trigger->AddChecksum(0, 0x6BF8A7F4); /*R2*/
+			}
+			else if (mSettings.dropdowncontrol == 7)
+			{
+				/*Set L1 or R1*/
+				trigger->AddChecksum(0, 0x823B8342); /*press*/
+				trigger->AddChecksum(0, 0xBD30325B); /*white*/
+				alt_trigger->AddChecksum(0, 0x823B8342); /*press*/
+				alt_trigger->AddChecksum(0, 0x767A45D7); /*black*/
+			}
 		}
 
 		trigger->AddInteger(0, 100);
+		alt_trigger->AddInteger(0, 100);
 
 		params->AddChecksum(0, 0x9077508B); /*GrindRelease*/
 		params->AddChecksum(0xA7E24442, 0xCF3C89F7); /*GrindBail, Airborne*/
@@ -546,10 +580,11 @@ void setDropDownKeys() {
 		params->AddInteger(0x5A151ED3, 5); /*MoveY*/
 
 		grindrelease->AddStructure(0xE594F0A2, trigger); /*Trigger*/
+		grindrelease->AddStructure(0x68B74085, alt_trigger); /*alt_trigger*/
 		grindrelease->AddChecksum(0xA6D2D890, 0x90E528CA); /*Scr, SkateOrInBail*/
 		grindrelease->AddStructure(0x7031F10C, params); /*params*/
 
-		Script::LazyArray* pref_dropdown = GlobalGetArray_Native(0x9077508B); // , 0, grindrelease); /*GrindRelease*/
+		Script::LazyArray* pref_dropdown = GlobalGetArray_Native(0x9077508B); /*GrindRelease*/
 		pref_dropdown->SetStructure(0, grindrelease);
 	}
 }

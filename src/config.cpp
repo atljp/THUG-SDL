@@ -168,6 +168,9 @@ void InitPatch() {
 		case 3: Log::TypedLog(CHN_DLL, "Drop Down button\t\t\t\t\tR1\n"); break;
 		case 4: Log::TypedLog(CHN_DLL, "Drop Down button\t\t\t\t\tL2\n"); break;
 		case 5: Log::TypedLog(CHN_DLL, "Drop Down button\t\t\t\t\tR2\n"); break;
+		case 6: Log::TypedLog(CHN_DLL, "Drop Down button\t\t\t\t\tL2 or R2\n"); break;
+		case 7: Log::TypedLog(CHN_DLL, "Drop Down button\t\t\t\t\tL1 or R1\n"); break;
+		default: Log::TypedLog(CHN_DLL, "Drop Down button\t\t\t\t\tPC default: L1+R1, Ps2 default: R2\n"); break;
 	}
 	switch (laddergrabcontrol) {
 		case 1: Log::TypedLog(CHN_DLL, "Ladder grab button\t\t\t\tDefault: R1\n"); break;

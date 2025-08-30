@@ -20,6 +20,8 @@ char* dropdown_options[] = {
 	"R1",
 	"L2",
 	"R2",
+	"L2 or R2",
+	"L1 or R1",
 	//1 = default, 2 = L1, 3 = R1, 4 = L2, 5 = R2 ; PC default: L1+R1, Ps2 default: R2
 };
 
@@ -83,14 +85,17 @@ void build_control_page(pgui_control* parent) {
 	control_page.caveman_helper = pgui_label_create(8, (24 * 2), 180, 160, "- PC and Xbox default: R1 or L1\n-- Black or White on Xbox (Duke)\n-- RB or LB on Xbox\n-- Caveman1 or Caveman2 on PC\n- Ps2 default: L1+R1", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
 
 	control_page.dropdownkey = pgui_label_create(8, 16 + (24 * 5), 70, 32, "Dropdown button(s):", PGUI_LABEL_JUSTIFY_CENTER, buttons_groupbox);
-	control_page.dropdownkey_combobox = pgui_combobox_create(8 + 88, 16 + 4 + (24 * 5), 80, 24, dropdown_options, 5, buttons_groupbox);
+	control_page.dropdownkey_combobox = pgui_combobox_create(8 + 88, 16 + 4 + (24 * 5), 80, 24, dropdown_options, 7, buttons_groupbox);
 	control_page.dropdown_helper = pgui_label_create(8, (24 * 7), 180, 80, "- PC and Xbox default: R2+L2\n--Spin right and Spin left on PC\n--RT and LT on Xbox\n- Ps2 default: R2", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
+	control_page.ddspinlag = pgui_checkbox_create(8, 16 + (24 * 9) - 12, 180, 32, "Drop down spin lag", buttons_groupbox);
 
-	control_page.laddergrabkey = pgui_label_create(8, 24 + (24 * 9), 70, 32, "Ladder grab button:", PGUI_LABEL_JUSTIFY_CENTER, buttons_groupbox);
-	control_page.laddergrabkey_combobox = pgui_combobox_create(8 + 88, 24 + 4 + (24 * 9), 80, 24, laddergrab_options, 2, buttons_groupbox);
+	control_page.laddergrabkey = pgui_label_create(8, 24 + (24 * 11), 70, 32, "Ladder grab button:", PGUI_LABEL_JUSTIFY_CENTER, buttons_groupbox);
+	control_page.laddergrabkey_combobox = pgui_combobox_create(8 + 88, 24 + 4 + (24 * 11), 80, 24, laddergrab_options, 2, buttons_groupbox);
 
 	control_page.ps2_helper = pgui_label_create(8, 16 + (24 * 14), (parent->w) + - 24 , 90, "* Using Ps2 controls will set getting of board to R1 + L1\!\n   Not using Ps2 controls will merge SpinRight + Switch and SpinLeft + Nollie onto    the spin keys!\n   Make sure to reset the Keyboard/Gamepad bindings after changing this setting!", PGUI_LABEL_JUSTIFY_LEFT, parent);
-	pgui_label_create(8, 24 + (24 * 10) + 4, 120, 18, "- Default: Spin Right", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
+	pgui_label_create(8, 24 + (24 * 12) + 4, 120, 18, "- Default: Spin Right", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
+
+	
 
 	// **************************
 	// SET SETTINGS
@@ -104,6 +109,7 @@ void build_control_page(pgui_control* parent) {
 	pgui_combobox_set_on_select(control_page.menubuttons_combobox, set_menu_combobox, &(controls.menubuttons));
 	pgui_combobox_set_on_select(control_page.cavemankey_combobox, set_menu_combobox, &(controls.cavemankey));
 	pgui_combobox_set_on_select(control_page.dropdownkey_combobox, set_menu_combobox, &(controls.dropdownkey));
+	pgui_checkbox_set_on_toggle(control_page.ddspinlag, do_setting_checkbox, &(controls.ddspinlag));
 	pgui_combobox_set_on_select(control_page.laddergrabkey_combobox, set_menu_combobox, &(controls.laddergrabkey));
 
 
@@ -119,6 +125,7 @@ void update_control_page() {
 	pgui_combobox_set_selection(control_page.menubuttons_combobox, controls.menubuttons-1);
 	pgui_combobox_set_selection(control_page.cavemankey_combobox, controls.cavemankey-1);
 	pgui_combobox_set_selection(control_page.dropdownkey_combobox, controls.dropdownkey-1);
+	pgui_checkbox_set_checked(control_page.ddspinlag, controls.ddspinlag);
 	pgui_combobox_set_selection(control_page.laddergrabkey_combobox, controls.laddergrabkey-1);
 }
 
@@ -126,6 +133,7 @@ void set_control_settings(struct controls* mControlsOut) {
 
 	mControlsOut->ps2_controls = controls.ps2_controls;
 	mControlsOut->dropdownkey = controls.dropdownkey;
+	mControlsOut->ddspinlag = controls.ddspinlag;
 	mControlsOut->laddergrabkey = controls.laddergrabkey;
 	mControlsOut->cavemankey = controls.cavemankey;
 	mControlsOut->menubuttons = controls.menubuttons;
