@@ -34,6 +34,8 @@ m_dd_buttons = 0
 m_dd_sping_lag = 0
 m_directional_dd = 0
 
+block_pause_menu = 0
+
 SCRIPT M_RejoinNextGame
 	IF GotParam FromPauseMenu 
 		//M_ObserveDestroyPauseMenu 
@@ -93,6 +95,7 @@ SCRIPT M_ObserveMode
 				IF M_UberFriggedThisFrame 
 					ResetSkaters 
 				ENDIF 
+				change block_pause_menu = 1
 				MakeSkaterGoto M_DisablePlayerInput
 				SlowSkaterToStop_NoBrake
 				IF NOT GameModeEquals is_lobby 
@@ -254,6 +257,7 @@ SCRIPT create_observe_menu
 	M_ObserveMenuRefreshHelperText 
 	Wait 4 frames 
 	FireEvent type = focus target = observe_input_handler 
+	change block_pause_menu = 0
 	restore_start_key_binding 
 ENDSCRIPT
 

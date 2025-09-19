@@ -15,7 +15,11 @@ SCRIPT sliderbar_add_item { pad_choose_script = edit_skater_create_cas_menu
 		icon_scale = 0 
 		icon_pos = PAIR(22.00000000000, 9.00000000000) 
 		text_just = [ center center ] 
+		text_just_2 = [ center center ]
 		text_pos = PAIR(0.00000000000, 0.00000000000) 
+		text_pos_2 = PAIR(10.00000000000, -1.00000000000)
+		default_value_text = "0.0"
+		text_value_id = generic_id
 		arrow_pos_up = PAIR(0.00000000000, 8.00000000000) 
 		arrow_pos_down = PAIR(0.00000000000, -8.00000000000) 
 		arrow_rgba = [ 128 128 128 128 ] 
@@ -146,6 +150,22 @@ SCRIPT sliderbar_add_item { pad_choose_script = edit_skater_create_cas_menu
 			id = <icon_id> 
 		} 
 	ENDIF 
+	IF GotParam create_text_value
+		CreateScreenElement { 
+			type = TextElement 
+			parent = <parent_id>
+			id = <text_value_id>
+			font = <font>
+			text = <default_value_text>
+			scale = 0.89999997616 
+			rgba = <rgba>
+			just = <text_just_2> 
+			pos = text_pos_2
+			z_priority = 310
+			replace_handlers 
+			<not_focusable> 
+		} 
+	ENDIF
 	SetScreenElementLock id = current_menu on 
 ENDSCRIPT
 

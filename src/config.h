@@ -38,8 +38,8 @@
 #define MOD_SECTION "AdditionalMods"
 #define CHAT_SECTION "Chat"
 #define VERSION_NUMBER_MAJOR 1
-#define VERSION_NUMBER_MINOR 0
-#define VERSION_NUMBER_FIX 1
+#define VERSION_NUMBER_MINOR 3
+#define VERSION_NUMBER_FIX 0
 
 struct keybinds {
 	//SDL_Scancode menu;

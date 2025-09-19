@@ -225,6 +225,7 @@ SCRIPT GameFlow_StartRun
 					ENDIF 
 				ELSE 
 					M_ObserveMode on 
+					Change block_pause_menu = 0
 				ENDIF 
 			ELSE 
 				IF IsTrue M_EnteringNetLevel 

@@ -259,17 +259,17 @@ SCRIPT scalingmenu_get_limits
 	<index> = 0 
 	BEGIN 
 		IF ChecksumEquals a = ( ( scalingmenu_constraints [ <index> ] ) . part ) b = <part> 
-			<min> = 0.00000000000 
-			<max> = -1.0 // 5E 07 1A 00 00 00 00 01 2D 16 76 DD 89 62 07 1A FF FF FF FF
+			<min> = 20.00000000000 
+			<max> = 200.00000000000 
 			BREAK 
 		ENDIF 
 		<index> = ( <index> + 1 ) 
 	REPEAT <array_size> 
 	IF NOT GotParam min 
-		<min> = 0.00000000000 
+		<min> = 90.00000000000 
 	ENDIF 
 	IF NOT GotParam max 
-		<max> = -nan 
+		<max> = 150.00000000000 
 	ENDIF 
 	RETURN min = <min> max = <max> 
 ENDSCRIPT
@@ -382,23 +382,64 @@ SCRIPT scalingmenu_refresh_arrows
 	<v> = 0 
 	IF gotParam affectX 
 		IF ( <affectX> = 1 ) 
+            x_id = scalingmenu_x_slider
 			<v> = <x> 
+			IF (<id> = scalingmenu_xyz_slider)
+				MangleChecksums a = <x_id> b = text_value
+				fake_value_id = <mangled_id>
+
+				FormatText textname = val_text "%g" g = <v>
+
+				SetScreenElementProps {
+					id = <fake_value_id>
+					text = <val_text>
+				}
+			ENDIF
 		ENDIF 
 	ENDIF 
 	IF gotParam affectY 
 		IF ( <affectY> = 1 ) 
+            y_id = scalingmenu_y_slider 
 			<v> = <y> 
+			IF (<id> = scalingmenu_xyz_slider)
+				MangleChecksums a = <y_id> b = text_value
+				fake_value_id = <mangled_id>
+				
+				FormatText textname = val_text "%g" g = <v>
+				
+				SetScreenElementProps {
+					id = <fake_value_id>
+					text = <val_text>
+				}
+			ENDIF
 		ENDIF 
 	ENDIF 
 	IF gotParam affectZ 
-		IF ( <affectZ> = 1 ) 
+		IF ( <affectZ> = 1 )
+            z_id = scalingmenu_z_slider
 			<v> = <z> 
+			IF (<id> = scalingmenu_xyz_slider)
+				MangleChecksums a = <z_id> b = text_value
+				fake_value_id = <mangled_id>
+				
+				FormatText textname = val_text "%g" g = <v>
+				
+				SetScreenElementProps {
+					id = <fake_value_id>
+					text = <val_text>
+				}
+			ENDIF
 		ENDIF 
 	ENDIF 
 	printf "%x %y %z" x = <x> y = <y> z = <z> 
 	scalingmenu_get_limits part = <part> <...> 
+	FormatText textname = val_text "%g" g = <v>
+    
+	SetScreenElementProps {
+        id = <text_value_id>
+        text = <val_text>
+    }
 	sliderbar_rescale_to_bar min = <min> max = <max> value = <v> left = scalingmenu_arrow_left right = scalingmenu_arrow_right 
-	printf <x_val> 
 	SetScreenElementProps { 
 		id = <up_arrow_id> 
 		pos = ( PAIR(1.00000000000, 0.00000000000) * <x_val> ) 
@@ -473,8 +514,13 @@ SCRIPT scalingmenu_addslider text = #"XYZ" affectX = 0 affectY = 0 affectZ = 0 i
 	<down_arrow_id> = <mangled_id> 
 	MangleChecksums a = <id> b = slider_bar 
 	<slider_bar_id> = <mangled_id> 
+	MangleChecksums a = <id> b = text_value
+	<text_value_id> = <mangled_id>
 	MangleChecksums a = <id> b = anchor 
 	<anchor_id> = <mangled_id> 
+    
+	scaling_get_default_value_text <...>
+    
 	sliderbar_add_item { 
 		text = <text> 
 		focus_script = scalingmenu_focus 
@@ -498,6 +544,9 @@ SCRIPT scalingmenu_addslider text = #"XYZ" affectX = 0 affectY = 0 affectZ = 0 i
 		} 
 		pad_choose_script = nullscript 
 		child_texture = scalebar 
+		create_text_value
+		text_value_id = <text_value_id>
+		default_value_text = <default_value_text>
 		icon_id = <slider_bar_id> 
 		icon_scale = scalingmenu_bar_scale 
 		icon_rgba = scalingmenu_bar_unfocus_rgba 
@@ -514,6 +563,32 @@ SCRIPT scalingmenu_addslider text = #"XYZ" affectX = 0 affectY = 0 affectZ = 0 i
 		up_arrow_texture = scale_up 
 		down_arrow_texture = scale_down 
 	} 
+ENDSCRIPT
+
+SCRIPT scaling_get_default_value_text
+	scalingmenu_get_xyz part = <part>
+	<v> = 0
+	
+	IF GotParam affectX
+		IF (<affectX> = 1)
+			<v> = <x>
+		ENDIF
+	ENDIF
+	IF GotParam affectY
+		IF (<affectY> = 1)
+			<v> = <y>
+		ENDIF
+	ENDIF
+	IF GotParam affectZ
+		IF (<affectZ> = 1)
+			<v> = <z>
+		ENDIF
+	ENDIF
+
+	scalingmenu_get_limits part = <part> <...> 
+	FormatText textname = val_text "%g" g = <v>
+
+	RETURN default_value_text = <val_text>
 ENDSCRIPT
 
 SCRIPT scalingmenu_add_options_to_menu 

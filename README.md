@@ -37,12 +37,19 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 - Toggle for boardscuffs
 - Option to disable all script mods (speedrunner mode)
 - Option to store the window position
-- Create-A-Skater: Unlimited 3 axes scaling
+- Create-A-Skater: Increased 3 axes scaling
+- Create-A-Skater: Visible scaling numbers
 - Create-A-Skater: Increased color ranges
 - Create-A-Skater: Board scaling
 - Exception Handler to generate crash reports (may not work on Windows 11)
 - Removed player limits for Created Parks
 - Option to enable free cam from the Select button (only during observe mode in net games)
+- Buttslap counter
+- Enable leftover levels: School, Philadelphia, Downhill Jam
+
+### Gameplay
+- Land pivots (including the ability to buttslap or air manual after)
+- Single tap THPS4 Boostplants
 
 ### Controls
 - Native gamepad support
@@ -50,7 +57,7 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 - Option to use "grind" in menus to go back (original Ps2 layout)
 - Support for Ps2 controls on gamepad and keyboard
 - Fix incorrect button prompts in textboxes and helper texts
-- Adjustable keys for Rail Drop Downs
+- Adjustable keys for Rail Drop Downs including directional DDs
 - Adjustable keys for Caveman
 - Adjustable keys for ladder/rail grab
 - Option to invert the x and/or y camera axis
@@ -175,6 +182,7 @@ When building the launcher, make sure to set the SubSystem to Windows. In Visual
 - PARTYMANX: Original development of Partymod. Thanks for the help and patience!
 - %.gone.: Clownjob'd mod for THUG which provided useful insights
 - Zedek the Plague Doctor ™: LazyStruct and LazyArray classes, Logger and ExceptionHandler and lots of script-related helper code
+- Drake9X: Scaling values in C-A-S scale sliders
 - Hardronix: DirectX9 and general code support
 - Edem: Gameplay and script support
 - Thanks to everyone who tested this mod during development!

@@ -991,6 +991,9 @@ SCRIPT unpause_rain
 ENDSCRIPT
 
 SCRIPT create_pause_menu 
+	IF IsTrue block_pause_menu
+		RETURN
+	ENDIF
 	IF NOT LevelIs load_sk5ed 
 		M_ResetViewer force_reset
 	ENDIF
@@ -3868,8 +3871,11 @@ level_select_menu_level_info = [
 	{ text = "School II" level_num = 15 points_to_unlock = 0 num_am_goals = 0 num_goals = 0 flag = LEVEL_UNLOCKED_SC2 level = load_SC2 } 
 	{ text = "Venice" level_num = 16 points_to_unlock = 0 num_am_goals = 0 num_goals = 0 flag = LEVEL_UNLOCKED_VN level = load_VN } 
 	{ text = "Hangar" level_num = 17 points_to_unlock = 0 num_am_goals = 0 num_goals = 0 flag = LEVEL_UNLOCKED_HN level = load_HN } 
-	{ text = "West Side" level_num = 18 points_to_unlock = -1 num_am_goals = 0 num_goals = 0 flag = LEVEL_UNLOCKED_SCH level = load_WWW DEVKIT_ONLY } 
-	{ text = "TestLevel" level_num = 21 points_to_unlock = -1 num_am_goals = 0 num_goals = 0 flag = LEVEL_UNLOCKED_NJ level = load_TestLevel DEVKIT_ONLY } 
+	{ text = "School" level_num = 18 points_to_unlock = 0 num_am_goals = 0 num_goals = 0 flag = LEVEL_UNLOCKED_HN level = load_SC } 
+	{ text = "Philadelphia" level_num = 19 points_to_unlock = 0 num_am_goals = 0 num_goals = 0 flag = LEVEL_UNLOCKED_HN level = load_PH } 
+	{ text = "Downhill Jam" level_num = 20 points_to_unlock = 0 num_am_goals = 0 num_goals = 0 flag = LEVEL_UNLOCKED_HN level = load_DJ } 
+	{ text = "West Side" level_num = 21 points_to_unlock = -1 num_am_goals = 0 num_goals = 0 flag = LEVEL_UNLOCKED_SCH level = load_WWW DEVKIT_ONLY } 
+	{ text = "TestLevel" level_num = 22 points_to_unlock = -1 num_am_goals = 0 num_goals = 0 flag = LEVEL_UNLOCKED_NJ level = load_TestLevel DEVKIT_ONLY } 
 	{ text = "Default" level_num = 30 points_to_unlock = -1 num_am_goals = 0 num_goals = 0 flag = LEVEL_UNLOCKED_NJ level = load_Default DEVKIT_ONLY } 
 ] 
 premade_parks_info = [ 
