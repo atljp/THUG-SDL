@@ -35,6 +35,7 @@ m_dd_sping_lag = 0
 m_directional_dd = 0
 
 block_pause_menu = 0
+m_restore_original_double_taps = 0
 
 SCRIPT M_RejoinNextGame
 	IF GotParam FromPauseMenu 
@@ -595,7 +596,7 @@ SCRIPT M_InitializeMod
 	// GAMERUNRESPAWNS
 	M_GetINIValue section = "Multiplayer" key = "GameRunRespawns" default = 1
 	IF NOT IsTrue <value> 
-			Change m_gamerunrespawns = 0
+		Change m_gamerunrespawns = 0
 	ENDIF	
 	// BOOSTPLANTS
 	M_GetINIValue section = "Miscellaneous" key = "SingleTapBP" default = 0
@@ -654,29 +655,32 @@ SCRIPT M_InitializeMod
 	IF IsTrue <value> 
 		change m_freecam_select = 1
 	ENDIF
-    // BSCOUNTER
-    M_GetINIValue section = "Miscellaneous" key = "BSCounter" default = 0
+	// BSCOUNTER
+	M_GetINIValue section = "Miscellaneous" key = "BSCounter" default = 0
 	IF IsTrue <value> 
 		change m_enable_bscounter = 1
 	ENDIF
-    // BHRA
-    M_GetINIValue section = "Miscellaneous" key = "BHRA" default = 0
+	// BHRA
+	M_GetINIValue section = "Miscellaneous" key = "BHRA" default = 0
 	IF IsTrue <value> 
 		change m_enable_landpivots = 1
 	ENDIF
-    
-    // DROP DOWNS
-    M_GetINIValue section = "Controls" key = "DropDownControl" default = 0
-    IF ( ( <value> ) > 5 )
-        change m_dd_buttons = <value>
-        change m_directional_dd = 1
-    ENDIF
-    M_GetINIValue section = "Controls" key = "DDSpinLag" default = 0
-    IF IsTrue <value>
-        change m_dd_sping_lag = 1
-    ENDIF
-    
-	//Aspect Ratio, manual bps, wp input, bhra
+	// DROP DOWNS
+	M_GetINIValue section = "Controls" key = "DropDownControl" default = 0
+	IF ( ( <value> ) > 5 )
+		change m_dd_buttons = <value>
+		change m_directional_dd = 1
+	ENDIF
+	M_GetINIValue section = "Controls" key = "DDSpinLag" default = 0
+	IF IsTrue <value>
+		change m_dd_sping_lag = 1
+	ENDIF
+	// ORIGINAL DOUBLE TAPS
+	M_GetINIValue section = "Debug" key = "OriginalDoubleTapGrinds" default = 0
+	IF IsTrue <value> 
+		change m_restore_original_double_taps = 1
+	ENDIF
+	//Aspect Ratio, manual bps, wp input
 ENDSCRIPT
 
 SCRIPT exit_pause_menu_maybe_create_observe_menu

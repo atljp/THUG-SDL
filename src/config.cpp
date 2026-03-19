@@ -290,6 +290,9 @@ void patchStaticValues() {
 	/* Expand default clipping distance to avoid issues in large level backgrounds (I.E. hawaii), thanks PARTYMANX */
 	patchDWord((void*)(0x004B9D8B + 2), (uint32_t)&default_clipping_distance);
 
+	/*Increase pool size for animations*/
+	patchDWord((void*)(0x0040A71F + 1), 0x3E80);
+
 	/*Patch entire main memory heap*/
 	//patchDWord((void*)(0x0057C45F + 1), 768 * 1024 * 1024);
 	//patchDWord((void*)(0x0057C47A + 1), 768 * 1024 * 1024);

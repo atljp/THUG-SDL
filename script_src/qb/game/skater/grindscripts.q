@@ -469,7 +469,13 @@ SCRIPT Grind GrindTweak = 7 boardscuff = 0 InitSpeed = 1.00000000000
 		ENDIF 
 	ENDIF 
 	IF GotParam IsATap 
-		DoBalanceTrick ButtonA = Right ButtonB = Left Type = <Type> DoFlipCheck ClearCheese 
+		IF IsTrue m_restore_original_double_taps
+			DoBalanceTrick ButtonA = Right ButtonB = Left Type = <Type> DoFlipCheck ClearCheese 
+		ELSE
+			IF NOT DoingBalanceTrick
+				DoBalanceTrick ButtonA = Right ButtonB = Left Type = <Type> DoFlipCheck ClearCheese 
+			ENDIF 
+		ENDIF
 	ELSE 
 		DoBalanceTrick ButtonA = Right ButtonB = Left Type = <Type> DoFlipCheck 
 	ENDIF 

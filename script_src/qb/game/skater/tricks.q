@@ -176,8 +176,8 @@ SCRIPT OnGroundExceptions
 			ClearException WallPush 
 		ENDIF 
 	ENDIF 
-    IF ( BSCount > 0 ) 
-        Change BSCount = 0
+	IF ( BSCount > 0 ) 
+		Change BSCount = 0
 	ENDIF
 	SetSkaterGroundTricks 
 	LaunchStateChangeEvent State = Skater_OnGround 
@@ -239,6 +239,9 @@ SCRIPT InAirExceptions
 	IF NOT GotParam AllowVibration 
 		VibrateOff 
 	ENDIF 
+	IF ( BSCount > 0 ) 
+		Change BSCount = 0
+	ENDIF
 	EnablePlayerInput 
 	BailOff 
 	BashOff 

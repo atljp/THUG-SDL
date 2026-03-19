@@ -843,7 +843,9 @@ SCRIPT edit_tricks_menu_add_item { parent = current_menu
 	ENDIF 
 ENDSCRIPT
 
-SCRIPT edit_tricks_sub_menu_add_key_combo { pad_choose_script = edit_tricks_menu_goto_trick_list 
+SCRIPT edit_tricks_sub_menu_add_key_combo { 
+		pad_choose_script = edit_tricks_menu_goto_trick_list 
+		pad_square_script = edit_tricks_menu_unassign_trick
 		highlight_bar_scale = PAIR(1.00000000000, 0.69999998808) 
 		parent = edit_tricks_menu_1 
 	} 
@@ -893,9 +895,11 @@ SCRIPT edit_tricks_sub_menu_add_key_combo { pad_choose_script = edit_tricks_menu
 	ENDIF 
 	SetScreenElementProps { 
 		id = <anchor_id> 
-		event_handlers = [ { pad_choose <pad_choose_script> params = <pad_choose_params> } 
+		event_handlers = [ 
+			{ pad_choose <pad_choose_script> params = <pad_choose_params> } 
 			{ pad_start <pad_choose_script> params = <pad_choose_params> } 
 			{ pad_choose generic_menu_pad_choose_sound } 
+			{ pad_square <pad_square_script> params = <pad_choose_params> }
 		] 
 	} 
 	IF GotParam not_focusable 
@@ -973,7 +977,9 @@ SCRIPT edit_tricks_sub_menu_add_header
 	} 
 ENDSCRIPT
 
-SCRIPT special_tricks_menu_add_slot { pad_choose_script = special_tricks_menu_goto_trick_list 
+SCRIPT special_tricks_menu_add_slot { 
+		pad_choose_script = special_tricks_menu_goto_trick_list 
+		pad_square_script = special_tricks_menu_unassign_trick 
 		highlight_bar_scale = PAIR(3.90000009537, 0.69999998808) 
 		highlight_bar_pos = PAIR(-105.00000000000, -18.00000000000) 
 	} 
@@ -1003,6 +1009,7 @@ SCRIPT special_tricks_menu_add_slot { pad_choose_script = special_tricks_menu_go
 			{ unfocus edit_tricks_menu_unfocus params = { rgba = [ 90 90 90 100 ] } } 
 			{ pad_choose <pad_choose_script> params = { highlight_script = edit_tricks_menu_focus highlight_bar_scale = PAIR(0.60000002384, 0.69999998808) highlight_bar_pos = <highlight_bar_pos> index = <index> } } 
 			{ pad_start <pad_choose_script> params = { highlight_script = edit_tricks_menu_focus highlight_bar_scale = PAIR(0.60000002384, 0.69999998808) highlight_bar_pos = <highlight_bar_pos> index = <index> } } 
+			{ pad_square <pad_square_script> params = { highlight_script = edit_tricks_menu_focus highlight_bar_scale = PAIR(0.60000002384, 0.69999998808) highlight_bar_pos = <highlight_bar_pos> index = <index> } }
 			{ pad_choose generic_menu_pad_choose_sound } 
 		] 
 		tags = { tag_grid_x = <index> } 
@@ -1804,6 +1811,45 @@ SCRIPT special_tricks_menu_select_key_combo
 		edit_tricks_menu_bind_trick new_key_combo = <key_combo> new_trick = <cat_num> index = <index> special createdtrick 
 	ENDIF 
 	special_tricks_menu_goto_trick_list 
+	edit_tricks_menu_back_from_trick_list 
+ENDSCRIPT
+
+SCRIPT special_tricks_menu_unassign_trick 
+	edit_tricks_menu_1_index = <index> 
+	BindTrickToKeyCombo { 
+		special 
+		index = ( <index> - 1 ) 
+		key_combo = Unassigned 
+		trick = Unassigned 
+		update_mappings = 1 
+	} 
+	GetCurrentSkaterProfileIndex 
+	IF InSplitScreenGame 
+		printf "in a split screen game" 
+	ELSE 
+		UpdateTrickMappings Skater = <currentSkaterProfileIndex> 
+	ENDIF 
+	GoalManager_ReplaceTrickText all 
+	edit_tricks_menu_back_from_trick_list 
+ENDSCRIPT
+
+SCRIPT edit_tricks_menu_unassign_trick 
+	edit_tricks_menu_1_index = <index> 
+	IF GotParam highlight_script 
+		RunScriptOnScreenElement id = <id> <highlight_script> params = { highlight_bar_scale = <highlight_bar_scale> } 
+	ENDIF 
+	BindTrickToKeyCombo { 
+		key_combo = <key_combo> 
+		trick = Unassigned 
+		update_mappings = 1 
+	} 
+	GetCurrentSkaterProfileIndex 
+	IF InSplitScreenGame 
+		printf "in a split screen game" 
+	ELSE 
+		UpdateTrickMappings Skater = <currentSkaterProfileIndex> 
+	ENDIF 
+	GoalManager_ReplaceTrickText all 
 	edit_tricks_menu_back_from_trick_list 
 ENDSCRIPT
 
