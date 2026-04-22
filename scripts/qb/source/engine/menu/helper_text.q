@@ -80,6 +80,12 @@ generic_helper_text = { helper_text_elements = [ { text = "\\b7/\\b4 = Select" }
 		{ text = "\\bm = Accept" } 
 	] 
 } 
+generic_helper_text_unassign = { helper_text_elements = [ { text = "\\b7/\\b4 = Select" } 
+		{ text = "\\bn = Back" } 
+		{ text = "\\bm = Accept" } 
+		{ text = "\\bo = Unassign Trick" }
+	] 
+} 
 generic_helper_text_no_back = { helper_text_elements = [ { text = "\\b7/\\b4 = Select" } 
 		{ text = "\\bm = Accept" } 
 	] 

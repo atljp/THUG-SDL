@@ -227,7 +227,7 @@ SCRIPT create_edit_tricks_sub_menu
 			IF ( <trick_attack_active> = 1 ) 
 				create_helper_text generic_helper_text_no_accept 
 			ELSE 
-				create_helper_text generic_helper_text 
+				create_helper_text generic_helper_text_unassign
 			ENDIF 
 		ENDIF 
 	ENDIF 
