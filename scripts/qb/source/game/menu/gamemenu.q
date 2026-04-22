@@ -1768,7 +1768,7 @@ SCRIPT edit_skater_options_menu
 	ENDIF 
 	IF GotParam tricks_uneditable 
 		make_theme_menu_item { 
-			text = "View Tricks" 
+			text = "Edit Tricks" 
 			id = menu_edit_tricks 
 			pad_choose_script = create_edit_tricks_menu 
 		} 

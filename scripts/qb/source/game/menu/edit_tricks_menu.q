@@ -11,31 +11,7 @@ SCRIPT create_edit_tricks_menu
 	change loading_cat_from_edit_tricks = 0 
 	dialog_box_exit 
 	FormatText ChecksumName = title_icon "%i_trick" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
-	<firefight_active> = 0 
-	IF GoalManager_GoalExists name = firefight 
-		IF GoalManager_GoalIsActive name = firefight 
-			<firefight_active> = 1 
-		ENDIF 
-	ENDIF 
-	IF ( <firefight_active> = 1 ) 
-		make_new_themed_sub_menu title = "VIEW TRICKS" title_icon = <title_icon> 
-	ELSE 
-		IF GoalManager_HasActiveGoals 
-			make_new_themed_sub_menu title = "VIEW TRICKS" title_icon = <title_icon> 
-		ELSE 
-			<trick_attack_active> = 0 
-			IF GoalManager_GoalExists name = trickattack 
-				IF GoalManager_GoalIsActive name = trickattack 
-					<trick_attack_active> = 1 
-				ENDIF 
-			ENDIF 
-			IF ( <trick_attack_active> = 1 ) 
-				make_new_themed_sub_menu title = "VIEW TRICKS" title_icon = <title_icon> 
-			ELSE 
-				make_new_themed_sub_menu title = "EDIT TRICKS" title_icon = <title_icon> 
-			ENDIF 
-		ENDIF 
-	ENDIF 
+	make_new_themed_sub_menu title = "EDIT TRICKS" title_icon = <title_icon> 
 	IF NOT LevelIs load_skateshop 
 		PauseMusicAndStreams 1 
 		pause_menu_gradient on 
@@ -206,31 +182,7 @@ SCRIPT create_edit_tricks_sub_menu
 		pos = PAIR(320.00000000000, 240.00000000000) 
 	} 
 	AssignAlias id = edit_tricks_sub_menu_anchor alias = current_menu_anchor 
-	<firefight_active> = 0 
-	IF GoalManager_GoalExists name = firefight 
-		IF GoalManager_GoalIsActive name = firefight 
-			<firefight_active> = 1 
-		ENDIF 
-	ENDIF 
-	IF ( <firefight_active> = 1 ) 
-		create_helper_text generic_helper_text_no_accept 
-	ELSE 
-		IF GoalManager_HasActiveGoals 
-			create_helper_text generic_helper_text_no_accept 
-		ELSE 
-			<trick_attack_active> = 0 
-			IF GoalManager_GoalExists name = trickattack 
-				IF GoalManager_GoalIsActive name = trickattack 
-					<trick_attack_active> = 1 
-				ENDIF 
-			ENDIF 
-			IF ( <trick_attack_active> = 1 ) 
-				create_helper_text generic_helper_text_no_accept 
-			ELSE 
-				create_helper_text generic_helper_text_unassign
-			ENDIF 
-		ENDIF 
-	ENDIF 
+	create_helper_text generic_helper_text_unassign 
 	build_theme_sub_title title = <title> title_icon = <title_icon> 
 	IF LevelIs load_skateshop 
 		CreateScreenElement { 
@@ -849,23 +801,6 @@ SCRIPT edit_tricks_sub_menu_add_key_combo {
 		highlight_bar_scale = PAIR(1.00000000000, 0.69999998808) 
 		parent = edit_tricks_menu_1 
 	} 
-	<firefight_active> = 0 
-	IF GoalManager_GoalExists name = firefight 
-		IF GoalManager_GoalIsActive name = firefight 
-			<firefight_active> = 1 
-		ENDIF 
-	ENDIF 
-	IF ( <firefight_active> = 1 ) 
-		pad_choose_script = nullscript 
-	ENDIF 
-	IF GoalManager_HasActiveGoals 
-		pad_choose_script = nullscript 
-	ENDIF 
-	IF GoalManager_GoalExists name = trickattack 
-		IF GoalManager_GoalIsActive name = trickattack 
-			pad_choose_script = nullscript 
-		ENDIF 
-	ENDIF 
 	IF NOT GotParam focus_params 
 		focus_params = { highlight_bar_scale = <highlight_bar_scale> 
 			highlight_bar_pos = <highlight_bar_pos> 
@@ -983,23 +918,6 @@ SCRIPT special_tricks_menu_add_slot {
 		highlight_bar_scale = PAIR(3.90000009537, 0.69999998808) 
 		highlight_bar_pos = PAIR(-105.00000000000, -18.00000000000) 
 	} 
-	<firefight_active> = 0 
-	IF GoalManager_GoalExists name = firefight 
-		IF GoalManager_GoalIsActive name = firefight 
-			<firefight_active> = 1 
-		ENDIF 
-	ENDIF 
-	IF ( <firefight_active> = 1 ) 
-		pad_choose_script = nullscript 
-	ENDIF 
-	IF GoalManager_HasActiveGoals 
-		pad_choose_script = nullscript 
-	ENDIF 
-	IF GoalManager_GoalExists name = trickattack 
-		IF GoalManager_GoalIsActive name = trickattack 
-			pad_choose_script = nullscript 
-		ENDIF 
-	ENDIF 
 	FormatText ChecksumName = unhighlight_color "%i_UNHIGHLIGHTED_TEXT_COLOR" i = ( THEME_COLOR_PREFIXES [ current_theme_prefix ] ) 
 	CreateScreenElement { 
 		type = ContainerElement 
