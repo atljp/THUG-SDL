@@ -52,6 +52,8 @@ uint32_t __fastcall removeScript(uint32_t partChecksum);
 void setCavemanKeys();
 void setLadderGrabKeys();
 void setDropDownKeys();
+void setWallplantKeys();
 void setButtonPrompts();
 void setHelperText(uint32_t struct_checksum, int index, char* text);
 char* setText(const char* text_content, const char* old_word, const char* new_word);
+void addControlCfuncs();

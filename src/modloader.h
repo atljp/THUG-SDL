@@ -10,6 +10,7 @@ bool getModIni();
 bool getModDefaultPreFile();
 bool getAllPreFiles();
 bool getAllQbFiles();
+bool getQdir();
 uint8_t* getQbData(const std::string& fileName);
 int strncasecmp(const char* s1, const char* s2, size_t n);
 bool checkFolderExists(char* folder);

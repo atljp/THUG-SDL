@@ -1,0 +1,32 @@
+- Add dummy [THUGSDL] section to thugsdl.ini as a workaround for a UTF-8 BOM parsing edge case
+- New compile scripts and mod.ini for the script sources:
+- - Copy the script_src\qb folder to Game\Data\pre
+- - Add QScript.QCompile.App.exe to the folder, get it [here](https://github.com/cuckydev/QScript/releases)
+- - Select Additional Mods in the launcher and set the path to data/pre/qb
+- - Edit the scripts in a texteditor of your choice and compile newly edited files automatically by running Z_Compile.bat
+- Fix double tab grind balance reset (option to restore the original version: Add OriginalDoubleTapGrinds=1 to the [Debug] section of thugsdl.ini)
+- Disclaimer: Direction DDs only work when thugsdl.pre is loaded!
+
+TODO:
+xxx Add Unbind tricks to Edit Tricks menu
+xxx Fix BS Counter reset to InAirExceptions
+xxx Fix double tab grind balance reset (option to restore broken version in [Debug] section, OriginalDoubleTapGrinds=1)
+xxx Add the whole script folder in modloader format
+Change View Tricks to Edit Tricks in Freeskate / Story (?)
+Add arrows to FOV slider
+Change script source structure: Setup for GuitarHeroSDK toolchain => WAIT FOR (DE)COMPILER TO WORK
+Maybe: Flips / Rolls
+Launcher: Write all new values to ini and set defaults
+Launcher: Dropdown menu for mod folders in Game/data/pre
+Launcher: Move respawn on new run to in game menu
+
+Next:
+-WP input
+-Load skater as CAS
+-Reset values fix: Numbers on scales
+-Number on color sliders
+-Fix crash when closing with error handler and stored window position
+-Fix more helper texts related to button inputs
+-Add toggle for walk/run on dpad
+-qdir.txt in thugsdl.pre to make new qb files
+-Warn helper function from scripts and dll

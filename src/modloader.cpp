@@ -6,6 +6,9 @@ char modfolder[MAX_PATH];
 char modfolder_fullpath[MAX_PATH];
 char modini_fullpath[MAX_PATH];
 char to_be_injected[MAX_PATH];
+char qdir_fullpath[MAX_PATH];
+char qdir_fullpath_fallback[MAX_PATH];
+char new_qdir_path[MAX_PATH];
 
 std::map<std::string, std::string> preFilesMap;
 std::map<std::string, std::string> qbFilesMap;
@@ -52,6 +55,13 @@ void InitModloader() {
 			}
 			else {
 				Log::TypedLog(CHN_MOD, "Failed to load Qb files\n");
+			}
+			if (getQdir()) {
+				Log::TypedLog(CHN_MOD, "Patching pointers to %s\n", new_qdir_path);
+				// Patch pointer to our new qdir.txt path
+				patchDWord((void*)(0x0052CC90 + 1), (uint32_t)&new_qdir_path);
+				patchDWord((void*)(0x0052CC9A + 1), (uint32_t)&new_qdir_path);
+				patchDWord((void*)(0x0052CD65 + 1), (uint32_t)&new_qdir_path);
 			}
 		}
 	}
@@ -178,7 +188,7 @@ std::map<std::string, std::string> extractSection(const std::string& section, bo
 
 bool getModIni() {
 
-	// Check if modfolder was specified in partymod.ini. Folders have to be relative to the game directory (data\pre\mymod)
+	// Check if modfolder was specified in thugsdl.ini. Folders have to be relative to the game directory (data\pre\mymod)
 	GetPrivateProfileString(MOD_SECTION, "Folder", "", modfolder, sizeof(modfolder), mExtModsettings.configfile);
 
 	if (strlen(modfolder)){
@@ -268,6 +278,52 @@ bool getAllQbFiles() {
 		Log::TypedLog(CHN_MOD, "REGISTERING QB FILE: %s=%s\n", kv.first.c_str(), kv.second.c_str());
 	}
 	return true;
+}
+
+bool getQdir() {
+
+	bool file_found = false;
+	bool using_source_folder = false;
+
+	// Check if custom  mod has a qdir.txt
+	sprintf_s(qdir_fullpath, "%s%s", modfolder_fullpath, "\\qdir.txt");
+	sprintf_s(qdir_fullpath_fallback, "%s%s", modfolder_fullpath, "\\source\\qdir.txt");
+
+	if (!checkFileExists(qdir_fullpath)) {
+		if (checkFileExists(qdir_fullpath_fallback)) {
+			sprintf_s(qdir_fullpath, "%s", qdir_fullpath_fallback);
+			using_source_folder = true;
+			file_found = true;
+		}
+	}
+	else {
+		file_found = true;
+	}
+
+	if (!file_found) {
+		Log::TypedLog(CHN_MOD, "No custom qdir.txt found! Loading from scripts\\qdir.txt\n");
+		return false;
+	}
+	else {
+		Log::TypedLog(CHN_MOD, "Found custom qdir.txt at %s\n", qdir_fullpath);
+
+		// Create new qdir.txt file path relative to the Data folder
+		const char* new_qdir_path_ptr = modfolder;
+
+		// Reuse the modfolder variable, remove data prefix
+		if (strncmp(modfolder, "data\\", strlen("data\\")) == 0) {
+			new_qdir_path_ptr = modfolder + strlen("data\\");
+		}
+		else {
+			Log::TypedLog(CHN_MOD, "Invalid mod folder format!\n");
+			return false;
+		}
+		if (using_source_folder)
+			sprintf_s(new_qdir_path, "%s%s", new_qdir_path_ptr, "\\source\\qdir.txt");
+		else
+			sprintf_s(new_qdir_path, "%s%s", new_qdir_path_ptr, "\\qdir.txt");
+		return true;
+	}
 }
 
 uint8_t* getQbData(const std::string& fileName) {

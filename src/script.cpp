@@ -26,7 +26,16 @@ bool walkspinpatched = false;
 bool boardscuffpatched = false;
 uint32_t addr_sCreateScriptSymbol = 0x0040AF40;
 uint32_t addr_sCreateSymbolOfTheFormNameEqualsValue = 0x0040D1D0;
+uint32_t addr_qdir = 0x00644B60;
 LPVOID pResource_oslogo;
+
+Script::LazyStruct* press_x = nullptr;
+Script::LazyStruct* x_down = nullptr;
+Script::LazyStruct* x_downleft = nullptr;
+Script::LazyStruct* x_downright = nullptr;
+Script::LazyStruct* down_x = nullptr;
+Script::LazyStruct* downleft_x = nullptr;
+Script::LazyStruct* downright_x = nullptr;
 
 struct CGoalManagerInstance
 {
@@ -422,16 +431,10 @@ void editScriptsInMemory() {
 		sCreateScriptSymbol_Wrapper(sizeof(select_network_play_multi_new), 0x40BB7409, 0x62EE909F, (uint8_t*)select_network_play_multi_new, "scripts\\myan.qb");
 
 		if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
-
-		// This loads M_InitializeMod which sets up all the script stuff
-		removeScript(0xAE754239); /*load_permanent_assets*/
-		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)load_permanent_assets_new);
-		sCreateScriptSymbol_Wrapper(0x6CB, 0xAE754239, contentsChecksum, (uint8_t*)load_permanent_assets_new, "game\\startup.qb");
 	}	
 }
 
 void hook_obs_chosen() {
-	// TOOD, doesnt update
 	removeScript(0x7436C06E); /*observe_chosen*/
 	sCreateScriptSymbol_Wrapper(sizeof(observe_chosen_new), 0x7436C06E, CalculateScriptContentsChecksum_Native((uint8_t*)observe_chosen_new), (uint8_t*)observe_chosen_new, "scripts\\myan.qb");
 }
@@ -717,6 +720,79 @@ void setLadderGrabKeys() {
 	}
 }
 
+bool CFunc_ToggleWallplantInput(Script::LazyStruct* pParams, DummyScript* pScript) {
+
+	if (press_x == nullptr) {
+		press_x = Script::LazyStruct::s_create();
+		press_x->AddChecksum(0, 0x823B8342); /*press*/
+		press_x->AddChecksum(0, 0x7323E97C); /*x*/
+		press_x->AddInteger(0, 450);
+	}
+	if (x_down == nullptr) {
+		x_down = Script::LazyStruct::s_create();
+		x_down->AddChecksum(0, 0x7D482318); /*InOrder*/
+		x_down->AddChecksum(0, 0x7323E97C); /*x*/
+		x_down->AddChecksum(0, 0xE3006FC4); /*Down*/
+		x_down->AddInteger(0, 450);
+	}
+	if (x_downleft == nullptr) {
+		x_downleft = Script::LazyStruct::s_create();
+		x_downleft->AddChecksum(0, 0x7D482318); /*InOrder*/
+		x_downleft->AddChecksum(0, 0x7323E97C); /*x*/
+		x_downleft->AddChecksum(0, 0xD8847EFA); /*DownLeft*/
+		x_downleft->AddInteger(0, 450);
+	}
+	if (x_downright == nullptr) {
+		x_downright = Script::LazyStruct::s_create();
+		x_downright->AddChecksum(0, 0x7D482318); /*InOrder*/
+		x_downright->AddChecksum(0, 0x7323E97C); /*x*/
+		x_downright->AddChecksum(0, 0x786B8B68); /*DownRight*/
+		x_downright->AddInteger(0, 450);
+	}
+	if (down_x == nullptr) {
+		down_x = Script::LazyStruct::s_create();
+		down_x->AddChecksum(0, 0x7D482318); /*InOrder*/
+		down_x->AddChecksum(0, 0xE3006FC4); /*Down*/
+		down_x->AddChecksum(0, 0x7323E97C); /*x*/
+		down_x->AddInteger(0, 450);
+	}
+	if (downleft_x == nullptr) {
+		downleft_x = Script::LazyStruct::s_create();
+		downleft_x->AddChecksum(0, 0x7D482318); /*InOrder*/
+		downleft_x->AddChecksum(0, 0xD8847EFA); /*DownLeft*/
+		downleft_x->AddChecksum(0, 0x7323E97C); /*x*/
+		downleft_x->AddInteger(0, 450);
+	}
+	if (downright_x == nullptr) {
+		downright_x = Script::LazyStruct::s_create();
+		downright_x->AddChecksum(0, 0x7D482318); /*InOrder*/
+		downright_x->AddChecksum(0, 0x786B8B68); /*DownRight*/
+		downright_x->AddChecksum(0, 0x7323E97C); /*x*/
+		downright_x->AddInteger(0, 450);
+	}
+	
+	Script::LazyArray* pref_wpinput = GlobalGetArray_Native(0x5D1F84A7); /*Wallplant_Trick*/
+
+	if (pParams->ContainsFlag(0x9B65D7B8)) { /* Ollie */
+		pref_wpinput->SetStructure(0, press_x);
+		pref_wpinput->SetStructure(1, x_down);
+		pref_wpinput->SetStructure(2, x_downleft);
+		pref_wpinput->SetStructure(3, x_downright);
+		pref_wpinput->SetStructure(4, down_x);
+		pref_wpinput->SetStructure(5, downleft_x);
+		pref_wpinput->SetStructure(6, downright_x);
+	}
+	else if (pParams->ContainsFlag(0x1A73CD45)) { /* DownAndOllie */
+		pref_wpinput->SetStructure(0, x_down);
+		pref_wpinput->SetStructure(1, x_downleft);
+		pref_wpinput->SetStructure(2, x_downright);
+		pref_wpinput->SetStructure(3, down_x);
+		pref_wpinput->SetStructure(4, downleft_x);
+		pref_wpinput->SetStructure(5, downright_x);
+	}
+	return true;
+}
+
 void setButtonPrompts() {
 
 	if (mSettings.buttonfont > 1 && mSettings.buttonfont < 5) {
@@ -729,7 +805,7 @@ void setButtonPrompts() {
 				/* PS2 font (and ngc but we don't care about that) */
 
 				patchByte((void*)0x005AD52F, 0x07); // R1 -> R2
-				patchByte((void*)0x005AD532, 0x05); //L1+R1 => R1
+				patchByte((void*)0x005AD532, 0x05); // L1+R1 => R1
 				patchByte((void*)0x005AD53A, 0x05); // L1 -> R1
 				patchByte((void*)0x005AD53B, 0x04); // R1 -> L1
 				patchByte((void*)0x005AD531, 0x05); // R2 -> R1
@@ -866,4 +942,10 @@ char* setText(const char* text_content, const char* old_word, const char* new_wo
 	// Copy the remaining part of the text_content 
 	strcpy(current_pos, text_content); 
 	return result; 
+}
+
+void addControlCfuncs() {
+
+	Log::TypedLog(CHN_DLL, "Adding control CFuncs\n");
+	CFuncs::AddFunction("M_ToggleWallplantInput", CFunc_ToggleWallplantInput);
 }
