@@ -34,6 +34,7 @@ m_enable_landpivots = 0
 m_dd_buttons = 0
 m_dd_sping_lag = 0
 m_directional_dd = 0
+m_boardscuffs = 0
 
 block_pause_menu = 0
 m_restore_original_double_taps = 0
@@ -687,7 +688,12 @@ SCRIPT M_InitializeMod
 	IF IsTrue <value> 
 		change m_restore_original_double_taps = 1
 	ENDIF
-	//Aspect Ratio, manual bps, wp input
+	// BOARDSCUFFS
+	M_GetINIValue section = "Miscellaneous" key = "Boardscuffs" default = 1
+	IF IsTrue <value>
+		change m_boardscuffs = 1
+	ENDIF
+	//Aspect Ratio, manual bps
 ENDSCRIPT
 
 SCRIPT exit_pause_menu_maybe_create_observe_menu

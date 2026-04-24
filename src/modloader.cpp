@@ -58,7 +58,7 @@ void InitModloader() {
 			}
 			if (getQdir()) {
 				Log::TypedLog(CHN_MOD, "Patching pointers to %s\n", new_qdir_path);
-				// Patch pointer to our new qdir.txt path
+				// Patch pointer to new qdir.txt path
 				patchDWord((void*)(0x0052CC90 + 1), (uint32_t)&new_qdir_path);
 				patchDWord((void*)(0x0052CC9A + 1), (uint32_t)&new_qdir_path);
 				patchDWord((void*)(0x0052CD65 + 1), (uint32_t)&new_qdir_path);
@@ -473,6 +473,8 @@ void __fastcall PreMgrLoadPre_Wrapper2(void* arg1, void* unused, uint8_t* p_data
 }
 
 uint8_t* __cdecl pipLoadWrapper(char* p_fileName, int unk1, int unk2, int unk3, int unk4) {
+
+	//Log::TypedLog(CHN_MOD, "pipLoadWrapper: %s\n", (const char*)p_fileName);
 
 	for (const auto& kv : qbFilesMap) {
 

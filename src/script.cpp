@@ -26,7 +26,6 @@ bool walkspinpatched = false;
 bool boardscuffpatched = false;
 uint32_t addr_sCreateScriptSymbol = 0x0040AF40;
 uint32_t addr_sCreateSymbolOfTheFormNameEqualsValue = 0x0040D1D0;
-uint32_t addr_qdir = 0x00644B60;
 LPVOID pResource_oslogo;
 
 Script::LazyStruct* press_x = nullptr;
@@ -429,8 +428,6 @@ void editScriptsInMemory() {
 		removeScript(0x40BB7409); /*select_network_play_multi*/
 		contentsChecksum = CalculateScriptContentsChecksum_Native((uint8_t*)select_network_play_multi_new);
 		sCreateScriptSymbol_Wrapper(sizeof(select_network_play_multi_new), 0x40BB7409, 0x62EE909F, (uint8_t*)select_network_play_multi_new, "scripts\\myan.qb");
-
-		if (!mSettings.boardscuffs) removeScript(0x9CE4DA4F); /*DoBoardScuff*/
 	}	
 }
 

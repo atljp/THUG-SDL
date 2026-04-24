@@ -293,6 +293,9 @@ void patchStaticValues() {
 	/*Increase pool size for animations*/
 	patchDWord((void*)(0x0040A71F + 1), 0x3E80);
 
+	/*Raise level ceiling*/
+	patchDWord((void*)0x0062F8F5, 0x412F40);
+
 	/*Patch entire main memory heap*/
 	//patchDWord((void*)(0x0057C45F + 1), 768 * 1024 * 1024);
 	//patchDWord((void*)(0x0057C47A + 1), 768 * 1024 * 1024);

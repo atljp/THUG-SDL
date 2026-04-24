@@ -597,17 +597,19 @@ SCRIPT CleanUp_Deck
 ENDSCRIPT
 
 SCRIPT DoBoardScuff 
-	SWITCH <Boardscuff> 
-		CASE 10 
-			Obj_ReplaceTexture src = "CS_NN_board_trans01.png" dest = "textures/scuffs/CS_NN_boardscuff_01" 
-		CASE 20 
-			Obj_ReplaceTexture src = "CS_NN_board_trans01.png" dest = "textures/scuffs/CS_NN_boardscuff_02" 
-		CASE 30 
-			Obj_ReplaceTexture src = "CS_NN_board_trans01.png" dest = "textures/scuffs/CS_NN_boardscuff_03" 
-		CASE 40 
-			Obj_ReplaceTexture src = "CS_NN_board_trans01.png" dest = "textures/scuffs/CS_NN_boardscuff_04" 
-		DEFAULT 
-	ENDSWITCH 
+	IF ( IsTrue m_boardscuffs )
+		SWITCH <Boardscuff> 
+			CASE 10 
+				Obj_ReplaceTexture src = "CS_NN_board_trans01.png" dest = "textures/scuffs/CS_NN_boardscuff_01" 
+			CASE 20 
+				Obj_ReplaceTexture src = "CS_NN_board_trans01.png" dest = "textures/scuffs/CS_NN_boardscuff_02" 
+			CASE 30 
+				Obj_ReplaceTexture src = "CS_NN_board_trans01.png" dest = "textures/scuffs/CS_NN_boardscuff_03" 
+			CASE 40 
+				Obj_ReplaceTexture src = "CS_NN_board_trans01.png" dest = "textures/scuffs/CS_NN_boardscuff_04" 
+			DEFAULT 
+		ENDSWITCH 
+	ENDIF
 ENDSCRIPT
 
 SCRIPT BailBoardControl BoardOffFrame = 5 
