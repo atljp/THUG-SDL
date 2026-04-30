@@ -1085,9 +1085,6 @@ void handleInputEvent(SDL_Event* e) {
 void handleQuitEvent(SDL_Event* e) {
 	switch (e->type) {
 	case SDL_QUIT: {
-		if (inputsettings.savewindowposition)
-			dumpWindowPosition();
-
 		*shouldQuit = 1;
 		return;
 	}
@@ -1097,6 +1094,8 @@ void handleQuitEvent(SDL_Event* e) {
 }
 
 void fastExit() {
+	if (inputsettings.savewindowposition)
+		dumpWindowPosition();
 	exit(0);
 }
 

@@ -42,26 +42,34 @@ void InitModloader() {
 		if (getModIni()) {
 
 			// Get all defined pre files and store them in a map of form qb.pre=mycustomfile.pre
-			if (getAllPreFiles()) {
-				Log::TypedLog(CHN_MOD, "Patching PIP::LoadPre and PreMgr::LoadPre\n");
-				patchPreWrappers();
+			if (getIniBool("MODINFO", "IsUsingPre", 1, modini_fullpath)) {
+				if (getAllPreFiles()) {
+					Log::TypedLog(CHN_MOD, "Patching PIP::LoadPre and PreMgr::LoadPre\n");
+					patchPreWrappers();
+				}
+				else {
+					Log::TypedLog(CHN_MOD, "Failed to load Pre files\n");
+				}
 			}
-			else {
-				Log::TypedLog(CHN_MOD, "Failed to load Pre files\n");
+			// Prioritize pre files over loose qb files by default
+			if (!(getIniBool("MODINFO", "IsUsingPre", 1, modini_fullpath))) {
+				if (getAllQbFiles()) {
+					Log::TypedLog(CHN_MOD, "Patching PIP::Load\n");
+					patchCall((void*)0x0040A049, pipLoadWrapper);
+				}
+				else {
+					Log::TypedLog(CHN_MOD, "Failed to load Qb files\n");
+				}
 			}
-			if (getAllQbFiles()) {
-				Log::TypedLog(CHN_MOD, "Patching PIP::Load\n");
-				patchCall((void*)0x0040A049, pipLoadWrapper);
-			}
-			else {
-				Log::TypedLog(CHN_MOD, "Failed to load Qb files\n");
-			}
-			if (getQdir()) {
-				Log::TypedLog(CHN_MOD, "Patching pointers to %s\n", new_qdir_path);
-				// Patch pointer to new qdir.txt path
-				patchDWord((void*)(0x0052CC90 + 1), (uint32_t)&new_qdir_path);
-				patchDWord((void*)(0x0052CC9A + 1), (uint32_t)&new_qdir_path);
-				patchDWord((void*)(0x0052CD65 + 1), (uint32_t)&new_qdir_path);
+			// Only use custom qdir.txt if we don't use pre files
+			if (!(getIniBool("MODINFO", "IsUsingPre", 1, modini_fullpath))) {
+				if (getQdir()) {
+					Log::TypedLog(CHN_MOD, "Patching pointers to %s\n", new_qdir_path);
+					// Patch pointer to new qdir.txt path
+					patchDWord((void*)(0x0052CC90 + 1), (uint32_t)&new_qdir_path);
+					patchDWord((void*)(0x0052CC9A + 1), (uint32_t)&new_qdir_path);
+					patchDWord((void*)(0x0052CD65 + 1), (uint32_t)&new_qdir_path);
+				}
 			}
 		}
 	}
@@ -250,7 +258,7 @@ bool getModDefaultPreFile() {
 		printf("Found file %s\n", preFile_fullpath);
 		return true;
 	}
-	printf("Could not find thugsdl.pre. Falling back to data\\pre\\qb.pre\n");
+	Log::TypedLog(CHN_MOD, "Could not find thugsdl.pre.Falling back to data\\pre\\qb.pre\n");
 	return false;
 }
 
@@ -283,16 +291,16 @@ bool getAllQbFiles() {
 bool getQdir() {
 
 	bool file_found = false;
-	bool using_source_folder = false;
+	bool using_compiled_folder = false;
 
 	// Check if custom  mod has a qdir.txt
 	sprintf_s(qdir_fullpath, "%s%s", modfolder_fullpath, "\\qdir.txt");
-	sprintf_s(qdir_fullpath_fallback, "%s%s", modfolder_fullpath, "\\source\\qdir.txt");
+	sprintf_s(qdir_fullpath_fallback, "%s%s", modfolder_fullpath, "\\compiled\\scripts\\qdir.txt");
 
 	if (!checkFileExists(qdir_fullpath)) {
 		if (checkFileExists(qdir_fullpath_fallback)) {
 			sprintf_s(qdir_fullpath, "%s", qdir_fullpath_fallback);
-			using_source_folder = true;
+			using_compiled_folder = true;
 			file_found = true;
 		}
 	}
@@ -318,8 +326,8 @@ bool getQdir() {
 			Log::TypedLog(CHN_MOD, "Invalid mod folder format!\n");
 			return false;
 		}
-		if (using_source_folder)
-			sprintf_s(new_qdir_path, "%s%s", new_qdir_path_ptr, "\\source\\qdir.txt");
+		if (using_compiled_folder)
+			sprintf_s(new_qdir_path, "%s%s", new_qdir_path_ptr, "\\compiled\\scripts\\qdir.txt");
 		else
 			sprintf_s(new_qdir_path, "%s%s", new_qdir_path_ptr, "\\qdir.txt");
 		return true;

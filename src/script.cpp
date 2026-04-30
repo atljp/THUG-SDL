@@ -592,9 +592,10 @@ void setDropDownKeys() {
 void setCavemanKeys() {
 	//CavemanKey=1 ; 1 = default, 2 = L1, 3 = R1, 4 = L2, 5 = R2, 6 = L1+R1, 7 = L2+R2 ; PC default: black or white which is R2 or L2
 	//In PC controls, white = L2 / black = R2
-	if (mSettings.cavemancontrol > 1)
+	if (mSettings.cavemancontrol && mSettings.cavemancontrol < 8)
 	{
 		Script::LazyStruct* trigger = Script::LazyStruct::s_create();
+		Script::LazyStruct* alt_trigger = Script::LazyStruct::s_create();
 
 		if (mSettings.isPs2Controls)
 		{
@@ -626,7 +627,7 @@ void setCavemanKeys() {
 				trigger->AddChecksum(0, 0x6BF8A7F4); /*R2*/
 				trigger->AddInteger(0, 10);
 			}
-			else if (mSettings.cavemancontrol == 6)
+			else if (mSettings.cavemancontrol == 6 || mSettings.cavemancontrol == 1)
 			{
 				/*Set L1+R1*/
 				trigger->AddChecksum(0, 0x3F369070); /*PressTwoAnyOrder*/
@@ -644,6 +645,16 @@ void setCavemanKeys() {
 			}
 		}
 		else {
+			if (mSettings.cavemancontrol == 1)
+			{
+				/*Set L1 or R1*/
+				trigger->AddChecksum(0, 0x823B8342); /*press*/
+				trigger->AddChecksum(0, 0x767A45D7); /*black*/
+				trigger->AddInteger(0, 10);
+				alt_trigger->AddChecksum(0, 0x823B8342); /*press*/
+				alt_trigger->AddChecksum(0, 0xBD30325B); /*white*/
+				alt_trigger->AddInteger(0, 10);
+			}
 			if (mSettings.cavemancontrol == 2)
 			{
 				/*Set L1*/
@@ -696,6 +707,9 @@ void setCavemanKeys() {
 		Script::LazyStruct* pref_caveman = GlobalGetStructure_Native(0xB32BEA02); //SwitchControl_Trigger
 		pref_caveman->Free();
 		pref_caveman->AddStructurePointer(0xE594F0A2, trigger); //trigger
+		if (!(mSettings.isPs2Controls) && mSettings.cavemancontrol == 1) {
+			pref_caveman->AddStructurePointer(0x68B74085, alt_trigger); //alt_trigger
+		}
 	}
 }
 

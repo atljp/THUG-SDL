@@ -29,17 +29,16 @@ uint8_t intromovies;
 uint8_t dropdowncontrol;
 uint8_t laddergrabcontrol;
 uint8_t cavemancontrol;
-uint8_t boardscuffs;
-uint8_t Ps2Controls;
-uint8_t quickgetup;
-uint8_t invertRXplayer1;
-uint8_t invertRYplayer1;
-uint8_t disableRXplayer1;
-uint8_t disableRYplayer1;
+bool boardscuffs;
+bool Ps2Controls;
+bool invertRXplayer1;
+bool invertRYplayer1;
+bool disableRXplayer1;
+bool disableRYplayer1;
 uint8_t chatsize;
 uint8_t consolewaittime;
-uint8_t noadditionalscriptmods;
-uint8_t savewindowposition;
+bool noadditionalscriptmods;
+bool savewindowposition;
 uint8_t menubuttons;
 bool exceptionhandler;
 bool disablefsgamma;
@@ -230,7 +229,7 @@ void InitPatch() {
 
 	/*Ledge warp fix*/
 	patchCall((void*)0x00569081, (void*)&fix_floating_precision);
-	patchCall((void*)0x005746fb, (void*)&fix_floating_precision);
+	patchCall((void*)0x005746FB, (void*)&fix_floating_precision);
 
 	/*Disable gamma*/
 	if (disablefsgamma)
@@ -293,12 +292,33 @@ void patchStaticValues() {
 	/*Increase pool size for animations*/
 	patchDWord((void*)(0x0040A71F + 1), 0x3E80);
 
-	/*Raise level ceiling*/
-	patchDWord((void*)0x0062F8F5, 0x412F40);
-
 	/*Patch entire main memory heap*/
-	//patchDWord((void*)(0x0057C45F + 1), 768 * 1024 * 1024);
-	//patchDWord((void*)(0x0057C47A + 1), 768 * 1024 * 1024);
+	patchDWord((void*)(0x0057C45F + 1), 0x16800000);
+	patchDWord((void*)(0x0057C47A + 1), 0x16800000);
+
+	if (!(noadditionalscriptmods)) {
+		/*Raise level ceiling*/
+		patchDWord((void*)0x0062F8F5, 0x412F40);
+
+		/*Raise acid scan distance*/
+		patchByte((void*)0x00561FE1, 0xD8);
+		patchDWord((void*)0x00646BD0, 0x46FA0000);
+	}
+	/*
+	// THUGPLUS
+	patchDWord((void*)(0x0040A668 + 1), 0x960);
+	patchDWord((void*)(0x0040A686 + 1), 0xA4100);
+	patchDWord((void*)(0x0040A6A4 + 1), 0x24B80);
+	patchDWord((void*)(0x0040A6C2 + 1), 0x12C00);
+	patchDWord((void*)(0x0040A6E0 + 1), 0x1F40);
+	patchDWord((void*)(0x0040A701 + 1), 0xEA60);
+	patchDWord((void*)(0x0040A71F + 1), 0x109A0);
+	patchDWord((void*)(0x0040A73D + 1), 0x960);
+	patchByte((void*)(0x004DFEFA + 6), 0x08);
+	patchDWord((void*)(0x0057B95C + 1), 0x802C80);
+	patchDWord((void*)(0x0057B9EF + 1), 0x1E2AA80);
+	patchBytesM((void*)0x00633922, (BYTE*)"\x7A\x49", 2);
+	*/
 
 	/*Patch Script heap size*/
 	//patchDWord((void*)(0x0057BABF+1), 0x4B000 * 3);
@@ -474,8 +494,8 @@ void writeConfigValues() {
 		*hq_shadows = graphics_settings.hqshadows;
 
 		if (graphics_settings.hqshadows == 2) {
-			patchByte((void*)(0x004860C0 + 2), 0x04);
-			patchByte((void*)(0x004860C5 + 2), 0x04);
+			patchByte((void*)(0x004860C0 + 2), 0x08);
+			patchByte((void*)(0x004860C5 + 2), 0x08);
 		}
 	}
 	
@@ -656,8 +676,6 @@ void loadSettings(struct modsettings* settingsOut) {
 		settingsOut->chatsize = chatsize;
 		settingsOut->boardscuffs = boardscuffs;
 		settingsOut->dropdowncontrol = dropdowncontrol;
-		settingsOut->quickgetup = quickgetup;
-		settingsOut->dropdowncontrol = dropdowncontrol;
 		settingsOut->cavemancontrol = cavemancontrol;
 		settingsOut->laddergrabcontrol = laddergrabcontrol;
 		settingsOut->noadditionalscriptmods = noadditionalscriptmods;
@@ -790,6 +808,7 @@ SDL_HitTestResult HitTestCallback(SDL_Window* Window, const SDL_Point* Area, voi
 }
 
 void dumpWindowPosition() {
+	printf("Saving window position\n");
 	SDL_GetWindowPosition(getWindowHandle(), &windowposx, &windowposy);
 	char str_x[10]; sprintf(str_x, "%d", windowposx);
 	char str_y[10]; sprintf(str_y, "%d", windowposy);

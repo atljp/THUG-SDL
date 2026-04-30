@@ -79,8 +79,8 @@ void patchThisToCdecl(void *addr, void *func) {
 
 void callFunc(void *addr) {
     // calls function with the assumption of it returning and accepting void
-    //void (*fp)() = addr;
-    //fp();
+    auto fp = reinterpret_cast<void (*)()>(addr);
+    fp();
 }
 
 void patchJump(void* addr, void* func) {
