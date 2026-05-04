@@ -1,5 +1,4 @@
-// This is just a random empty file which is loaded automatically without messing with qdir.txt
-// Put all the helper and utility functions here
+
 RejoinNextGame = 0
 m_observe_hud_visible = 1
 M_ObserveOn = 0
@@ -738,18 +737,15 @@ SCRIPT launch_mod_menu
 			{ pad_back generic_menu_pad_back params = { callback = create_pause_menu } } 
 		] 
 	} 
-	
+	// FOV
 	M_GetINIValue section = "Graphics" key = "FOV" default = 72
 	menu_camera_fov_get_string
-	theme_menu_add_item text = "Field Of View" extra_text = <text> id = menu_fov
-	SetScreenElementProps { 
+	theme_menu_add_item { text = "Field Of View:" 
 		id = menu_fov
-		event_handlers = [
-			{ pad_left change_fov params = { dec } } 
-			{ pad_right change_fov params = { inc } } 
-		] 
-		replace_handlers 
-	} 
+		focus_script = menu_fov_focus 
+		focus_params = { camera_fov_value = camera_fov_value } 
+		unfocus_script = menu_fov_unfocus 
+	}
 	// TH4 BOOSTPLANT INPUT
 	M_GetINIValue section = "Miscellaneous" key = "SingleTapBP" default = 0
 	IF IsTrue <value> 
@@ -757,7 +753,7 @@ SCRIPT launch_mod_menu
 	ELSE 
 		hud_text = "Double Tap"
 	ENDIF
-	theme_menu_add_item { text = "THPS4 Boostplant Input" 
+	theme_menu_add_item { text = "THPS4 Boostplant Input:" 
 		extra_text = <hud_text> 
 		id = menu_singletapbp
 		pad_choose_script = toggle_gameitem pad_choose_params  = { singletapbp }
@@ -769,7 +765,7 @@ SCRIPT launch_mod_menu
 	ELSE 
 		hud_text = "\\b3 + \\b4"
 	ENDIF
-	theme_menu_add_item { text = "Wallplant Input" 
+	theme_menu_add_item { text = "Wallplant Input:" 
 		extra_text = <hud_text> 
 		id = menu_wpinput
 		pad_choose_script = change_wallplantinput
@@ -783,7 +779,7 @@ SCRIPT launch_mod_menu
 		ELSE 
 			hud_text = "Off"
 		ENDIF
-		theme_menu_add_item { text = "Respawn on new run" 
+		theme_menu_add_item { text = "Respawn on new run:" 
 			extra_text = <hud_text> 
 			id = menu_gamerunrespawns 
 			pad_choose_script = toggle_gameitem pad_choose_params  = { gamerunrespawns }
@@ -792,7 +788,7 @@ SCRIPT launch_mod_menu
 		// CHAT MESSAGE SIZE
 		M_GetINIValue section = "Chat" key = "ChatSize" default = 3
 		chat_size_get_string
-		theme_menu_add_item { text = "Chat size" 
+		theme_menu_add_item { text = "Chat size:" 
 			extra_text = <text> 
 			id = menu_chatsize
 			pad_choose_script = change_chatsize
@@ -801,7 +797,7 @@ SCRIPT launch_mod_menu
 		// PLAYER NAME SIZE
 		M_GetINIValue section = "Multiplayer" key = "PlayerNameSize" default = 3
 		playername_size_get_string
-		theme_menu_add_item { text = "Player Name size" 
+		theme_menu_add_item { text = "Player Name size:" 
 			extra_text = <text> 
 			id = menu_playernamesize
 			pad_choose_script = change_playernamesize
@@ -817,7 +813,7 @@ SCRIPT launch_mod_menu
     ELSE 
         hud_text = "Off"
     ENDIF
-    theme_menu_add_item { text = "Buttslap Counter" 
+    theme_menu_add_item { text = "Buttslap Counter:" 
         extra_text = <hud_text> 
         id = menu_bscounter
         pad_choose_script = toggle_gameitem pad_choose_params  = { bscounter }
@@ -829,7 +825,7 @@ SCRIPT launch_mod_menu
     ELSE 
         hud_text = "Off"
     ENDIF
-    theme_menu_add_item { text = "Land Pivots" 
+    theme_menu_add_item { text = "Land Pivots:" 
         extra_text = <hud_text> 
         id = menu_bhra
         pad_choose_script = toggle_gameitem pad_choose_params  = { bhra }
@@ -841,7 +837,7 @@ SCRIPT launch_mod_menu
 	ELSE 
 		hud_text = "Default"
 	ENDIF
-	theme_menu_add_item { text = "Select Button" 
+	theme_menu_add_item { text = "Select Button:" 
 		extra_text = <hud_text> 
 		id = menu_selectbutton
 		pad_choose_script = toggle_gameitem pad_choose_params  = { freecamselect }
@@ -853,6 +849,7 @@ SCRIPT launch_mod_menu
 		theme_menu_add_item text = "Set Restart" id = set_restart_custom pad_choose_script = m_set_custom_restart
 		theme_menu_add_item text = "Go to Restart" id = goto_restart_custom pad_choose_script = m_skip_to_custom_restart last_menu_item = 1
 	ENDIF
+	fov_show_value
 	finish_themed_sub_menu 
 ENDSCRIPT
 
@@ -919,11 +916,6 @@ SCRIPT toggle_gameitem
     ENDIF
 ENDSCRIPT
 
-SCRIPT menu_camera_fov_get_string 
-	FormatText TextName = fov_text "%a" a = ( camera_fov_value ) 
-	RETURN text = <fov_text> 
-ENDSCRIPT
-
 SCRIPT chat_size_get_string
 	SWITCH m_chat_scale
 	CASE 1
@@ -954,34 +946,119 @@ SCRIPT playername_size_get_string
 	RETURN text = <playername_size_text> 
 ENDSCRIPT
 
+SCRIPT menu_fov_focus
+	GetTags 
+	FormatText ChecksumName = arrow_color "%i_unhighlighted_text_color" i = ( THEME_COLOR_PREFIXES [ current_theme_prefix ] ) 
+	main_theme_focus	
+	
+	IF ( ( camera_fov_value - 1 ) = ( camera_fov_min ) ) 
+		SetScreenElementProps { id = { <id> child = 5 } rgba = [ 128 128 128 0 ] } 
+	ELSE 
+		SetScreenElementProps { id = { <id> child = 5 } rgba = <arrow_color> } 
+	ENDIF 
+	IF ( ( camera_fov_value + 1 ) = ( camera_fov_max ) ) 
+		SetScreenElementProps { id = { <id> child = 6 } rgba = [ 128 128 128 0 ] } 
+	ELSE 
+		SetScreenElementProps { id = { <id> child = 6 } rgba = <arrow_color> } 
+	ENDIF 
+	
+ENDSCRIPT
+
+SCRIPT menu_fov_unfocus
+	GetTags 
+	main_theme_unfocus 
+	SetScreenElementProps { id = { <id> child = 5 } rgba = [ 128 128 128 0 ] } 
+	SetScreenElementProps { id = { <id> child = 6 } rgba = [ 128 128 128 0 ] } 
+ENDSCRIPT
+
+SCRIPT fov_show_value
+	FormatText ChecksumName = text_color "%i_unhighlighted_text_color" i = ( THEME_COLOR_PREFIXES [ current_theme_prefix ] )
+	menu_camera_fov_get_string
+	FormatText textName = fov "%v" v = <text> 
+	
+	CreateScreenElement { 
+		type = textElement 
+		parent = menu_fov 
+		font = small 
+		just = [ center top ] 
+		pos = PAIR(128.00000000000, -17.00000000000) 
+		text = <fov> 
+		rgba = <text_color> 
+	} 
+	CreateScreenElement { 
+		type = SpriteElement 
+		parent = menu_fov 
+		texture = left_arrow 
+		rgba = [ 128 128 128 0 ] 
+		pos = PAIR(115.00000000000, -17.00000000000) 
+		just = [ right top ] 
+		scale = 0.75000000000 
+	} 
+	CreateScreenElement { 
+		type = SpriteElement 
+		parent = menu_fov 
+		texture = right_arrow 
+		rgba = [ 128 128 128 0 ] 
+		pos = PAIR(143.00000000000, -17.00000000000) 
+		just = [ left top ] 
+		scale = 0.75000000000 
+	} 
+	
+	SetScreenElementProps { 
+		id = menu_fov 
+		event_handlers = [ 
+			{ pad_left change_fov params = { dec } } 
+			{ pad_right change_fov params = { inc } } 
+		] 
+		replace_handlers 
+	} 
+ENDSCRIPT
+
+SCRIPT menu_camera_fov_get_string 
+	FormatText TextName = fov_text "%a" a = ( camera_fov_value ) 
+	RETURN text = <fov_text> 
+ENDSCRIPT
+
 SCRIPT change_fov
+	GetTags
 	IF GotParam dec
 		IF ( ( ( camera_fov_value ) - 1 ) > ( camera_fov_min ) )
-			Change camera_fov_value = ( ( camera_fov_value ) - 1 ) 
+			SetScreenElementProps id = { <id> child = 6 } rgba = [ 128 128 128 128 ]
+			Change camera_fov_value = ( ( camera_fov_value ) - 1 )
+			M_SetINIValue section = "Graphics" key = "FOV" value = (camera_fov_value)
+			M_SetFOV fov_value = camera_fov_value	
+			menu_camera_fov_get_string
+			SetScreenElementProps { 
+				id = { menu_fov child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
 			PlaySound MenuUp
-		ENDIF 	
-		menu_camera_fov_get_string 
-		SetScreenElementProps { 
-			id = { menu_fov child = 3 } 
-			text = <text> 
-		}
-		M_SetINIValue section = "Graphics" key = "FOV" value = (camera_fov_value)
-		M_SetFOV fov_value = camera_fov_value
-		
-		
-	ELSE
-		IF ( ( ( camera_fov_value ) + 1 ) < ( camera_fov_max ) ) 
-			Change camera_fov_value = ( ( camera_fov_value ) + 1 )
-			PlaySound MenuUp
-		ENDIF 
-		menu_camera_fov_get_string
-		SetScreenElementProps { 
-			id = { menu_fov child = 3 } 
-			text = <text> 
-		}
-		M_SetINIValue section = "Graphics" key = "FOV" value = (camera_fov_value)
-		M_SetFOV fov_value = camera_fov_value
+		ENDIF
+		IF ( ( ( camera_fov_value ) - 1 ) = ( camera_fov_min ) )
+			SetScreenElementProps id = { <id> child = 5 } rgba = [ 128 128 128 0 ] 
+		ENDIF
 	ENDIF
+	IF GotParam inc
+		IF ( ( ( camera_fov_value ) + 1 ) < ( camera_fov_max ) )
+			SetScreenElementProps id = { <id> child = 5 } rgba = [ 128 128 128 128 ]
+			Change camera_fov_value = ( ( camera_fov_value ) + 1 )
+			M_SetINIValue section = "Graphics" key = "FOV" value = (camera_fov_value)
+			M_SetFOV fov_value = camera_fov_value	
+			menu_camera_fov_get_string
+			SetScreenElementProps { 
+				id = { menu_fov child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 6 } 
+			PlaySound MenuUp
+		ENDIF
+		IF ( ( ( camera_fov_value ) + 1 ) = ( camera_fov_max ) )
+			SetScreenElementProps id = { <id> child = 6 } rgba = [ 128 128 128 0 ] 
+		ENDIF
+		
+	ENDIF	
+		
 ENDSCRIPT
 
 SCRIPT change_chatsize
@@ -1091,7 +1168,6 @@ SCRIPT change_wallplantinput
 ENDSCRIPT
 
 SCRIPT set_wallplantinput
-	// 0: x+down ; 1: x
 	IF IsTrue m_wpinput
 		M_ToggleWallplantInput Ollie
 	ELSE

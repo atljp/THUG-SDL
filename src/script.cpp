@@ -731,7 +731,7 @@ void setLadderGrabKeys() {
 	}
 }
 
-bool CFunc_ToggleWallplantInput(Script::LazyStruct* pParams, DummyScript* pScript) {
+bool CFunc_ToggleWallplantInput(Script::LazyStruct* pParams) {
 
 	if (press_x == nullptr) {
 		press_x = Script::LazyStruct::s_create();
@@ -801,6 +801,17 @@ bool CFunc_ToggleWallplantInput(Script::LazyStruct* pParams, DummyScript* pScrip
 		pref_wpinput->SetStructure(4, downleft_x);
 		pref_wpinput->SetStructure(5, downright_x);
 	}
+	return true;
+}
+
+bool CFunc_ToggleHangControls(Script::LazyStruct* pParams) {
+
+	if (pParams->ContainsFlag(0xD443A2BC)) /* Off */
+		patchBytesM((void*)0x0046D5B7, (BYTE*)"\xE9\xED\x01\x00\x00\x90", 6);
+
+	else if (pParams->ContainsFlag(0xF649D637))  /* On */
+		patchBytesM((void*)0x0046D5B7, (BYTE*)"\x0F\x84\xEC\x01\x00\x00", 6);
+
 	return true;
 }
 
@@ -959,4 +970,5 @@ void addControlCfuncs() {
 
 	Log::TypedLog(CHN_DLL, "Adding control CFuncs\n");
 	CFuncs::AddFunction("M_ToggleWallplantInput", CFunc_ToggleWallplantInput);
+	CFuncs::AddFunction("M_ToggleHangControls", CFunc_ToggleHangControls);
 }
