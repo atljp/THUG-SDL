@@ -34,6 +34,7 @@ m_dd_buttons = 0
 m_dd_sping_lag = 0
 m_directional_dd = 0
 m_boardscuffs = 0
+m_screenmode = 0
 
 block_pause_menu = 0
 m_restore_original_double_taps = 0
@@ -692,7 +693,17 @@ SCRIPT M_InitializeMod
 	IF IsTrue <value>
 		change m_boardscuffs = 1
 	ENDIF
-	//Aspect Ratio, manual bps
+	// ASPECT RATIO
+	M_GetINIValue section = "Graphics" key = "ScreenMode" default = 0
+	IF ( ( <value> ) < 1 )
+		Change m_screenmode = 0
+	ELSE
+		IF ( ( <value> ) > 5 )
+			Change m_screenmode = 5
+		ELSE
+			Change m_screenmode = <value>
+		ENDIF
+	ENDIF
 ENDSCRIPT
 
 SCRIPT exit_pause_menu_maybe_create_observe_menu
@@ -714,7 +725,7 @@ SCRIPT exit_pause_menu_maybe_create_observe_menu
 	ENDIF 
 	IF NOT GameModeEquals is_lobby 
 		IF NOT GameModeEquals is_singlesession 
-			IF M_IsSurveying // Added M_
+			IF M_IsSurveying
 				create_observe_menu 
 				RETURN 
 			ENDIF 
@@ -729,7 +740,8 @@ SCRIPT launch_mod_menu
 	make_new_themed_sub_menu title = "THUG SDL OPTIONS" title_icon = <title_icon> 
 	create_helper_text { helper_text_elements = [ { text = "\\b7/\\b4 = Select" } 
 			{ text = "\\bn = Back" } 
-			{ text = "\\bm = Accept" } 
+			{ text = "\\bm = Toggle Item" } 
+			{ text = "\\b6/\\b5 = Change Item" } 
 		] 
 	} 
 	SetScreenElementProps { id = sub_menu 
@@ -738,17 +750,22 @@ SCRIPT launch_mod_menu
 		] 
 	} 
 	// FOV
-	M_GetINIValue section = "Graphics" key = "FOV" default = 72
-	menu_camera_fov_get_string
 	theme_menu_add_item { text = "Field Of View:" 
 		id = menu_fov
 		focus_script = menu_fov_focus 
 		focus_params = { camera_fov_value = camera_fov_value } 
 		unfocus_script = menu_fov_unfocus 
 	}
+	// SCREENMODE
+	theme_menu_add_item { text = "Aspect Ratio:" 
+			id = menu_screenmode
+			focus_script = menu_screenmode_focus 
+			focus_params = { m_screenmode = m_screenmode } 
+			unfocus_script = menu_screenmode_unfocus
+			pad_choose_script = change_screenmode
+	}
 	// TH4 BOOSTPLANT INPUT
-	M_GetINIValue section = "Miscellaneous" key = "SingleTapBP" default = 0
-	IF IsTrue <value> 
+	IF IsTrue m_singletapbp
 		hud_text = "Single Tap" 
 	ELSE 
 		hud_text = "Double Tap"
@@ -759,8 +776,7 @@ SCRIPT launch_mod_menu
 		pad_choose_script = toggle_gameitem pad_choose_params  = { singletapbp }
 	} 
 	// WALLPLANT INPUT
-	M_GetINIValue section = "Controls" key = "WallplantInput" default = 0
-	IF IsTrue <value> 
+	IF IsTrue m_wpinput
 		hud_text = "\\b3" 
 	ELSE 
 		hud_text = "\\b3 + \\b4"
@@ -770,11 +786,21 @@ SCRIPT launch_mod_menu
 		id = menu_wpinput
 		pad_choose_script = change_wallplantinput
 	} 
+	// BOARDSCUFFS
+	IF IsTrue m_boardscuffs
+		hud_text = "On"
+	ELSE
+		hud_text = "Off"
+	ENDIF
+	theme_menu_add_item { text = "Boardscuffs:" 
+		extra_text = <hud_text> 
+		id = menu_boardscuffs
+		pad_choose_script = toggle_gameitem pad_choose_params  = { boardscuffs }
+	}
 	
 	IF GotParam NetGame
 		// RESPAWN ON NEW RUN
-		M_GetINIValue section = "Multiplayer" key = "GameRunRespawns" default = 1
-		IF IsTrue <value> 
+		IF IsTrue m_gamerunrespawns 
 			hud_text = "On" 
 		ELSE 
 			hud_text = "Off"
@@ -784,18 +810,14 @@ SCRIPT launch_mod_menu
 			id = menu_gamerunrespawns 
 			pad_choose_script = toggle_gameitem pad_choose_params  = { gamerunrespawns }
 		} 
-		
 		// CHAT MESSAGE SIZE
-		M_GetINIValue section = "Chat" key = "ChatSize" default = 3
 		chat_size_get_string
 		theme_menu_add_item { text = "Chat size:" 
 			extra_text = <text> 
 			id = menu_chatsize
 			pad_choose_script = change_chatsize
 		}
-		
 		// PLAYER NAME SIZE
-		M_GetINIValue section = "Multiplayer" key = "PlayerNameSize" default = 3
 		playername_size_get_string
 		theme_menu_add_item { text = "Player Name size:" 
 			extra_text = <text> 
@@ -807,8 +829,7 @@ SCRIPT launch_mod_menu
 		printf "Mod menu: Single player options: Empty"
 	ENDIF 
     // BUTTSLAP COUNTER
-    M_GetINIValue section = "Miscellaneous" key = "BSCounter" default = 0
-    IF IsTrue <value> 
+    IF IsTrue m_enable_bscounter
         hud_text = "On" 
     ELSE 
         hud_text = "Off"
@@ -819,8 +840,7 @@ SCRIPT launch_mod_menu
         pad_choose_script = toggle_gameitem pad_choose_params  = { bscounter }
     }
     // BHRA
-    M_GetINIValue section = "Miscellaneous" key = "BHRA" default = 0
-    IF IsTrue <value> 
+    IF IsTrue m_enable_landpivots
         hud_text = "On" 
     ELSE 
         hud_text = "Off"
@@ -831,8 +851,7 @@ SCRIPT launch_mod_menu
         pad_choose_script = toggle_gameitem pad_choose_params  = { bhra }
     }
 	// FREE CAM SELECT
-	M_GetINIValue section = "Miscellaneous" key = "FreeCamOnSelect" default = 0
-	IF IsTrue <value> 
+	IF IsTrue m_freecam_select
 		hud_text = "Free Cam" 
 	ELSE 
 		hud_text = "Default"
@@ -850,6 +869,7 @@ SCRIPT launch_mod_menu
 		theme_menu_add_item text = "Go to Restart" id = goto_restart_custom pad_choose_script = m_skip_to_custom_restart last_menu_item = 1
 	ENDIF
 	fov_show_value
+	screenmode_show_value
 	finish_themed_sub_menu 
 ENDSCRIPT
 
@@ -914,6 +934,18 @@ SCRIPT toggle_gameitem
             Change m_enable_landpivots = 1
         ENDIF
     ENDIF
+	IF GotParam boardscuffs
+        M_GetINIValue section = "Miscellaneous" key = "Boardscuffs" default = 1
+        IF IsTrue <value>
+            SetScreenElementProps id = { menu_boardscuffs child = 3 } text = "Off" 
+            M_SetINIValue section = "Miscellaneous" key = "Boardscuffs" value = 0
+            Change m_boardscuffs = 0
+        ELSE 
+            SetScreenElementProps id = { menu_boardscuffs child = 3 } text = "On" 
+            M_SetINIValue section = "Miscellaneous" key = "Boardscuffs" value = 1				
+            Change m_boardscuffs = 1
+        ENDIF
+    ENDIF
 ENDSCRIPT
 
 SCRIPT chat_size_get_string
@@ -949,8 +981,7 @@ ENDSCRIPT
 SCRIPT menu_fov_focus
 	GetTags 
 	FormatText ChecksumName = arrow_color "%i_unhighlighted_text_color" i = ( THEME_COLOR_PREFIXES [ current_theme_prefix ] ) 
-	main_theme_focus	
-	
+	main_theme_focus 
 	IF ( ( camera_fov_value - 1 ) = ( camera_fov_min ) ) 
 		SetScreenElementProps { id = { <id> child = 5 } rgba = [ 128 128 128 0 ] } 
 	ELSE 
@@ -961,7 +992,6 @@ SCRIPT menu_fov_focus
 	ELSE 
 		SetScreenElementProps { id = { <id> child = 6 } rgba = <arrow_color> } 
 	ENDIF 
-	
 ENDSCRIPT
 
 SCRIPT menu_fov_unfocus
@@ -973,16 +1003,15 @@ ENDSCRIPT
 
 SCRIPT fov_show_value
 	FormatText ChecksumName = text_color "%i_unhighlighted_text_color" i = ( THEME_COLOR_PREFIXES [ current_theme_prefix ] )
-	menu_camera_fov_get_string
-	FormatText textName = fov "%v" v = <text> 
+	FormatText textName = fov_text "%v" v = camera_fov_value
 	
 	CreateScreenElement { 
 		type = textElement 
 		parent = menu_fov 
 		font = small 
 		just = [ center top ] 
-		pos = PAIR(128.00000000000, -17.00000000000) 
-		text = <fov> 
+		pos = PAIR(182.50000000000, -17.00000000000) 
+		text = <fov_text> 
 		rgba = <text_color> 
 	} 
 	CreateScreenElement { 
@@ -999,11 +1028,10 @@ SCRIPT fov_show_value
 		parent = menu_fov 
 		texture = right_arrow 
 		rgba = [ 128 128 128 0 ] 
-		pos = PAIR(143.00000000000, -17.00000000000) 
+		pos = PAIR(250.00000000000, -17.00000000000) 
 		just = [ left top ] 
 		scale = 0.75000000000 
 	} 
-	
 	SetScreenElementProps { 
 		id = menu_fov 
 		event_handlers = [ 
@@ -1056,9 +1084,7 @@ SCRIPT change_fov
 		IF ( ( ( camera_fov_value ) + 1 ) = ( camera_fov_max ) )
 			SetScreenElementProps id = { <id> child = 6 } rgba = [ 128 128 128 0 ] 
 		ENDIF
-		
 	ENDIF	
-		
 ENDSCRIPT
 
 SCRIPT change_chatsize
@@ -1173,6 +1199,221 @@ SCRIPT set_wallplantinput
 	ELSE
 		M_ToggleWallplantInput DownAndOllie
 	ENDIF
+ENDSCRIPT
+
+SCRIPT menu_screenmode_focus
+GetTags 
+	FormatText ChecksumName = arrow_color "%i_unhighlighted_text_color" i = ( THEME_COLOR_PREFIXES [ current_theme_prefix ] ) 
+	main_theme_focus 
+	SetScreenElementProps { id = { <id> child = 5 } rgba = <arrow_color> } 
+	SetScreenElementProps { id = { <id> child = 6 } rgba = <arrow_color> } 
+ENDSCRIPT
+
+SCRIPT menu_screenmode_unfocus
+	GetTags 
+	main_theme_unfocus 
+	SetScreenElementProps { id = { <id> child = 5 } rgba = [ 128 128 128 0 ] } 
+	SetScreenElementProps { id = { <id> child = 6 } rgba = [ 128 128 128 0 ] } 
+ENDSCRIPT
+
+SCRIPT screenmode_get_string
+	SWITCH m_screenmode
+	CASE 0
+		FormatText TextName = m_screenmode_text "Auto"
+	CASE 1
+		FormatText TextName = m_screenmode_text "4:3"
+	CASE 2
+		FormatText TextName = m_screenmode_text "16:9"
+	CASE 3
+		FormatText TextName = m_screenmode_text "16:10"
+	CASE 4
+		FormatText TextName = m_screenmode_text "21:9"
+	CASE 5
+		FormatText TextName = m_screenmode_text "21:10"
+	DEFAULT
+		FormatText TextName = m_screenmode_text "\\c2ERROR!"
+	ENDSWITCH
+	RETURN text = <m_screenmode_text>
+ENDSCRIPT
+
+SCRIPT screenmode_show_value
+	FormatText ChecksumName = text_color "%i_unhighlighted_text_color" i = ( THEME_COLOR_PREFIXES [ current_theme_prefix ] )
+	screenmode_get_string
+	FormatText textName = screenmode_text "%v" v = <text>
+	
+	CreateScreenElement { 
+		type = textElement 
+		parent = menu_screenmode
+		font = small 
+		just = [ center top ] 
+		pos = PAIR(182.50000000000, -17.00000000000) 
+		text = <screenmode_text> 
+		rgba = <text_color> 
+	} 
+	CreateScreenElement { 
+		type = SpriteElement 
+		parent = menu_screenmode 
+		texture = left_arrow 
+		rgba = [ 128 128 128 0 ] 
+		pos = PAIR(115.00000000000, -17.00000000000) 
+		just = [ right top ] 
+		scale = 0.75000000000 
+	} 
+	CreateScreenElement { 
+		type = SpriteElement 
+		parent = menu_screenmode 
+		texture = right_arrow 
+		rgba = [ 128 128 128 0 ] 
+		pos = PAIR(250.00000000000, -17.00000000000) 
+		just = [ left top ] 
+		scale = 0.75000000000 
+	} 
+	SetScreenElementProps { 
+		id = menu_screenmode 
+		event_handlers = [ 
+			{ pad_left change_screenmode params = { left } } 
+			{ pad_right change_screenmode params = { right } } 
+		] 
+		replace_handlers 
+	} 
+ENDSCRIPT
+
+SCRIPT change_screenmode
+	GetTags
+	IF GotParam left
+		SWITCH m_screenmode
+		CASE 0
+			Change m_screenmode = 5
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		CASE 1
+			Change m_screenmode = 0
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		CASE 2
+			Change m_screenmode = 1
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		CASE 3
+			Change m_screenmode = 2
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		CASE 4
+			Change m_screenmode = 3
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		CASE 5
+			Change m_screenmode = 4
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		DEFAULT
+			printf "Invalid Screenmode setting!"
+		ENDSWITCH
+	ENDIF
+	IF GotParam right
+		SWITCH m_screenmode
+		CASE 0
+			Change m_screenmode = 1
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		CASE 1
+			Change m_screenmode = 2
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		CASE 2
+			Change m_screenmode = 3
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		CASE 3
+			Change m_screenmode = 4
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		CASE 4
+			Change m_screenmode = 5
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		CASE 5
+			Change m_screenmode = 0
+			M_SetINIValue section = "Graphics" key = "ScreenMode" value = (m_screenmode)
+			screenmode_get_string
+			SetScreenElementProps { 
+				id = { menu_screenmode child = 4 } 
+				text = <text> 
+			}
+			menu_horiz_blink_arrow arrow_id = { <id> child = 5 } 
+			PlaySound MenuUp
+		DEFAULT
+			printf "Invalid Screenmode setting!"
+		ENDSWITCH
+	ENDIF 
+	M_SetAspectRatio value = (m_screenmode)
+	M_SetFOV fov_value = camera_fov_value
 ENDSCRIPT
 
 SCRIPT m_set_custom_restart

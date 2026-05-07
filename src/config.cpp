@@ -62,8 +62,8 @@ dehexifyDigit_NativeCall* dehexifyDigit_Native = (dehexifyDigit_NativeCall*)(0x0
 typedef uint32_t __cdecl GlobalGetArrayAsInt_NativeCall(uint32_t nameChecksum);
 GlobalGetArrayAsInt_NativeCall* GlobalGetArrayAsInt_Native = (GlobalGetArrayAsInt_NativeCall*)(0x00413650);
 
-typedef float __cdecl SetScreenAngleFactor_NativeCall(float fov);
-SetScreenAngleFactor_NativeCall* SetScreenAngleFactor_Native = (SetScreenAngleFactor_NativeCall*)(0x00485480);
+typedef float __cdecl CViewportManager_sSetScreenAngle_NativeCall(float fov);
+CViewportManager_sSetScreenAngle_NativeCall* CViewportManager_sSetScreenAngle_Native = (CViewportManager_sSetScreenAngle_NativeCall*)(0x00485480);
 
 /* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- Init =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
@@ -841,18 +841,42 @@ void runProfileConnectScript(void* arg1, Script::LazyStruct* pParams) {
 	RunScript(0x588ED87C, pParams, nullptr, nullptr);
 }
 
-void __cdecl setAspectRatio(float aspect) {
+void writeAspectRatioValue() {
 	float aspect_ratio = 0;
 
 	switch (screenmode) {
-		case 1: aspect_ratio = 4.0f / 3.0f; break;			// 0x3FAAAAAB
-		case 2: aspect_ratio = 16.0f / 9.0f; break;			// 0x3FE38E39
-		case 3: aspect_ratio = 16.0f / 10.0f; break;		// 0x3FCCCCCD
-		case 4: aspect_ratio = 2560.0f / 1080.0f; break;	// 0x4017B426
-		case 5: aspect_ratio = 21.0f / 10.0f; break;		// 0x40066666
-		default: aspect_ratio = ((float)resX / (float)resY); break;
+	case 1: aspect_ratio = 4.0f / 3.0f; break;			// 0x3FAAAAAB
+	case 2: aspect_ratio = 16.0f / 9.0f; break;			// 0x3FE38E39
+	case 3: aspect_ratio = 16.0f / 10.0f; break;		// 0x3FCCCCCD
+	case 4: aspect_ratio = 2560.0f / 1080.0f; break;	// 0x4017B426
+	case 5: aspect_ratio = 21.0f / 10.0f; break;		// 0x40066666
+	default: aspect_ratio = ((float)resX / (float)resY); break;
 	}
 	patchFloat((void*)0x00707860, aspect_ratio);
+}
+
+void __cdecl setAspectRatio(float aspect) {
+	writeAspectRatioValue();
+}
+
+bool CFunc_SetAspectRatio(Script::LazyStruct* pParams) {
+	screenmode = pParams->GetInteger(Script::QbKey("value"));
+	writeAspectRatioValue();
+	return true;
+}
+
+bool CFunc_SetFOV(Script::LazyStruct* pParams) {
+
+	float fov = 0.0;
+	pParams->GetFloat(0x96715172, &fov, 0); // fov_value
+
+	if (!fov) {
+		Log::TypedLog(CHN_DLL, "Received invalid FOV value!\n");
+		return false;
+	}
+	float fov_real = AdjustHorizontalFOV(fov, *(float*)0x00707860);
+	CViewportManager_sSetScreenAngle_Native(fov_real);
+	return true;
 }
 
 float AdjustHorizontalFOV(float verticalFOV, float aspectRatio) {
@@ -888,7 +912,7 @@ float __cdecl setScreenAngleFactor(float fov) {
 		case 5: fov = 97.7f; break;
 		default: fov = AdjustHorizontalFOV(*(float*)0x00707868, *(float*)0x00707860); break;
 	}
-	return SetScreenAngleFactor_Native(fov);
+	return CViewportManager_sSetScreenAngle_Native(fov);
 }
 
 int Rnd_fixed(int n) {
@@ -1078,4 +1102,6 @@ void addScriptCFuncs() {
 	CFuncs::AddFunction("M_SetINIValue", CFunc_SetINIValue);
 	CFuncs::AddFunction("M_GetINIString", CFunc_GetINIString);
 	CFuncs::AddFunction("M_SetINIString", CFunc_SetINIString);
+	CFuncs::AddFunction("M_SetFOV", CFunc_SetFOV);
+	CFuncs::AddFunction("M_SetAspectRatio", CFunc_SetAspectRatio);
 }
