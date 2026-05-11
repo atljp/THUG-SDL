@@ -11,7 +11,7 @@ char* caveman_options[] = {
 	"RT/R2",
 	"L1+R1",
 	"L2+R2",
-	//; PC default: black or white which is R2 or L2 (caveman1 or caveman2 in the launcher), Ps2 default: L1+R1"
+	//; PC default: black or white which is L2 or R2 (caveman1 or caveman2 in the launcher), Ps2 default: L1+R1"
 };
 
 char* dropdown_options[] = {
@@ -59,6 +59,8 @@ void check_nollieandswitch_keys(pgui_control* control, int value, void* data) {
 		pgui_textbox_set_enabled(gamepad_page.caveman2, 1);
 	}
 	do_setting_checkbox(control, value, data);
+	defaultSettings_tabonly(2);
+	setAllPadBindText();
 }
 
 void build_control_page(pgui_control* parent) {
@@ -82,17 +84,17 @@ void build_control_page(pgui_control* parent) {
 
 	control_page.cavemankey = pgui_label_create(8, 16, 70, 32, "Caveman button(s):", PGUI_LABEL_JUSTIFY_CENTER, buttons_groupbox);
 	control_page.cavemankey_combobox = pgui_combobox_create(8 + 88, 16 + 4, 80, 24, caveman_options, 7, buttons_groupbox);
-	control_page.caveman_helper = pgui_label_create(8, (24 * 2), 180, 160, "- PC and Xbox default: R1 or L1\n-- Black or White on Xbox (Duke)\n-- RB or LB on Xbox\n-- Caveman1 or Caveman2 on PC\n- Ps2 default: L1+R1", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
+	control_page.caveman_helper = pgui_label_create(8, (24 * 2), 180, 160, "- PC and Xbox default: L1 or R1\n-- Black or White on Xbox (Duke)\n-- RB or LB on Xbox\n-- Caveman1 or Caveman2 on PC\n- Ps2 default: L1+R1", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
 
 	control_page.dropdownkey = pgui_label_create(8, 16 + (24 * 5), 70, 32, "Dropdown button(s):", PGUI_LABEL_JUSTIFY_CENTER, buttons_groupbox);
 	control_page.dropdownkey_combobox = pgui_combobox_create(8 + 88, 16 + 4 + (24 * 5), 80, 24, dropdown_options, 7, buttons_groupbox);
-	control_page.dropdown_helper = pgui_label_create(8, (24 * 7), 180, 80, "- PC and Xbox default: R2+L2\n--Spin right and Spin left on PC\n--RT and LT on Xbox\n- Ps2 default: R2", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
+	control_page.dropdown_helper = pgui_label_create(8, (24 * 7), 180, 80, "- PC and Xbox default: L2+R2\n--Spin right and Spin left on PC\n--RT and LT on Xbox\n- Ps2 default: R2", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
 	control_page.ddspinlag = pgui_checkbox_create(8, 16 + (24 * 9) - 12, 180, 32, "Drop down spin lag", buttons_groupbox);
 
 	control_page.laddergrabkey = pgui_label_create(8, 24 + (24 * 11), 70, 32, "Ladder grab button:", PGUI_LABEL_JUSTIFY_CENTER, buttons_groupbox);
 	control_page.laddergrabkey_combobox = pgui_combobox_create(8 + 88, 24 + 4 + (24 * 11), 80, 24, laddergrab_options, 2, buttons_groupbox);
 
-	control_page.ps2_helper = pgui_label_create(8, 16 + (24 * 14), (parent->w) + - 24 , 90, "* Using Ps2 controls will set getting of board to R1 + L1\!\n   Not using Ps2 controls will merge SpinRight + Switch and SpinLeft + Nollie onto    the spin keys!\n   Make sure to reset the Keyboard/Gamepad bindings after changing this setting!", PGUI_LABEL_JUSTIFY_LEFT, parent);
+	control_page.ps2_helper = pgui_label_create(8, 16 + (24 * 14), (parent->w) + - 24 , 90, "* Using Ps2 controls will set getting of board to L1 + R1\!\n   Not using Ps2 controls will merge SpinRight + Switch and SpinLeft + Nollie onto    the spin keys!", PGUI_LABEL_JUSTIFY_LEFT, parent);
 	pgui_label_create(8, 24 + (24 * 12) + 4, 120, 18, "- Default: Spin Right", PGUI_LABEL_JUSTIFY_LEFT, buttons_groupbox);
 
 	

@@ -140,19 +140,13 @@ char* language_options[] = {
 	"German",
 };
 
-char* chatsize_options[] = {
-	"Tiny",
-	"Small",
-	"Default",
-	"Big",
-};
-
 void build_general_page(pgui_control* parent) {
 	initResolutionList();
 
 	pgui_control* resolution_groupbox = pgui_groupbox_create(8, 8, (parent->w / 2) - 8 - 4, (parent->h / 2) - 8 - 4, "Resolution", parent);
 	pgui_control* graphics_groupbox = pgui_groupbox_create(8, (parent->h / 2) + 4, (parent->w / 2) - 8 - 4, (parent->h / 2) - 8 - 4, "Graphics", parent);
-	pgui_control* misc_groupbox = pgui_groupbox_create((parent->w / 2) + 4, 8, (parent->w / 2) - 8 - 4, (parent->h) - 8 - 8, "Miscellaneous", parent);
+	pgui_control* misc_groupbox = pgui_groupbox_create((parent->w / 2) + 4, 8, (parent->w / 2) - 8 - 4, (parent->h / 2) + 114, "Miscellaneous", parent);
+	pgui_control* modloader_groupbox = pgui_groupbox_create((parent->w / 2) + 4, (parent->h) - 98, (parent->w / 2) - 8 - 4, 90, "Mod loader", parent);
 
 	// resolution options
 	general_page.resolution_combobox = pgui_combobox_create(8, 16, 168, 24, displayModeStringList, numDisplayModes + 1, resolution_groupbox);
@@ -190,15 +184,11 @@ void build_general_page(pgui_control* parent) {
 	general_page.append_log = pgui_checkbox_create(8, 24 + (24 * 4), 128, 24, "Append log", misc_groupbox);
 	general_page.exception_handler = pgui_checkbox_with_tooltip_create(8, 24 + (24 * 5), 136, 24, "Exception Handler", misc_groupbox, "May not work on Windows 11");
 	general_page.intro_movies = pgui_checkbox_create(8, 24 + (24 * 6), 128, 24, "Intro movies", misc_groupbox);
-	general_page.boardscuffs = pgui_checkbox_create(8, 24 + (24 * 7), 128, 24, "Boardscuffs", misc_groupbox);
-	general_page.game_run_respawns = pgui_checkbox_create(8, 24 + (24 * 8), 128, 24, "Respawn on new run", misc_groupbox);
-	general_page.chat_size_label = pgui_label_create(8, 24 + (24 * 9) + 9, 128, 24, "Chat size:", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox);
-	general_page.chat_size = pgui_combobox_create(8 + 82, 24 + (24 * 9) + 4, 80, 24, chatsize_options, 4, misc_groupbox);
-	general_page.chat_wait_time_label = pgui_label_with_tooltip_create(8, 24 + (24 * 10) + 11, 128, 24, "Message time (seconds): ", PGUI_LABEL_JUSTIFY_LEFT, misc_groupbox, "Value between 1 and 120");
-	general_page.chat_wait_time = pgui_textbox_create(8 + 132, 24 + (24 * 10) + 9, 30, 20, "", misc_groupbox);
-	general_page.no_additional_script_mods = pgui_checkbox_create(8, 24 + (24 * 14) - 10, 128, 24, "Disable Script Mods", misc_groupbox);
-	general_page.additional_mods_checkbox = pgui_checkbox_create(8, 24 + (24 * 15) - 10, 128, 24, "Additional mods:", misc_groupbox);
-	general_page.additional_mods = pgui_textbox_create(8, 24 + (24 * 16) - 5, (parent->w / 2) - 32, 24, "", misc_groupbox);
+	general_page.no_additional_script_mods = pgui_checkbox_create(8, 24 + (24 * 7), 128, 24, "Disable Script Mods", misc_groupbox);
+
+	// mod loader
+	general_page.additional_mods_checkbox = pgui_checkbox_create(8, 16 + 4, 128, 24, "Additional mods:", modloader_groupbox);
+	general_page.additional_mods = pgui_textbox_create(8, 16 + 33, (parent->w / 2) - 32, 24, "", modloader_groupbox);
 
 	// **************************
 	// SET SETTINGS
@@ -211,11 +201,7 @@ void build_general_page(pgui_control* parent) {
 	pgui_checkbox_set_on_toggle(general_page.exception_handler, do_setting_checkbox, &(settings.exceptionhandler));
 	pgui_checkbox_set_on_toggle(general_page.intro_movies, do_setting_checkbox, &(settings.intromovies));
 	pgui_combobox_set_on_select(general_page.language, set_menu_combobox, &(settings.language));
-	pgui_checkbox_set_on_toggle(general_page.boardscuffs, do_setting_checkbox, &(settings.boardscuffs));
 	pgui_checkbox_set_on_toggle(general_page.no_additional_script_mods, do_setting_checkbox, &(settings.noadditionalscriptmods));
-	pgui_checkbox_set_on_toggle(general_page.game_run_respawns, do_setting_checkbox, &(settings.gamerunrespawns));
-	pgui_combobox_set_on_select(general_page.chat_size, set_menu_combobox, &(settings.chatsize));
-	pgui_textbox_set_on_focus_lost(general_page.chat_wait_time, do_custom_resolution_textbox, &(settings.chatwaittime));
 	pgui_checkbox_set_on_toggle(general_page.additional_mods_checkbox, check_additional_mods, &(settings.additionalmods));
 	pgui_textbox_set_on_focus_lost(general_page.additional_mods, do_additional_mod_folder, &(settings.additionalmods_folder));
 
@@ -332,14 +318,7 @@ void update_general_page() {
 	pgui_checkbox_set_checked(general_page.append_log, settings.appendlog);
 	pgui_checkbox_set_checked(general_page.exception_handler, settings.exceptionhandler);
 	pgui_checkbox_set_checked(general_page.intro_movies, settings.intromovies);
-	pgui_checkbox_set_checked(general_page.boardscuffs, settings.boardscuffs);
 	pgui_checkbox_set_checked(general_page.no_additional_script_mods, settings.noadditionalscriptmods);
-	pgui_checkbox_set_checked(general_page.game_run_respawns, settings.gamerunrespawns);
-	pgui_combobox_set_selection(general_page.chat_size, settings.chatsize-1);
-
-	char buf_chat_wait_time[16];
-	itoa(settings.chatwaittime, buf_chat_wait_time, 10);
-	pgui_textbox_set_text(general_page.chat_wait_time, buf_chat_wait_time);
 
 	pgui_checkbox_set_checked(general_page.disable_blur, settings.disable_blur);
 	pgui_checkbox_set_checked(general_page.disable_fs_gamma, settings.disable_fsgamma);
@@ -436,13 +415,8 @@ void set_general_settings(struct settings* mSettingsOut) {
 	mSettingsOut->exceptionhandler = settings.exceptionhandler;
 	mSettingsOut->intromovies = settings.intromovies;
 	mSettingsOut->language = settings.language;
-	mSettingsOut->boardscuffs = settings.boardscuffs;
 	mSettingsOut->noadditionalscriptmods = settings.noadditionalscriptmods;
-	mSettingsOut->gamerunrespawns = settings.gamerunrespawns;
 	mSettingsOut->disable_fsgamma = settings.disable_fsgamma;
-	mSettingsOut->chatsize = settings.chatsize;
-	if (settings.chatwaittime < 1 || settings.chatwaittime > 120) settings.chatwaittime = 30;
-	mSettingsOut->chatwaittime = settings.chatwaittime;
 	mSettingsOut->additionalmods = settings.additionalmods;
 	strcpy(mSettingsOut->additionalmods_folder, settings.additionalmods_folder);
 

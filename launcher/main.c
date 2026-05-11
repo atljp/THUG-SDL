@@ -20,6 +20,8 @@ struct controllerbinds padbinds;
 char configFile[1024];
 int doing_keybind = 0;
 
+static void checkFileExists(const char* file);
+
 void do_setting_checkbox(pgui_control* control, int value, int* target) {
 	*target = value;
 }
@@ -425,6 +427,8 @@ void saveSettings() {
 
 	char *configFile = getConfigFile();
 
+	checkFileExists(configFile);
+
 	if (settings.resX < 640 && settings.resX != 0 && settings.resY != 0) {
 		settings.resX = 640;
 	}
@@ -665,6 +669,21 @@ void callback_default_tabonly(pgui_control* control, void* data) {
 		default:
 			break;
 		}		
+	}
+}
+
+static void checkFileExists(const char* file)
+{
+	DWORD attrs = GetFileAttributesA(file);
+
+	if (attrs == INVALID_FILE_ATTRIBUTES) {
+		FILE* fp = fopen(file, "wb");
+
+		if (fp) {
+			// Add dummy[THUGSDL] section at the top as a workaround for a UTF - 8 BOM parsing edge case
+			fputs("[THUGSDL]\n", fp);
+			fclose(fp);
+		}
 	}
 }
 
