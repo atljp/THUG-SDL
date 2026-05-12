@@ -231,3 +231,4 @@ c:\skate5\data\scripts\game\usr\JKU_Scripts.qb
 c:\skate5\data\scripts\game\usr\JS_Scripts.qb
 c:\skate5\data\scripts\gamemodes\gamemode.qb
 c:\skate5\data\scripts\thugsdl\thugsdl_scripts.qb
+c:\skate5\data\scripts\thugsdl\thugsdl_menu.qb

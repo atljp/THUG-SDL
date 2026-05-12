@@ -32,7 +32,6 @@ struct settings {
 	int exceptionhandler;
 
 	int chatsize;
-	int chatwaittime;
 	int additionalmods;
 	char additionalmods_folder[MAX_PATH];
 
@@ -278,6 +277,7 @@ struct general_page {
 	pgui_control* chat_wait_time;
 	pgui_control* additional_mods_checkbox;
 	pgui_control* additional_mods;
+	pgui_control* additional_mods_info;
 	
 	pgui_control* disable_fs_gamma;
 	pgui_control* disable_blur;

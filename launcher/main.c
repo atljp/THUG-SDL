@@ -81,7 +81,6 @@ void defaultSettings() {
 	settings.noadditionalscriptmods = 0;
 	settings.gamerunrespawns = 1;
 	settings.chatsize = 3;
-	settings.chatwaittime = 30;
 	settings.additionalmods = 0;
 	strcpy(settings.additionalmods_folder, "data/pre/mymod");
 
@@ -143,8 +142,8 @@ void defaultSettings() {
 		padbinds.rightSpin = CONTROLLER_BUTTON_RIGHTSHOULDER;
 		padbinds.nollie = CONTROLLER_BUTTON_LEFTTRIGGER;
 		padbinds.switchRevert = CONTROLLER_BUTTON_RIGHTTRIGGER;
-		padbinds.caveman = CONTROLLER_BUTTON_RIGHTTRIGGER;
-		padbinds.caveman2 = CONTROLLER_BUTTON_LEFTTRIGGER;
+		padbinds.caveman = CONTROLLER_BUTTON_LEFTSHOULDER;
+		padbinds.caveman2 = CONTROLLER_BUTTON_RIGHTSHOULDER;
 	}
 	else {
 		padbinds.leftSpin = CONTROLLER_BUTTON_LEFTTRIGGER;
@@ -189,11 +188,7 @@ void defaultSettings_tabonly(int tab) {
 		settings.appendlog = 0;
 		settings.exceptionhandler = 0;
 		settings.intromovies = 0;
-		settings.boardscuffs = 1;
 		settings.noadditionalscriptmods = 0;
-		settings.gamerunrespawns = 1;
-		settings.chatsize = 3;
-		settings.chatwaittime = 30;
 		settings.additionalmods = 0;
 		strcpy(settings.additionalmods_folder, "data/pre/mymod");
 
@@ -325,9 +320,7 @@ void loadSettings() {
 	settings.intromovies = getIniBool("Miscellaneous", "IntroMovies", 0, configFile);
 	settings.language = GetPrivateProfileInt("Miscellaneous", "Language", 1, configFile);
 	settings.button_font = GetPrivateProfileInt("Miscellaneous", "ButtonFont", 2, configFile);
-	settings.boardscuffs = getIniBool("Miscellaneous", "Boardscuffs", 1, configFile);
 	settings.noadditionalscriptmods = getIniBool("Miscellaneous", "NoAdditionalScriptMods", 0, configFile);
-	settings.gamerunrespawns = getIniBool("Multiplayer", "GameRunRespawns", 1, configFile);
 	
 	// CONTROLS
 	controls.ps2_controls = getIniBool("Controls", "Ps2Controls", 1, configFile);
@@ -340,10 +333,6 @@ void loadSettings() {
 	controls.invertryp1 = getIniBool("Controls", "InvertRYPlayer1", 0, configFile);
 	controls.disablerxp1 = getIniBool("Controls", "DisableRXPlayer1", 0, configFile);
 	controls.disableryp1 = getIniBool("Controls", "DisableRYPlayer1", 0, configFile);
-
-	// CHAT
-	settings.chatsize = GetPrivateProfileInt("Chat", "ChatSize", 3, configFile);
-	settings.chatwaittime = GetPrivateProfileInt("Chat", "ChatWaitTime", 30, configFile);
 
 	// ADDITIONAL MODS
 	settings.additionalmods = getIniBool("AdditionalMods", "UseMod", 0, configFile);
@@ -403,6 +392,7 @@ void loadSettings() {
 	padbinds.switchRevert = GetPrivateProfileInt("Gamepad", "Switch", CONTROLLER_BUTTON_RIGHTTRIGGER, configFile);
 	padbinds.caveman = GetPrivateProfileInt("Gamepad", "Caveman", CONTROLLER_BUTTON_LEFTSHOULDER, configFile);
 	padbinds.caveman2 = GetPrivateProfileInt("Gamepad", "Caveman2", CONTROLLER_BUTTON_RIGHTSHOULDER, configFile);
+
 
 	padbinds.right = GetPrivateProfileInt("Gamepad", "Right", CONTROLLER_BUTTON_DPAD_RIGHT, configFile);
 	padbinds.left = GetPrivateProfileInt("Gamepad", "Left", CONTROLLER_BUTTON_DPAD_LEFT, configFile);
@@ -469,11 +459,7 @@ void saveSettings() {
 	writeIniInt("Logger", "ExceptionHandler", mSettings.exceptionhandler, configFile);
 	writeIniInt("Miscellaneous", "IntroMovies", mSettings.intromovies, configFile);
 	writeIniInt("Miscellaneous", "Language", mSettings.language, configFile);
-	writeIniInt("Miscellaneous", "Boardscuffs", mSettings.boardscuffs, configFile);
 	writeIniInt("Miscellaneous", "NoAdditionalScriptMods", mSettings.noadditionalscriptmods, configFile);
-	writeIniInt("Multiplayer", "GameRunRespawns", mSettings.gamerunrespawns, configFile);
-	writeIniInt("Chat", "ChatSize", mSettings.chatsize, configFile);
-	writeIniInt("Chat", "ChatWaitTime", mSettings.chatwaittime, configFile);
 	writeIniInt("AdditionalMods", "UseMod", mSettings.additionalmods, configFile);
 	writeIniString("AdditionalMods", "Folder", mSettings.additionalmods_folder, configFile);
 

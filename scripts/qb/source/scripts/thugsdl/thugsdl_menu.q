@@ -25,6 +25,7 @@ m_directional_dd = 0
 m_boardscuffs = 0
 m_screenmode = 0
 m_restore_original_double_taps = 0
+m_skatervoice = 0
 
 // -----------------------------------------
 // Initialize all values from ini
@@ -85,16 +86,16 @@ SCRIPT M_InitializeMod
 	ENDIF	
 	set_playernamesize
 	// TEXT CHAT DURATION
-	M_GetINIValue section = "Chat" key = "ChatWaitTime" default = 30
-	IF ( ( <value> ) < ( chat_duration_min ) )
-		Change console_wait_time = 1
-	ELSE
-		IF ( ( <value> ) > ( chat_duration_max ) )
-			Change console_wait_time = 30
-		ELSE
-			Change console_wait_time = <value>
-		ENDIF
-	ENDIF
+	//M_GetINIValue section = "Chat" key = "ChatWaitTime" default = 30
+	//IF ( ( <value> ) < ( chat_duration_min ) )
+	//	Change console_wait_time = 1
+	//ELSE
+	//	IF ( ( <value> ) > ( chat_duration_max ) )
+	//		Change console_wait_time = 30
+	//	ELSE
+	//		Change console_wait_time = <value>
+	//	ENDIF
+	//ENDIF
 	// FREE CAM SELECT
 	M_GetINIValue section = "Miscellaneous" key = "FreeCamOnSelect" default = 0
 	IF IsTrue <value> 
@@ -141,6 +142,11 @@ SCRIPT M_InitializeMod
 			Change m_screenmode = <value>
 		ENDIF
 	ENDIF
+	// SKATER VOICE
+	M_GetINIValue section = "Miscellaneous" key = "SkaterVoice" default = 1
+	IF IsTrue <value>
+		change m_skatervoice = 1
+	ENDIF
 ENDSCRIPT
 
 // -----------------------------------------
@@ -173,7 +179,7 @@ SCRIPT launch_mod_menu
 		unfocus_script = menu_sdl_generic_unfocus
 	}
 	// TH4 BOOSTPLANT INPUT
-	theme_menu_add_item { text = "THPS4 Boostplant Input:" 
+	theme_menu_add_item { text = "Wallieplant Controls:" 
 		id = menu_singletapbp
 		focus_script = menu_sdl_generic_focus 
 		unfocus_script = menu_sdl_generic_unfocus
@@ -189,7 +195,12 @@ SCRIPT launch_mod_menu
 		id = menu_boardscuffs
 		focus_script = menu_sdl_generic_focus 
 		unfocus_script = menu_sdl_generic_unfocus
-	}	
+	}
+	theme_menu_add_item { text = "Skater Voice:" 
+		id = menu_skatervoice
+		focus_script = menu_sdl_generic_focus 
+		unfocus_script = menu_sdl_generic_unfocus
+	}
 	IF GotParam NetGame
 		// RESPAWN ON NEW RUN
 		theme_menu_add_item { text = "Respawn on new run:" 
@@ -245,6 +256,7 @@ SCRIPT launch_mod_menu
 	singletapbp_show_value
 	wpinput_show_value
 	boardscuffs_show_value
+	skatervoice_show_value
 	bscounter_show_value
 	bhra_show_value
 	freecamselect_show_value
@@ -293,6 +305,16 @@ SCRIPT toggle_gameitem
 		boardscuffs_get_string
 		SetScreenElementProps { id = { menu_boardscuffs child = 4 } text = <text> }
         M_SetINIValue section = "Miscellaneous" key = "Boardscuffs" value = (m_boardscuffs)		
+    ENDIF
+	IF GotParam skatervoice
+        IF IsTrue m_skatervoice
+			Change m_skatervoice = 0
+		ELSE
+			Change m_skatervoice = 1
+		ENDIF
+		skatervoice_get_string
+		SetScreenElementProps { id = { menu_skatervoice child = 4 } text = <text> }
+        M_SetINIValue section = "Miscellaneous" key = "SkaterVoice" value = (m_skatervoice)		
     ENDIF
 	IF GotParam gamerunrespawns
 		IF IsTrue m_gamerunrespawns
@@ -935,7 +957,7 @@ SCRIPT change_screenmode
 ENDSCRIPT
 
 // -----------------------------------------
-// TH4 Boostplant input
+// TH4 Boostplant input (Wallieplant controls)
 // -----------------------------------------
 
 SCRIPT singletapbp_get_string
@@ -1102,6 +1124,61 @@ SCRIPT boardscuffs_show_value
 		event_handlers = [ 
 			{ pad_left toggle_gameitem params = { boardscuffs left } } 
 			{ pad_right toggle_gameitem params = { boardscuffs right } } 
+		] 
+		replace_handlers 
+	} 
+ENDSCRIPT
+
+// -----------------------------------------
+//Skater voice
+// -----------------------------------------
+
+SCRIPT skatervoice_get_string
+	IF IsTrue m_skatervoice
+		FormatText TextName = skatervoice_text "On"
+	ELSE
+		FormatText TextName = skatervoice_text "Off"
+	ENDIF
+	RETURN text = <skatervoice_text> 
+ENDSCRIPT
+
+SCRIPT skatervoice_show_value
+	skatervoice_get_string
+	FormatText ChecksumName = text_color "%i_unhighlighted_text_color" i = ( THEME_COLOR_PREFIXES [ current_theme_prefix ] )
+	FormatText textName = skatervoice_text "%v" v = <text>
+	
+	CreateScreenElement { 
+		type = textElement 
+		parent = menu_skatervoice
+		font = small 
+		just = [ center top ] 
+		pos = PAIR(182.50000000000, -17.00000000000) 
+		text = <skatervoice_text> 
+		rgba = <text_color> 
+	} 
+	CreateScreenElement { 
+		type = SpriteElement 
+		parent = menu_skatervoice 
+		texture = left_arrow 
+		rgba = [ 128 128 128 0 ] 
+		pos = PAIR(115.00000000000, -17.00000000000) 
+		just = [ right top ] 
+		scale = 0.75000000000 
+	} 
+	CreateScreenElement { 
+		type = SpriteElement 
+		parent = menu_skatervoice 
+		texture = right_arrow 
+		rgba = [ 128 128 128 0 ] 
+		pos = PAIR(250.00000000000, -17.00000000000) 
+		just = [ left top ] 
+		scale = 0.75000000000 
+	} 
+	SetScreenElementProps { 
+		id = menu_skatervoice 
+		event_handlers = [ 
+			{ pad_left toggle_gameitem params = { skatervoice left } } 
+			{ pad_right toggle_gameitem params = { skatervoice right } } 
 		] 
 		replace_handlers 
 	} 

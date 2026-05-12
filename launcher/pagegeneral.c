@@ -64,6 +64,8 @@ void check_custom_resolution(pgui_control* control, int value, void* data) {
 void check_additional_mods(pgui_control* control, int value, void* data) {
 	if (value) {
 		pgui_textbox_set_enabled(general_page.additional_mods, 1);
+		settings.noadditionalscriptmods = 1;
+		pgui_checkbox_set_checked(general_page.no_additional_script_mods, 1);
 	}
 	else {
 		pgui_textbox_set_enabled(general_page.additional_mods, 0);
@@ -143,6 +145,18 @@ char* language_options[] = {
 void build_general_page(pgui_control* parent) {
 	initResolutionList();
 
+	/*
+	HINSTANCE hinst = GetModuleHandle(NULL);
+	//HICON hInfoIcon = LoadIcon(hinst, MAKEINTRESOURCE(IDI_INFOICO));
+	HICON hInfoIcon = (HICON)LoadImage(
+		hinst,
+		MAKEINTRESOURCE(IDI_INFOICO),
+		IMAGE_ICON,
+		16, 16,
+		LR_DEFAULTCOLOR | LR_CREATEDIBSECTION
+	);
+	*/
+
 	pgui_control* resolution_groupbox = pgui_groupbox_create(8, 8, (parent->w / 2) - 8 - 4, (parent->h / 2) - 8 - 4, "Resolution", parent);
 	pgui_control* graphics_groupbox = pgui_groupbox_create(8, (parent->h / 2) + 4, (parent->w / 2) - 8 - 4, (parent->h / 2) - 8 - 4, "Graphics", parent);
 	pgui_control* misc_groupbox = pgui_groupbox_create((parent->w / 2) + 4, 8, (parent->w / 2) - 8 - 4, (parent->h / 2) + 114, "Miscellaneous", parent);
@@ -187,7 +201,7 @@ void build_general_page(pgui_control* parent) {
 	general_page.no_additional_script_mods = pgui_checkbox_create(8, 24 + (24 * 7), 128, 24, "Disable Script Mods", misc_groupbox);
 
 	// mod loader
-	general_page.additional_mods_checkbox = pgui_checkbox_create(8, 16 + 4, 128, 24, "Additional mods:", modloader_groupbox);
+	general_page.additional_mods_checkbox = pgui_checkbox_with_tooltip_create(8, 16 + 4, 128, 24, "Additional mods:", modloader_groupbox, "It is recommended to disable script mods when loading qb or pre files from the specified folder. For more information see the README.");
 	general_page.additional_mods = pgui_textbox_create(8, 16 + 33, (parent->w / 2) - 32, 24, "", modloader_groupbox);
 
 	// **************************

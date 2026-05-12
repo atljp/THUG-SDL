@@ -252,12 +252,18 @@ SCRIPT InAirExceptions
 ENDSCRIPT
 
 SCRIPT SetSkaterAirManualTricks 
-	IF NOT GetGlobalFlag flag = FLAG_EXPERT_MODE_NO_MANUALS 
-    IF InAir 
-        SetManualTricks special = SpecialManualTricks Manualtricks 
-    ELSE 
-        SetManualTricks LandPivotManualTricks 
-    ENDIF 
+	IF GetGlobalFlag flag = FLAG_EXPERT_MODE_NO_MANUALS 
+	ELSE
+		IF Obj_FlagSet FLAG_SKATER_IN_LAND_PIVOT
+			IF InAir 
+				SetManualTricks special = SpecialManualTricks Manualtricks 
+			ELSE 
+				SetManualTricks LandPivotManualTricks 
+			ENDIF 
+		ELSE
+			SetManualTricks special = SpecialManualTricks Manualtricks
+		ENDIF
+	ENDIF
 ENDSCRIPT
 
 SCRIPT SetSkaterAirTricks 
@@ -943,6 +949,9 @@ SCRIPT FlailVibrate
 ENDSCRIPT
 
 SCRIPT GroundGone 
+	IF Obj_FlagSet FLAG_SKATER_IN_LAND_PIVOT 
+		Obj_ClearFlag FLAG_SKATER_IN_LAND_PIVOT 
+	ENDIF
 	InAirExceptions 
 	StopBalanceTrick 
 	SetException Ex = Ollied Scr = Ollie 

@@ -899,3 +899,29 @@ LRESULT pgui_control_wndproc(pgui_control* control, HWND hwnd, UINT uMsg, WPARAM
 
 	return 0;
 }
+
+pgui_control* pgui_icon_create(int x, int y, int w, int h, HICON icon, pgui_control* parent) {
+	pgui_control* control = calloc(1, sizeof(pgui_control));
+
+	control->x = x;
+	control->y = y;
+	control->w = w;
+	control->h = h;
+	control->parent = parent;
+
+	control->hwnd = CreateWindowEx(
+		0,
+		WC_STATIC,
+		NULL,
+		WS_CHILD | WS_VISIBLE | SS_ICON,
+		x, y, w, h,
+		parent->hwnd,
+		NULL,
+		GetModuleHandle(NULL),
+		NULL
+	);
+
+	SendMessage(control->hwnd, STM_SETICON, icon, 0);
+
+	return control;
+}

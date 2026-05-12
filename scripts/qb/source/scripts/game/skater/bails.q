@@ -333,9 +333,11 @@ SCRIPT GeneralBail Friction = 18 Friction2 = 20 HeavyFriction = 100
 	KillSpecial 
 	created_trick_cleanup 
 	SpawnClothingLandScript 
-	IF NOT GotParam NoScuff 
-		PlaySkaterStream type = "bail" 
-	ENDIF 
+	IF IsTrue m_skatervoice
+		IF NOT GotParam NoScuff 
+			PlaySkaterStream type = "bail" 
+		ENDIF 
+	ENDIF
 	SetSkaterCamLerpReductionTimer time = 0 
 	InBail 
 	LaunchStateChangeEvent State = Skater_InBail 

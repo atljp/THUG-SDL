@@ -270,6 +270,7 @@ SCRIPT Manual BlendPeriod = 0.30000001192 Speed = 1.00000000000
 	IF GotParam LandPivotManual 
 		printf "LAND PIVOT MANUAL =======================================" 
 		SetManualTricks Special = SpecialManualTricks ManualTricks
+		Obj_ClearFlag FLAG_SKATER_IN_LAND_PIVOT
 	ENDIF 
     IF NOT GotParam SkipInitAnim
         IF GotParam FromAir 

@@ -77,6 +77,7 @@ typedef struct pgui_control {
 	HWND hwnd;
 	size_t num_children;
 	size_t children_size;
+	HICON icon;
 
 	int x;
 	int y;
@@ -151,3 +152,4 @@ void pgui_trackbar_set_enabled(pgui_control* control, int enabled);
 pgui_control* pgui_tabs_create(int x, int y, int w, int h, char** options, size_t num_options, pgui_control* parent);
 LRESULT pgui_tabs_wndproc(pgui_control* control, HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 LRESULT pgui_control_wndproc(pgui_control* control, HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+pgui_control* pgui_icon_create(int x, int y, int w, int h, HICON icon, pgui_control* parent);
