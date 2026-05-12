@@ -13,7 +13,6 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 ## Features
 
 ### General
-
 - Unofficial port of [partymod-thaw](https://github.com/PARTYMANX/partymod-thaw)
 - Replaced input system entirely with new, modern system using the SDL2 library
 - Improved window handling allowing for custom resolutions and configurable windowing (4k resolution, (borderless) windowed mode)
@@ -21,45 +20,52 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 - In game mod settings menu
   - Saves to and loads from thugsdl.ini automatically
 - Stability fixes
-- Increased default clipping distance for large levels
 - Added pause buffer for speedrunning (menu to game transition with pause button held)
-- Option to toggle blur effects
-- Option to toggle the fullscreen gamma correction which makes the game looks too dark
-- Restored the onscreen keyboard
-- Increased speed when exiting the game
+- Option to disable all script mods (speedrunner mode)
 - Modloader for script mods: [Section Modloader](#modloader)
 - Supported languages: English, French, German
-- Adjustable button prompts: PC, Ps2, Xbox, Ngc
+- Increased speed when exiting the game
 - Console window with adjustable log level
 - Option to print the console output to a file (overwrite / append)
+- Adjustable button prompts: PC, Ps2, Xbox, Ngc
+- Restored the onscreen keyboard
 - Intro movie skip
-- Higher quality shadows
-- Toggle for boardscuffs
-- Option to disable all script mods (speedrunner mode)
 - Option to store the window position
-- Create-A-Skater: Increased 3 axes scaling
-- Create-A-Skater: Visible scaling numbers
-- Create-A-Skater: Increased color ranges
-- Create-A-Skater: Board scaling
 - Exception Handler to generate crash reports (may not work on Windows 11)
-- Removed player limits for Created Parks
-- Option to enable free cam from the Select button (only during observe mode in net games)
-- Buttslap counter
 - Enable leftover levels: School, Philadelphia, Downhill Jam
+
+### Graphics
+- Increased default clipping distance for large levels
+- Higher quality shadows
+- Option to toggle blur effects
+- Option to toggle the fullscreen gamma correction which makes the game looks too dark
+- FOV and aspect ratio settings
 
 ### Gameplay
 - Land pivots (including the ability to buttslap or air manual after)
-- Single tap THPS4 Boostplants
+- Toggle for boardscuffs
+- Toggle for skater voices during bails
+- Removed player limits for created parks
+- Buttslap counter
+- Option to enable free cam from the "select" button (only during observe mode in net games)
+- Create-A-Skater: Increased 3 axes scaling
+- Create-A-Skater: Numbers on scaling sliders
+- Create-A-Skater: Increased color ranges
+- Create-A-Skater: Board scaling
+- Always enable the ability to edit tricks during games
+- Unbind tricks in Edit Trick menu
+- Raised level ceiling and acid drop height
 
 ### Controls
 - Native gamepad support
 - Restore original menu navigation for Xbox and Ps2 layouts
-- Option to use "grind" in menus to go back (original Ps2 layout)
 - Support for Ps2 controls on gamepad and keyboard
 - Fix incorrect button prompts in textboxes and helper texts
 - Adjustable keys for Rail Drop Downs including directional DDs
 - Adjustable keys for Caveman
 - Adjustable keys for ladder/rail grab
+- Input setting for THPS4 Boostplants (wallieplants)
+- Input setting for wallplants
 - Option to invert the x and/or y camera axis
 - Option to disable the x and/or y camera axis
 
@@ -76,52 +82,16 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 - No chat reset after net games started / ended
 - Removed short freeze time before level changes
 - Option for chat size scaling
-- Option for chat message time
 - Restart game option added to the ranking screen and pause menu
 
 
 ## MODLOADER
 This allows you to load user-defined `.pre` and `.qb` files from a separate folder. 
-Activate "Additional Mods" in the launcher's General Page and define your folder path relative to the game folder: `data/pre/mymod`.
-- Place mod contents inside your mod folder at `C:\<thug-install-path>\Game\Data\pre\mymod`  
-- Create a `mod.ini` file in that folder (it defines which original files you want to replace with your custom ones)
+Activate "Additional Mods" in the launcher's General Page and define your folder path relative to the game folder (example: `data/pre/mymod`).
 
-**THUG-SDL uses its own script mods by default. Select "Disable Script Mods" in the launcher or your changes could get overwritten!**<br><br>
+An example environment to easily develop script mods can be found [here](https://github.com/atljp/thps-modding-resources/tree/main/Scripts/THUG/THUG-SDL_DEV_ENV).<br>
+<br>**THUG-SDL uses its own script mods by default (thugsdl.pre). Select "Disable Script Mods" in the launcher or your changes could get overwritten!**<br><br>
 
-Example mod.ini:
-```
-[MODINFO]
-Name=My Custom Mod
-
-[PRE]
-qb.pre=modded_qb.pre
-anims.pre=modded_anims.pre
-netanims.pre=modded_netanims.pre
-
-[QB]
-scripts\game\skater\airtricks.qb=modded_airtricks.qb
-scripts\game\skater\manualtricks.qb=modded_manualtricks.qb
-levels\mainmenu\mainmenu_scripts.qb=modded_mainmenu_scripts.qb
-```
-The folder contents should look like this:
-<br>![image](https://github.com/atljp/thps-modding-resources/blob/main/img/custommod_screenshot1.png)
-
-### Levels
-Level files cannot be loaded automatically from the mod folder without adjusting the `load_level` script.<br>
-There need to be additional checks for a "custom_folder" parameter, see the example file here: [Levels.q](https://github.com/atljp/THUG-SDL/blob/main/src/Mod/Levels.q)<br><br>
-When creating the level struct, add the paths and the "custom_folder" parameter like this:
-```
-File: scripts\Game\Levels.q
-
-Level_AU = { 
-	 pre = "mymod\\Levels\\AU.pre"
-	 scnpre = "mymod\\Levels\\AUscn.pre"
-	 colpre = "mymod\\Levels\\AUcol.pre"
-	 pedpre = "mymod\\Levels\\AUped.pre"
-	 [...]
-	 custom_folder = "mymod\\Levels\\"
-}
-```
 
 ## TROUBLESHOOTING
 
