@@ -1242,7 +1242,9 @@ SCRIPT Land2 RevertTime = 5
 			REPEAT 10 
 		ENDIF 
 	ENDIF 
+	KillExtraTricks 
 	LandSkaterTricks 
+	OnExceptionRun 
 	OnGroundExceptions 
 	CheckForNetBrake 
 	waitanimwhilstchecking AndManuals 

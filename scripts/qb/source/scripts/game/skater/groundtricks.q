@@ -100,14 +100,13 @@ SCRIPT Revert FSName = #"FS Revert" BSName = #"BS Revert" FSAnim = RevertFS BSAn
 	Display Blockspin 
 	FlipAfter 
 	BoardRotateAfter 
-	//BlendPeriodOut 0.00000000000 
+	BlendPeriodOut 0.00000000000 
 	Wait 0.10000000149 seconds 
 	SetException Ex = Ollied Scr = Ollie 
 	IF NOT GotParam LandPivot 
 		ResetLandedFromVert 
 	ENDIF 
-	//WaitAnim 100 Percent 
-    WaitAnimFinished
+	WaitAnimFinished 
 	CanKickOn 
     IF GotParam LandPivot 
 		PlayAnim Anim = manual_range From = middle BlendPeriod = 0.00000000000 
@@ -123,12 +122,7 @@ SCRIPT Revert FSName = #"FS Revert" BSName = #"BS Revert" FSAnim = RevertFS BSAn
 		PlayAnim Anim = PutDownManual BlendPeriod = 0.30000001192 speed = 2.50000000000 
 		Obj_ClearFlag FLAG_SKATER_IN_LAND_PIVOT 
 	ELSE 
-		IF NOT held X 
-			PlayAnim Anim = CrouchIdleToIdle BlendPeriod = 0.00000000000 speed = 0.69999998808 
-		ELSE 
-			PlayAnim Anim = CrouchIdle BlendPeriod = 0.00000000000 From = 0.00000000000 To = 0.30000001192 seconds 
-			BlendPeriodOut 0.30000001192 
-		ENDIF 
+		PlayAnim Anim = CrouchIdle BlendPeriod = 0.30000001192 
 	ENDIF 
 	WaitAnimWhilstChecking AndManuals 
 	Goto OnGroundAI 
