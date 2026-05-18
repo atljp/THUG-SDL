@@ -919,6 +919,33 @@ int Rnd_fixed(int n) {
 	return (rand() % n);
 }
 
+bool CFunc_Warn(Script::LazyStruct* pParams) {
+	char buf[2048];
+	Log::StringFromParams(buf, pParams);
+
+	// Make sure it doesn't end in \n
+	int len = strlen(buf);
+
+	if (len && buf[len - 1] == '\n')
+		buf[len - 1] = '\0';
+
+	uint32_t warning_type = pParams->GetInteger(0x7321A8D6);
+
+	// info
+	Log::CoreWarn(buf, (warning_type == 0x3476CEA8) ? false : true);
+
+	return 1;
+}
+
+bool CFunc_GetScreenValues(Script::LazyStruct* pParams, DummyScript* pScript) {
+
+	pScript->GetParams->AddFloat(0x24041436/*screen_scaling*/, 640.0 / (float)resY);
+	pScript->GetParams->AddFloat(0x0EE29A94/*screen_width*/, (float)resX);
+	pScript->GetParams->AddFloat(0x7B7E9859/*screen_height*/, (float)resY);
+
+	return true;
+}
+
 uint32_t GetValue(const char* appName, const char* keyName, uint32_t def) {
 	return GetPrivateProfileInt(appName, keyName, def, configFile);
 }
@@ -1098,6 +1125,8 @@ bool CFunc_SetINIString(Script::LazyStruct* pParams) {
 
 void addScriptCFuncs() {
 	Log::TypedLog(CHN_DLL, "Adding script CFuncs\n");
+	CFuncs::AddFunction("Warn", CFunc_Warn);
+	CFuncs::AddFunction("M_GetScreenValues", CFunc_GetScreenValues);
 	CFuncs::AddFunction("M_GetINIValue", CFunc_GetINIValue);
 	CFuncs::AddFunction("M_SetINIValue", CFunc_SetINIValue);
 	CFuncs::AddFunction("M_GetINIString", CFunc_GetINIString);

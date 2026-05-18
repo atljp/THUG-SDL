@@ -275,7 +275,7 @@ namespace Script {
 	//---------------------------------------
 	
 	typedef void (__thiscall* AddPair_NativeCall)(LazyStruct* struc, uint32_t nameChecksum, float x, float y);
-	AddPair_NativeCall AddPair_Native = (AddPair_NativeCall)(0x00412780); //maybe
+	AddPair_NativeCall AddPair_Native = (AddPair_NativeCall)(0x00412660);
 
 	void LazyStruct::AddPair(uint32_t nameChecksum, float x, float y)
 	{

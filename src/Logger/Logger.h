@@ -35,8 +35,8 @@ namespace Log
 	void StringFromParams(char* print_dest, Script::LazyStruct* pParams);
 	bool CFunc_PrintF(Script::LazyStruct* pParams, void* pScript);
 	bool CFunc_ScriptAssert(Script::LazyStruct* pParams);
-    //void CoreWarn(char* buf, bool is_warning);
-	//void Warn(const char* Format, ...);
+    void CoreWarn(char* buf, bool is_warning);
+	void Warn(const char* Format, ...);
 	void Error(const char* Format, ...);
 	//void PatchCFuncs();
     //void PatchLogger();

@@ -123,6 +123,40 @@ namespace Log {
 	}
 
 	//------------------------
+	// Internal warn - DO NOT CALL
+	//------------------------
+
+	void CoreWarn(char* buf, bool is_warning)
+	{
+		TypedLog(CHN_DLL, "!! WARNING !! - %s\n", buf);
+
+		Script::LazyStruct* scriptParams = Script::LazyStruct::s_create();
+
+		scriptParams->AddChecksum(0x7321A8D6 /*Type*/, is_warning ? 0xBFB16339 /*warning*/ : 0x3476CEA8 /*info*/);
+		scriptParams->AddString(0xC4745838 /*Text*/, (char*)buf);
+		RunScript(0x14F4E66C /*Warn_AddMessage*/, scriptParams, nullptr, nullptr);
+
+		Script::LazyStruct::s_free(scriptParams);
+	}
+
+	//------------------------
+	// Warn
+	//------------------------
+
+	void Warn(const char* Format, ...)
+	{
+		char final_buffer[3000];
+		memset(&final_buffer, 0, sizeof(final_buffer));
+
+		va_list args;
+		va_start(args, Format);
+		vsnprintf(final_buffer, 3000, Format, args);
+		va_end(args);
+
+		CoreWarn(final_buffer, true);
+	}
+
+	//------------------------
 	// Print a nasty error!
 	//------------------------
 
