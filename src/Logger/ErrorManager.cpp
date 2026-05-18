@@ -89,6 +89,13 @@ namespace ErrorManager
 				
 			snprintf(buffer, ERR_LENGTH, "%s\n[0x%08p]", buffer, StackFrame.AddrPC.Offset);
 		}
+
+        // Optional: show active QB script
+        DummyScript* activeScript = *(DummyScript**)0x0069842C;
+        if (activeScript)
+            snprintf(buffer, ERR_LENGTH, "%s\n\nQB: 0x%08x <- 0x%08x", buffer, activeScript->mScriptNameChecksum, activeScript->mParentScriptNameChecksum);
+        else
+            snprintf(buffer, ERR_LENGTH, "%s\n\nQB: NONE", buffer);
 	}
 	
 	// ------------------------------------

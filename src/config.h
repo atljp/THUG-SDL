@@ -171,7 +171,9 @@ struct DummyScript
 {
 	char unk1[20];
 	Script::LazyStruct* GetParams;
-	char unk[164];
+	char unk2[72];
+	uint32_t mParentScriptNameChecksum;
+	char unk[88];
 	uint32_t mScriptNameChecksum;
 };
 
