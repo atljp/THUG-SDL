@@ -13,9 +13,9 @@ colormenu_wrap_arrow_left = -53.00000000000
 colormenu_wrap_arrow_right = 80.00000000000 
 colormenu_nowrap_arrow_left = -53.00000000000 
 colormenu_nowrap_arrow_right = 80.00000000000 
-colormenu_hue_increment = 5 
-colormenu_saturation_increment = 3 
-colormenu_value_increment = 2 
+colormenu_hue_increment = 1 
+colormenu_saturation_increment = 1 
+colormenu_value_increment = 1 
 colormenu_min_saturation = 0.00000000000 
 colormenu_max_saturation = 100.00000000000 
 colormenu_min_value = 0.00000000000 
@@ -165,6 +165,36 @@ ENDSCRIPT
 SCRIPT colormenu_set_hsv use_default_hsv = 0 
 	GetCurrentSkaterProfileIndex 
 	printf "h=%h s=%s v=%v" h = <h> s = <s> v = <v> 
+	// The switch case statements prevent 0 and 100 from being formatted as 0.000 and 100.000
+	FormatText textname = val_text "%g" g = <h>
+	SetScreenElementProps { 
+		id = hue_slider_bar_text 
+		text = <val_text>
+	}
+	SWITCH <s>
+		CASE 0
+			FormatText textname = val_text "0"
+		CASE 100
+			FormatText textname = val_text "100"
+		DEFAULT
+			FormatText textname = val_text "%g" g = <s>
+	ENDSWITCH
+	SetScreenElementProps { 
+		id = saturation_slider_bar_text 
+		text = <val_text>
+	}
+	SWITCH <v>
+		CASE 0
+			FormatText textname = val_text "0"
+		CASE 100
+			FormatText textname = val_text "100"
+		DEFAULT
+			FormatText textname = val_text "%g" g = <v>
+	ENDSWITCH
+	SetScreenElementProps { 
+		id = value_slider_bar_text 
+		text = <val_text>
+	}
 	SetPlayerAppearanceColor player = <currentSkaterProfileIndex> part = <part> h = <h> s = <s> v = <v> use_default_hsv = <use_default_hsv> 
 ENDSCRIPT
 
@@ -276,6 +306,14 @@ SCRIPT colormenu_decrement_value
 	colormenu_refresh_skaters 
 ENDSCRIPT
 
+SCRIPT reset_color_slider_text id = default_slider_bar value = 0
+	FormatText textname = val_text "%g" g = <value>
+	SetScreenElementProps { 
+		id = <id> 
+		text = <val_text>
+	} 
+ENDSCRIPT
+
 SCRIPT colormenu_reset_to_default 
 	GetCurrentSkaterProfileIndex 
 	GetPlayerAppearancePart player = <currentSkaterProfileIndex> part = <part> 
@@ -283,6 +321,9 @@ SCRIPT colormenu_reset_to_default
 	GetCurrentSkaterProfileIndex 
 	SetPlayerAppearanceColor player = <currentSkaterProfileIndex> part = <part> h = <h> s = <s> v = <v> use_default_hsv = 1 
 	colormenu_refresh_arrows part = <part> 
+	reset_color_slider_text id = hue_slider_bar_text value = <h>
+	reset_color_slider_text id = saturation_slider_bar_text value = <s>
+	reset_color_slider_text id = value_slider_bar_text value = <v>
 	colormenu_refresh_skaters 
 ENDSCRIPT
 
@@ -300,6 +341,9 @@ SCRIPT colormenu_add_options_to_menu
 			create_helper_text generic_helper_text_color_menu 
 		ENDIF 
 	ENDIF 
+	
+	color_get_default_value_text <...>
+	
 	sliderbar_add_item { 
 		text = #"HUE" 
 		focus_script = colormenu_focus 
@@ -322,6 +366,9 @@ SCRIPT colormenu_add_options_to_menu
 		} 
 		pad_choose_script = nullscript 
 		child_texture = colorbar 
+		create_text_value 
+		text_value_id = hue_slider_bar_text
+		default_value_text = <default_value_text_hue>
 		icon_id = hue_slider_bar 
 		icon_scale = colormenu_bar_scale 
 		icon_rgba = colormenu_bar_unfocus_rgba 
@@ -363,6 +410,9 @@ SCRIPT colormenu_add_options_to_menu
 		} 
 		pad_choose_script = nullscript 
 		child_texture = bw_slider 
+		create_text_value 
+		text_value_id = saturation_slider_bar_text
+		default_value_text = <default_value_text_sat>
 		icon_id = saturation_slider_bar 
 		icon_scale = colormenu_bar_scale 
 		icon_rgba = colormenu_bar_unfocus_rgba 
@@ -404,6 +454,9 @@ SCRIPT colormenu_add_options_to_menu
 		} 
 		pad_choose_script = nullscript 
 		child_texture = bw_slider 
+		create_text_value 
+		text_value_id = value_slider_bar_text
+		default_value_text = <default_value_text_val>
 		icon_id = value_slider_bar 
 		icon_scale = colormenu_bar_scale 
 		icon_rgba = colormenu_bar_unfocus_rgba 
@@ -432,6 +485,14 @@ SCRIPT colormenu_add_options_to_menu
 			dims = PAIR(10.00000000000, 30.00000000000) 
 		} 
 	ENDIF 
+ENDSCRIPT
+
+SCRIPT color_get_default_value_text
+	colormenu_get_hsv part = <part>
+	FormatText textname = val_text_hue "%g" g = <h>
+	FormatText textname = val_text_sat "%g" g = <s>
+	FormatText textname = val_text_val "%g" g = <v>
+	RETURN { default_value_text_hue = <val_text_hue> default_value_text_sat = <val_text_sat> default_value_text_val = <val_text_val> } 
 ENDSCRIPT
 
 SCRIPT posmenu_add_options_to_menu 
