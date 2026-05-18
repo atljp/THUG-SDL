@@ -340,6 +340,14 @@ SCRIPT scalingmenu_decrement
 	scalingmenu_refresh_skaters 
 ENDSCRIPT
 
+SCRIPT reset_scaling_slider_text id = default_slider_bar 	
+	MangleChecksums a = <id> b = text_value
+	SetScreenElementProps {
+        id = <mangled_id>
+        text = "100"
+    }	
+ENDSCRIPT
+
 SCRIPT scalingmenu_reset_to_default 
 	<x> = 100 
 	<y> = 100 
@@ -347,6 +355,11 @@ SCRIPT scalingmenu_reset_to_default
 	GetCurrentSkaterProfileIndex 
 	SetPlayerAppearanceScale player = <currentSkaterProfileIndex> part = <part> x = <x> y = <y> z = <z> use_default_scale = 1 
 	scalingmenu_refresh_skaters 
+
+	reset_scaling_slider_text id = scalingmenu_x_slider 
+	reset_scaling_slider_text id = scalingmenu_y_slider 
+	reset_scaling_slider_text id = scalingmenu_z_slider 
+	reset_scaling_slider_text id = scalingmenu_xyz_slider
 ENDSCRIPT
 
 SCRIPT scalingmenu_get_xyz 
@@ -435,10 +448,22 @@ SCRIPT scalingmenu_refresh_arrows
 	scalingmenu_get_limits part = <part> <...> 
 	FormatText textname = val_text "%g" g = <v>
     
+	// Update number in the x, y and z slider bars
 	SetScreenElementProps {
         id = <text_value_id>
         text = <val_text>
     }
+	
+	// Update number in the xyz slider bar by creating arithmetic average
+	xyz_id = scalingmenu_xyz_slider
+	<v> = ( ( <x> + <y> + <z> ) / 3 ) 
+	FormatText textname = val_text "%g" g = <v>
+	MangleChecksums a = <xyz_id> b = text_value
+	SetScreenElementProps {
+		id = <mangled_id>
+		text = <val_text>
+	}
+	
 	sliderbar_rescale_to_bar min = <min> max = <max> value = <v> left = scalingmenu_arrow_left right = scalingmenu_arrow_right 
 	SetScreenElementProps { 
 		id = <up_arrow_id> 
