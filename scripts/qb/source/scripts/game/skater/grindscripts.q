@@ -68,7 +68,17 @@ SCRIPT SkateInOrBail moveleft = 1 moveright = -1 movey = -5
                 movey = 5 
                 goto SkateIn_Right_Directional params = { <...> }
             ENDIF
+            IF Held R1
+                movex = -5 
+                movey = 5 
+                goto SkateIn_Right_Directional params = { <...> }
+            ENDIF
             IF Held white
+                movex = 5 
+                movey = 5 
+                goto SkateIn_Left_Directional params = { <...> }
+            ENDIF
+			IF Held L1
                 movex = 5 
                 movey = 5 
                 goto SkateIn_Left_Directional params = { <...> }
