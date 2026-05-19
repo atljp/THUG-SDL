@@ -107,7 +107,11 @@ SCRIPT resolve_pos_anchor pos=PAIR(0.00000000000, 0.00000000000) pos_anchor=[lef
     x_pos = (<x_pos> * PAIR(1.00000000000, 0.00000000000))
     y_pos = (<y_pos> * PAIR(0.00000000000, 1.00000000000))
     
-    RETURN pos=((<x_pos> + <y_pos>) + <pos>)
+	IF (<id> = root_window)
+		 RETURN pos=PAIR(320.00000000000,16.00000000000)
+	ELSE
+		RETURN pos=((<x_pos> + <y_pos>) + <pos>)
+	ENDIF
 ENDSCRIPT
 
 // -----------------------------------------------
