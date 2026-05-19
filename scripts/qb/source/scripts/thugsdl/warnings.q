@@ -64,9 +64,9 @@ SCRIPT resolve_pos_anchor pos=PAIR(0.00000000000, 0.00000000000) pos_anchor=[lef
         M_GetParentScript
 
         IF GotParam parent_script
-            warn "resolve_pos_anchor fail, ID %g, parent script %h" g=<id> h=<parent_script>
+            printf "resolve_pos_anchor fail, ID %g, parent script %h" g=<id> h=<parent_script>
         ELSE
-            warn "resolve_pos_anchor fail, ID %g" g=<id>
+            printf "resolve_pos_anchor fail, ID %g" g=<id>
         ENDIF
 
         RETURN pos=PAIR(0.00000000000, 0.00000000000)
@@ -194,11 +194,11 @@ SCRIPT Warn_CreateElements
     // Create a VMenu that will hold the warnings.
     // Each warning will be an item in that list.
 	
-    CreateScreenElement {
+    CreateScreenElementEx {
         type = VMenu
         parent = root_window
         id = warnings_vmenu
-        pos = PAIR(100.00000000000, 16.00000000000)
+        pos = PAIR(0.00000000000, 16.00000000000)
         dims = PAIR(640.00000000000, 320.00000000000)
         pos_anchor = [ center top ]
         just = [ center top ]
@@ -238,7 +238,6 @@ ENDSCRIPT
 SCRIPT Warn_AddMessage type=warning
     // Not allowed / not initialized.
     IF NOT IsTrue warning_message_can_show
-		printf "not allowed"
         RETURN
     ENDIF
     
@@ -275,9 +274,9 @@ SCRIPT Warn_AddMessage type=warning
         just = [center center]
         pos = PAIR(0.00000000000, 0.00000000000)
         scale = (warning_message_text_scale * PAIR(0.90000000000, 1.00000000000))
-        font = dialog
+        font = small
         texture = white
-        rgba = [8 8 8 128]
+        rgba = [80 80 80 128]
         z_priority = 50001
     }
     
