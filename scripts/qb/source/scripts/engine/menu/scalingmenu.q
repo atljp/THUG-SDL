@@ -259,17 +259,17 @@ SCRIPT scalingmenu_get_limits
 	<index> = 0 
 	BEGIN 
 		IF ChecksumEquals a = ( ( scalingmenu_constraints [ <index> ] ) . part ) b = <part> 
-			<min> = 20.00000000000 
-			<max> = 200.00000000000 
+			<min> = 0.00000000000 
+			<max> = 500.00000000000  // 5E 07 1A 00 00 00 00 01 2D 16 76 DD 89 62 07 1A FF FF FF FF
 			BREAK 
 		ENDIF 
 		<index> = ( <index> + 1 ) 
 	REPEAT <array_size> 
 	IF NOT GotParam min 
-		<min> = 90.00000000000 
+		<min> = 0.00000000000 
 	ENDIF 
 	IF NOT GotParam max 
-		<max> = 150.00000000000 
+		<max> = 500.00000000000 
 	ENDIF 
 	RETURN min = <min> max = <max> 
 ENDSCRIPT

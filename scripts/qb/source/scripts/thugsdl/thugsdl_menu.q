@@ -371,7 +371,7 @@ ENDSCRIPT
 // -----------------------------------------
 
 SCRIPT menu_sdl_generic_focus
-GetTags 
+	GetTags 
 	FormatText ChecksumName = arrow_color "%i_unhighlighted_text_color" i = ( THEME_COLOR_PREFIXES [ current_theme_prefix ] ) 
 	main_theme_focus 
 	SetScreenElementProps { id = { <id> child = 5 } rgba = <arrow_color> } 

@@ -208,7 +208,7 @@ SCRIPT Warn_CreateElements
         just = [ center top ]
         internal_just = [ center top ]
         z_priority = 0
-        scale = ( <screen_scaling> * 0.50000000000 )
+        scale = <screen_scaling>
     }
 ENDSCRIPT
 

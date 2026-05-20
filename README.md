@@ -47,9 +47,10 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 - Toggle for skater voices during bails
 - Removed player limits for created parks
 - Buttslap counter
+- Fixed double tap grind balance reset
 - Option to enable free cam from the "select" button (only during observe mode in net games)
 - Create-A-Skater: Increased 3 axes scaling
-- Create-A-Skater: Numbers on scaling sliders
+- Create-A-Skater: Numbers on color and scaling sliders
 - Create-A-Skater: Increased color ranges
 - Create-A-Skater: Board scaling
 - Always enable the ability to edit tricks during games
@@ -64,7 +65,7 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 - Adjustable keys for Rail Drop Downs including directional DDs
 - Adjustable keys for Caveman
 - Adjustable keys for ladder/rail grab
-- Input setting for THPS4 Boostplants (wallieplants)
+- Input setting for THPS4 Boostplants (Wallieplants)
 - Input setting for wallplants
 - Option to invert the x and/or y camera axis
 - Option to disable the x and/or y camera axis
@@ -87,7 +88,7 @@ Run `thugsdlpatcher.exe` in the Game directory where THUG.exe should already be.
 
 ## MODLOADER
 This allows you to load user-defined `.pre` and `.qb` files from a separate folder. 
-Activate "Additional Mods" in the launcher's General Page and define your folder path relative to the game folder (example: `data/pre/mymod`).
+Activate "Additional Mods" in the launcher's General Page and set your folder path (example: `data/pre/mymod`).
 
 An example environment to easily develop script mods can be found [here](https://github.com/atljp/thps-modding-resources/tree/main/Scripts/THUG/THUG-SDL_DEV_ENV).<br>
 <br>**THUG-SDL uses its own script mods by default (thugsdl.pre). Select "Disable Script Mods" in the launcher or your changes could get overwritten!**<br><br>

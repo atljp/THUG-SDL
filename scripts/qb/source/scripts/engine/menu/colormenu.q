@@ -166,35 +166,41 @@ SCRIPT colormenu_set_hsv use_default_hsv = 0
 	GetCurrentSkaterProfileIndex 
 	printf "h=%h s=%s v=%v" h = <h> s = <s> v = <v> 
 	// The switch case statements prevent 0 and 100 from being formatted as 0.000 and 100.000
-	FormatText textname = val_text "%g" g = <h>
-	SetScreenElementProps { 
-		id = hue_slider_bar_text 
-		text = <val_text>
-	}
-	SWITCH <s>
-		CASE 0
-			FormatText textname = val_text "0"
-		CASE 100
-			FormatText textname = val_text "100"
-		DEFAULT
-			FormatText textname = val_text "%g" g = <s>
-	ENDSWITCH
-	SetScreenElementProps { 
-		id = saturation_slider_bar_text 
-		text = <val_text>
-	}
-	SWITCH <v>
-		CASE 0
-			FormatText textname = val_text "0"
-		CASE 100
-			FormatText textname = val_text "100"
-		DEFAULT
-			FormatText textname = val_text "%g" g = <v>
-	ENDSWITCH
-	SetScreenElementProps { 
-		id = value_slider_bar_text 
-		text = <val_text>
-	}
+	IF ScreenElementExists id = hue_slider_bar_text
+		FormatText textname = val_text "%g" g = <h>
+		SetScreenElementProps { 
+			id = hue_slider_bar_text 
+			text = <val_text>
+		}
+	ENDIF
+	IF ScreenElementExists id = saturation_slider_bar_text
+		SWITCH <s>
+			CASE 0
+				FormatText textname = val_text "0"
+			CASE 100
+				FormatText textname = val_text "100"
+			DEFAULT
+				FormatText textname = val_text "%g" g = <s>
+		ENDSWITCH
+		SetScreenElementProps { 
+			id = saturation_slider_bar_text 
+			text = <val_text>
+		}
+	ENDIF
+	IF ScreenElementExists id = value_slider_bar_text
+		SWITCH <v>
+			CASE 0
+				FormatText textname = val_text "0"
+			CASE 100
+				FormatText textname = val_text "100"
+			DEFAULT
+				FormatText textname = val_text "%g" g = <v>
+		ENDSWITCH
+		SetScreenElementProps { 
+			id = value_slider_bar_text 
+			text = <val_text>
+		}
+	ENDIF
 	SetPlayerAppearanceColor player = <currentSkaterProfileIndex> part = <part> h = <h> s = <s> v = <v> use_default_hsv = <use_default_hsv> 
 ENDSCRIPT
 

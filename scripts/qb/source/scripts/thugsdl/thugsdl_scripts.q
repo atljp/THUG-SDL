@@ -8,6 +8,7 @@ JoinedAsObserver = 0
 JoinedGameInProgress = 0
 M_EnteringNetLevel = 0
 block_pause_menu = 0
+warning_message_can_show = 1
 
 // -----------------------------------------
 // Observe mode
