@@ -117,10 +117,12 @@ ENDSCRIPT
 
 SCRIPT colormenu_get_default_color 
 	IF NOT GotParam part 
-		script_assert "no part parameter" 
+		warn "no part parameter" 
+		RETURN h = 0 s = 0 v = 0
 	ENDIF 
 	IF NOT GotParam desc_id 
-		script_assert "no desc_id parameter" 
+		warn "no desc_id parameter" 
+		RETURN h = 0 s = 0 v = 0
 	ENDIF 
 	GetActualCASOptionStruct part = <part> desc_id = <desc_id> 
 	IF GotParam default_h 

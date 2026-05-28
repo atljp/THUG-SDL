@@ -1,6 +1,9 @@
 
 skater_select_light0_heading = 60 
 skater_select_light1_heading = -190 
+ss_current_skater_locked = 0
+can_create_skater = 1
+skater_select_hovered_ped_index = 0
 SCRIPT PlayThrowBoardSound 
 	IF NOT GotParam NoSFX 
 		Wait 1.22000002861 second 
@@ -1710,6 +1713,7 @@ SCRIPT create_select_skater_menu
 			{ text = "\\bm=Accept" } 
 			{ text = "\\bn=Back" } 
 			{ text = "\\bo=Load Skater" } 
+			{ text = "\\bp = Make Custom Skater" }
 		] 
 	} 
 	root_pos = PAIR(22.00000000000, 60.00000000000) 
@@ -1814,6 +1818,8 @@ SCRIPT select_skater_create_top_bar scale = PAIR(1.13999998569, 1.00000000000) t
 		just = [ center top ] 
 	} 
 	IF GotParam create_dots 
+		current_appearance_struct  = ( master_skater_list [ <skater_index> ] ) <...>
+		
 		CreateScreenElement { 
 			Type = HScrollingMenu 
 			parent = select_skater_top_anchor 
@@ -1842,6 +1848,7 @@ SCRIPT select_skater_create_top_bar scale = PAIR(1.13999998569, 1.00000000000) t
 						{ pad_back select_skater_menu_back params = { callback = back_from_player_two_select } } 
 						{ pad_option ss_overwrite_warning params = { } } 
 						{ pad_option generic_menu_pad_choose_sound } 
+						{ pad_expand ss_create_warning Params = { } }
 					] 
 					replace_handlers 
 				} 
@@ -1860,6 +1867,7 @@ SCRIPT select_skater_create_top_bar scale = PAIR(1.13999998569, 1.00000000000) t
 						{ pad_back select_skater_menu_back params = { callback = create_main_menu } } 
 						{ pad_option ss_overwrite_warning params = { } } 
 						{ pad_option generic_menu_pad_choose_sound } 
+						{ pad_expand ss_create_warning Params = { } }
 					] 
 					replace_handlers 
 				} 
@@ -1871,6 +1879,7 @@ SCRIPT select_skater_create_top_bar scale = PAIR(1.13999998569, 1.00000000000) t
 								{ pad_back select_skater_menu_back params = { callback = create_career_options_menu } } 
 								{ pad_option ss_overwrite_warning params = { } } 
 								{ pad_option generic_menu_pad_choose_sound } 
+								{ pad_expand ss_create_warning Params = { } } 
 							] 
 							replace_handlers 
 						} 
@@ -1975,6 +1984,7 @@ SCRIPT ss_cancel_load_skater
 			{ text = "\\bm=Accept" } 
 			{ text = "\\bn=Back" } 
 			{ text = "\\bo=Load Skater" } 
+			{ text = "\\bp = Make Custom Skater" }
 		] 
 	} 
 	FireEvent Type = focus target = select_skater_hmenu 
@@ -2306,34 +2316,21 @@ SCRIPT MakeSelectPedMenu dims = PAIR(300.00000000000, 150.00000000000) pos = PAI
 			{ pad_down set_which_arrow params = { arrow = scrolling_menu_down_arrow } } 
 			{ pad_up generic_menu_up_or_down_sound params = { up } } 
 			{ pad_down generic_menu_up_or_down_sound params = { down } } 
+			{ pad_expand ss_create_warning params = { from_ped_menu } }
 		] 
 	} 
 	GetArraySize ped_profile_list 
 	<Index> = 0 
 	BEGIN 
-		IF GetGlobalFlag flag = ( ( ped_profile_list [ <Index> ] ) . ped_group_flag ) 
-			theme_menu_add_item { text = ( ( ped_profile_list [ <Index> ] ) . display_name ) 
-				focus_script = PedFocus 
-				focus_params = { appearance = ( ( ped_profile_list [ <Index> ] ) . ped_appearance_structure ) } 
-				pad_choose_script = PedChoose 
-				pad_choose_params = { info = <ped_info> } 
-				centered 
-				highlight_bar_scale = PAIR(1.70000004768, 0.69999998808) 
-				no_bg 
-			} 
-		ELSE 
-			IF GetGlobalFlag flag = GOT_ALL_GAPS 
-				theme_menu_add_item { text = ( ( ped_profile_list [ <Index> ] ) . display_name ) 
-					focus_script = PedFocus 
-					focus_params = { appearance = ( ( ped_profile_list [ <Index> ] ) . ped_appearance_structure ) } 
-					pad_choose_script = PedChoose 
-					pad_choose_params = { info = <ped_info> } 
-					centered 
-					highlight_bar_scale = PAIR(1.70000004768, 0.69999998808) 
-					no_bg 
-				} 
-			ENDIF 
-		ENDIF 
+		theme_menu_add_item { text = ( ( ped_profile_list [ <Index> ] ) . display_name ) 
+			focus_script = PedFocus 
+			focus_params = { ped_focus_index = <index> appearance = ( ( ped_profile_list [ <Index> ] ) . ped_appearance_structure ) } 
+			pad_choose_script = PedChoose 
+			pad_choose_params = { info = <ped_info> } 
+			centered 
+			highlight_bar_scale = PAIR(1.70000004768, 0.69999998808) 
+			no_bg 
+		} 
 		<Index> = ( <Index> + 1 ) 
 	REPEAT <array_size> 
 	theme_menu_add_item { text = "Done" 
@@ -2364,6 +2361,10 @@ SCRIPT PedChoose
 ENDSCRIPT
 
 SCRIPT PedFocus 
+	IF GotParam ped_focus_index
+		Change skater_select_hovered_ped_index = <ped_focus_index>
+		RemoveParameter ped_focus_index
+    ENDIF
 	main_theme_focus 
 	GetCurrentSkaterProfileIndex 
 	SetPlayerAppearance player = <currentSkaterProfileIndex> appearance_structure = <appearance> 
@@ -2387,12 +2388,16 @@ SCRIPT BackFromPedMenu
 			{ text = "\\bm=Accept" } 
 			{ text = "\\bn=Back" } 
 			{ text = "\\bo=Load Skater" } 
+			{ text = "\\bp = Make Custom Skater" }
 		] 
 		parent = select_skater_anchor 
 	} 
 	SetScreenElementLock id = select_skater_anchor on 
-	Debounce X time = 0.50000000000 
-	FireEvent Type = focus target = select_skater_hmenu data = { child_id = 19 } 
+	
+	IF NOT GotParam immediate
+		Debounce X time = 0.50000000000 
+		FireEvent Type = focus target = select_skater_hmenu data = { child_id = 19 } 
+	ENDIF
 	AssignAlias id = select_skater_anchor alias = current_menu_anchor 
 ENDSCRIPT
 
@@ -2772,3 +2777,150 @@ attract_mode_movies = [
 	"movies\\demo_2" 
 	"movies\\demo_3" 
 ] 
+
+
+SCRIPT select_skater_allow_load
+	// Reset value
+	IF NOT IsTrue can_create_skater
+		Change can_create_skater = 1
+	ENDIF
+	// Don't load locked skaters
+	IF ( ss_current_skater_locked = 1 )
+		Change can_create_skater = 0
+	ENDIF
+    load_pro_skater_get_current_skater_name
+	printf "current_skater: %g" g=<current_skater>
+	IF ( ChecksumEquals a = <current_skater> b = custom )
+		Change can_create_skater = 0
+	ENDIF
+	// Only load when PED menu is open
+	IF ( ChecksumEquals a = <current_skater> b = PED )
+		IF NOT ObjectExists id = ped_menu_parts_anchor
+			Change can_create_skater = 0
+		ENDIF
+	ENDIF
+ENDSCRIPT
+
+SCRIPT ss_create_warning Title = #"Create Skater" callback = cas_reset_skater_and_goto_menu
+	select_skater_allow_load
+	IF NOT IsTrue can_create_skater
+		RETURN
+	ENDIF
+	IF GotParam from_ped_menu
+        back_script = ss_cancel_create_skater_toped
+        choose_params = { from_ped_menu = 1 }
+    ELSE 
+        back_script = ss_cancel_load_skater
+        choose_params = {}
+    ENDIF
+	// Unfocus current menu to use dialogbox event handlers
+	FireEvent type = unfocus target = select_skater_hmenu
+	IF GotParam from_ped_menu
+		FireEvent type = unfocus target = ped_menu_parts_anchor
+	ENDIF
+    create_snazzy_dialog_box {
+        title = <title>
+        text = #"Warning !\\nAny unsaved changes to your current Game Progress will be lost.\\nContinue ?"
+        text_dims = PAIR(400.00000000000, 0.00000000000) 
+        pad_back_script = generic_menu_pad_back
+        pad_back_params = { callback = <back_script> }
+        buttons = [
+            {
+				font = small text = #"No" 
+				pad_choose_script = <back_script>
+			}
+            {
+                font = small text = #"Yes"
+                pad_choose_script = ss_yes_create_skater
+                pad_choose_params = <choose_params>
+            }
+        ]
+    }
+ENDSCRIPT
+
+// -----------------------------------------
+// YES, we want to convert a skater!
+//
+// This takes the current profile we're
+// hovering over and converts it to a CAS.
+// -----------------------------------------
+
+SCRIPT ss_yes_create_skater
+	BackFromPedMenu immediate
+	ss_get_current_appearance_structure from_ped_menu = <from_ped_menu>
+	new_appearance = <appearance>
+	set_default_temporary_profiles
+	load_pro_skater_set_custom 
+	GetCurrentSkaterProfileIndex
+    IF NOT ( IsTrue <female> )
+        <is_male> = 1
+        SetSkaterProfileProperty player = <currentSkaterProfileIndex> is_male 1
+    ELSE
+        <is_male> = 0
+        SetSkaterProfileProperty player = <currentSkaterProfileIndex> is_male 0
+    ENDIF
+	SetPlayerAppearance appearance_structure = <appearance> player = <currentSkaterProfileIndex>
+	EditPlayerAppearance { 
+			profile = <currentSkaterProfileIndex> 
+			target = SetPart 
+			targetParams = { part = board desc_id = Default } 
+	} 
+    RefreshSkaterModel skater = 0 profile = <currentSkaterProfileIndex> no_board = no_board
+    MakeSkaterGoto { CasAI params = { no_init } }
+	launch_cas
+ENDSCRIPT
+
+SCRIPT ss_cancel_create_skater_toped 
+    dialog_box_exit
+    BackFromPedMenu
+ENDSCRIPT
+
+SCRIPT edit_skater_premade_skater_choose
+    GetCurrentSkaterProfileIndex
+    IF NOT GotParam Female
+        <is_male> = 1
+        SetSkaterProfileProperty player = <currentSkaterProfileIndex> is_male 1
+    ELSE
+        <is_male> = 0
+        SetSkaterProfileProperty player = <currentSkaterProfileIndex> is_male 0
+    ENDIF
+    SetPlayerAppearance appearance_structure = <appearance> player = <currentSkaterProfileIndex>
+    RefreshSkaterModel skater = 0 profile = <currentSkaterProfileIndex> no_board = no_board
+    MakeSkaterGoto { CasAI params = { no_init } }
+ENDSCRIPT
+
+SCRIPT load_pro_skater_get_current_skater_name
+    GetCurrentSkaterProfileIndex
+    GetSkaterProfileInfo player = <currentSkaterProfileIndex> name
+    RETURN current_skater = <name>
+ENDSCRIPT
+
+SCRIPT ss_get_current_appearance_structure 
+    GetCurrentSkaterProfileIndex
+    IF GotParam from_ped_menu
+		ped_struct = ( ped_profile_list [ skater_select_hovered_ped_index ] )
+        RETURN appearance = ( <ped_struct>.ped_appearance_structure )
+    ENDIF
+    GetSkaterProfileInfo player = <currentSkaterProfileIndex>
+	IF GotParam is_male
+        IF (<is_male> = 0)
+            female = 1
+        ENDIF
+    ENDIF
+    IF GotParam default_appearance
+        RETURN appearance = <default_appearance> female = <female>
+	ELSE
+		IF GotParam ped_appearance_structure
+			RETURN appearance = <ped_appearance_structure> female = <female>
+		ENDIF
+    ENDIF
+    RETURN appearance = {}
+ENDSCRIPT
+
+SCRIPT load_pro_skater_set_custom 
+    load_pro_skater_get_current_skater_name
+    IF NOT (<current_skater> = custom)
+        load_pro_skater {profile = 0 skater = 0 name = custom}
+    ENDIF
+ENDSCRIPT
+
