@@ -56,6 +56,8 @@ int defWidth;
 int defHeight;
 graphicsSettings graphics_settings;
 
+bool b_ShowFinalScore = false;
+
 typedef uint32_t dehexifyDigit_NativeCall(char* button);
 dehexifyDigit_NativeCall* dehexifyDigit_Native = (dehexifyDigit_NativeCall*)(0x00401E40);
 
@@ -64,6 +66,10 @@ GlobalGetArrayAsInt_NativeCall* GlobalGetArrayAsInt_Native = (GlobalGetArrayAsIn
 
 typedef float __cdecl CViewportManager_sSetScreenAngle_NativeCall(float fov);
 CViewportManager_sSetScreenAngle_NativeCall* CViewportManager_sSetScreenAngle_Native = (CViewportManager_sSetScreenAngle_NativeCall*)(0x00485480);
+
+typedef void (__thiscall* DispatchScore_NativeCall)(void* scoreObj, int score, int multiplier);
+DispatchScore_NativeCall DispatchScore_Native = (DispatchScore_NativeCall)(0x004F6600);
+
 
 /* -=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=- */
 /* -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- Init =-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- */
@@ -247,6 +253,16 @@ void InitPatch() {
 	patchByte((void*)0x005C870A, 0x65);
 	patchByte((void*)0x005C8711, 0x6E);
 	patchBytesM((void*)0x007D1520, (BYTE*)"\x6F\x70\x65\x6E\x73\x70\x79\x00", 8);
+
+	/*Totaled score display*/
+	patchCall((void*)0x004F69D0, (void*)DispatchScore_Hook);
+	patchCall((void*)0x004F7223, (void*)DispatchScore_Hook);
+	patchCall((void*)0x004F7412, (void*)DispatchScore_Hook);
+	patchCall((void*)0x004F74EF, (void*)DispatchScore_Hook);
+	patchCall((void*)0x004F77E2, (void*)DispatchScore_Hook);
+	patchCall((void*)0x004F7A2B, (void*)DispatchScore_Hook);
+	patchCall((void*)0x004F7A4E, (void*)DispatchScore_Hook);
+	patchCall((void*)0x004F7BDA, (void*)DispatchScore_Hook);
 
 	addScriptCFuncs();
 }
@@ -665,6 +681,16 @@ void patch_button_font(uint8_t sel) {
 	}
 }
 
+void __fastcall DispatchScore_Hook(void* scoreObj, void* edx, int score, int multiplier) {
+	// Emulate the final score. Mult of 0 is shown as-is.
+	if (b_ShowFinalScore && score && multiplier > 0.0) {
+		int finalScore = (int)(score * multiplier);
+		DispatchScore_Native(scoreObj, finalScore, 0);
+		return;
+	}
+	DispatchScore_Native(scoreObj, score, multiplier);
+}
+
 void loadSettings(struct modsettings* settingsOut) {
 	if (settingsOut) {
 		settingsOut->isPs2Controls = Ps2Controls;
@@ -946,6 +972,11 @@ bool CFunc_GetScreenValues(Script::LazyStruct* pParams, DummyScript* pScript) {
 	return true;
 }
 
+bool CFunc_SetFinalScoreDisplay(Script::LazyStruct* pParams){
+	b_ShowFinalScore = pParams->Contains(0xF649D637); /*on*/
+	return true;
+}
+
 uint32_t GetValue(const char* appName, const char* keyName, uint32_t def) {
 	return GetPrivateProfileInt(appName, keyName, def, configFile);
 }
@@ -1133,4 +1164,5 @@ void addScriptCFuncs() {
 	CFuncs::AddFunction("M_SetINIString", CFunc_SetINIString);
 	CFuncs::AddFunction("M_SetFOV", CFunc_SetFOV);
 	CFuncs::AddFunction("M_SetAspectRatio", CFunc_SetAspectRatio);
+	CFuncs::AddFunction("M_SetFinalScoreDisplay", CFunc_SetFinalScoreDisplay);
 }

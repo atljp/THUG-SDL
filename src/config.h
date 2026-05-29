@@ -197,6 +197,7 @@ int Rnd_fixed(int n);
 void patch_button_font(uint8_t sel);
 uint32_t patchMetaButtonMap();
 uint32_t dehexifyDigit_Wrapper(char* p_button);
+void __fastcall DispatchScore_Hook(void* scoreObj, void* edx, int score, int multiplier);
 void loadSettings(struct modsettings* settingsOut);
 void loadModSettings(struct extmodsettings* modsettingsOut);
 void loadLogSettings(struct logsettings* settingsOut);
