@@ -1849,6 +1849,8 @@ SCRIPT select_skater_create_top_bar scale = PAIR(1.13999998569, 1.00000000000) t
 						{ pad_option ss_overwrite_warning params = { } } 
 						{ pad_option generic_menu_pad_choose_sound } 
 						{ pad_expand ss_create_warning Params = { } }
+						{ pad_l1 skateshop_rotate_skater_left }	
+                        { pad_r1 skateshop_rotate_skater_right }
 					] 
 					replace_handlers 
 				} 
@@ -1868,6 +1870,8 @@ SCRIPT select_skater_create_top_bar scale = PAIR(1.13999998569, 1.00000000000) t
 						{ pad_option ss_overwrite_warning params = { } } 
 						{ pad_option generic_menu_pad_choose_sound } 
 						{ pad_expand ss_create_warning Params = { } }
+						{ pad_l1 skateshop_rotate_skater_left }	
+                        { pad_r1 skateshop_rotate_skater_right }
 					] 
 					replace_handlers 
 				} 
@@ -2317,6 +2321,8 @@ SCRIPT MakeSelectPedMenu dims = PAIR(300.00000000000, 150.00000000000) pos = PAI
 			{ pad_up generic_menu_up_or_down_sound params = { up } } 
 			{ pad_down generic_menu_up_or_down_sound params = { down } } 
 			{ pad_expand ss_create_warning params = { from_ped_menu } }
+			{ pad_l1 skateshop_rotate_skater_left }	
+            { pad_r1 skateshop_rotate_skater_right }
 		] 
 	} 
 	GetArraySize ped_profile_list 
@@ -2345,7 +2351,15 @@ SCRIPT MakeSelectPedMenu dims = PAIR(300.00000000000, 150.00000000000) pos = PAI
 	DoScreenElementMorph id = scrolling_menu_up_arrow time = 0 rgba = <on_rgba> 
 	DoScreenElementMorph id = scrolling_menu_down_arrow time = 0 rgba = <on_rgba> 
 	SetScreenElementLock id = ped_menu_parts_anchor off 
-	create_helper_text generic_helper_text parent = ped_menu_parts_anchor helper_pos = PAIR(320.00000000000, 261.00000000000) 
+	create_helper_text { helper_text_elements = [ { text = "\\b6/\\b5=Select" } 
+			{ text = "\\bm=Accept" } 
+			{ text = "\\bn=Back" } 
+			{ text = "\\bo=Load Skater" } 
+			{ text = "\\bp = Make Custom Skater" }
+		] 
+		parent = ped_menu_parts_anchor 
+		helper_pos = PAIR(320.00000000000, 261.00000000000)
+	}  
 	SetScreenElementLock id = ped_menu_parts_anchor on 
 ENDSCRIPT
 

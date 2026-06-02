@@ -45,6 +45,7 @@ bool disablefsgamma;
 bool disableblur;
 bool writefile;
 bool appendlog;
+bool basescoredisplay;
 int windowposx;
 int windowposy;
 int usemod;
@@ -124,6 +125,7 @@ void InitPatch() {
 	chatsize = GetPrivateProfileInt(CHAT_SECTION, "ChatSize", 3, configFile);
 	consolewaittime = GetPrivateProfileInt(CHAT_SECTION, "ChatWaitTime", 30, configFile);
 	usemod = getIniBool(MOD_SECTION, "UseMod", 0, configFile);
+	basescoredisplay = GetPrivateProfileInt(MISC_SECTION, "BaseScoreDisplay", 0, configFile);
 
 	/* Allocate console */
 	if (console) {
@@ -255,15 +257,16 @@ void InitPatch() {
 	patchBytesM((void*)0x007D1520, (BYTE*)"\x6F\x70\x65\x6E\x73\x70\x79\x00", 8);
 
 	/*Totaled score display*/
-	patchCall((void*)0x004F69D0, (void*)DispatchScore_Hook);
-	patchCall((void*)0x004F7223, (void*)DispatchScore_Hook);
-	patchCall((void*)0x004F7412, (void*)DispatchScore_Hook);
-	patchCall((void*)0x004F74EF, (void*)DispatchScore_Hook);
-	patchCall((void*)0x004F77E2, (void*)DispatchScore_Hook);
-	patchCall((void*)0x004F7A2B, (void*)DispatchScore_Hook);
-	patchCall((void*)0x004F7A4E, (void*)DispatchScore_Hook);
-	patchCall((void*)0x004F7BDA, (void*)DispatchScore_Hook);
-
+	if (basescoredisplay) {
+		patchCall((void*)0x004F69D0, (void*)DispatchScore_Hook);
+		patchCall((void*)0x004F7223, (void*)DispatchScore_Hook);
+		patchCall((void*)0x004F7412, (void*)DispatchScore_Hook);
+		patchCall((void*)0x004F74EF, (void*)DispatchScore_Hook);
+		patchCall((void*)0x004F77E2, (void*)DispatchScore_Hook);
+		patchCall((void*)0x004F7A2B, (void*)DispatchScore_Hook);
+		patchCall((void*)0x004F7A4E, (void*)DispatchScore_Hook);
+		patchCall((void*)0x004F7BDA, (void*)DispatchScore_Hook);
+	}
 	addScriptCFuncs();
 }
 
