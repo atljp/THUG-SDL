@@ -154,8 +154,65 @@ ENDSCRIPT
 // -----------------------------------------
 
 SCRIPT launch_mod_menu
+	hide_current_goal 
+	FormatText ChecksumName = title_icon "%i_options" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
+	make_new_themed_option_menu title = "THUG SDL OPTIONS" title_icon = <title_icon> 
+	pause_show_deck parent = current_menu_anchor no_slide 
+	GoalManager_HideGoalPoints 
+	GoalManager_HidePoints 
+	unhide_root_window 
+	SetScreenElementProps { id = options_menu 
+		event_handlers = [ 
+			{ pad_back generic_menu_pad_back params = { callback = create_pause_menu } } 
+		] 
+	} 
+	// NET OPTIONS
+	IF InNetGame
+		make_theme_menu_item { 
+			text = "NET OPTIONS" 
+			id = menu_mod_net_options
+			pad_choose_script = create_mod_net_options_menu
+			pad_choose_params = { back_script = launch_mod_menu } 
+		} 
+	ELSE 
+		// SINGLEPLAYER OPTIONS
+		printf "Mod menu: No Single player options"
+	ENDIF 
+	// DISPLAY + UI OPTIONS
+	make_theme_menu_item { 
+		text = "DISPLAY OPTIONS" 
+		id = menu_mod_display_options
+		pad_choose_script = create_mod_display_options_menu
+		pad_choose_params = { back_script = launch_mod_menu } 
+	}
+	// CONTROL OPTIONS
+	make_theme_menu_item { 
+		text = "CONTROL OPTIONS" 
+		id = menu_mod_control_options
+		pad_choose_script = create_mod_control_options_menu
+		pad_choose_params = { back_script = launch_mod_menu } 
+	}
+	// GAMEPLAY OPTIONS
+	make_theme_menu_item { 
+		text = "GAMEPLAY OPTIONS" 
+		id = menu_mod_gameplay_options
+		pad_choose_script =create_mod_gameplay_options_menu
+		pad_choose_params = { back_script = launch_mod_menu } 
+	}
+	// SET AND GOTO RESTART
+	make_theme_menu_item text = "Set Restart" id = menu_set_custom pad_choose_script = m_set_custom_restart
+	IF ( restart_exists = 1 ) 
+		make_theme_menu_item text = "Goto Restart" id = menu_skip_to_custom pad_choose_script = m_skip_to_custom_restart
+	ENDIF 
+	add_music_track_text 
+	build_top_bar pos = PAIR(-400.00000000000, 62.00000000000) 
+	DoScreenElementMorph id = top_bar_anchor time = 0.20000000298 pos = PAIR(0.00000000000, 62.00000000000) 
+	FireEvent type = focus target = current_menu_anchor 
+ENDSCRIPT
+
+SCRIPT create_mod_net_options_menu
 	FormatText ChecksumName = title_icon "%i_special" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
-	make_new_themed_sub_menu title = "THUG SDL OPTIONS" title_icon = <title_icon> 
+	make_new_themed_sub_menu title = "NET OPTIONS" title_icon = <title_icon> 
 	create_helper_text { helper_text_elements = [ { text = "\\b7/\\b4 = Select" } 
 			{ text = "\\bn = Back" } 
 			{ text = "\\b6/\\b5 = Change Item" } 
@@ -163,9 +220,48 @@ SCRIPT launch_mod_menu
 	} 
 	SetScreenElementProps { id = sub_menu 
 		event_handlers = [ 
-			{ pad_back generic_menu_pad_back params = { callback = create_pause_menu } } 
+			{ pad_back generic_menu_pad_back params = { callback = launch_mod_menu } } 
 		] 
 	} 
+	// RESPAWN ON NEW RUN
+	theme_menu_add_item { text = "Respawn on new run:" 
+		id = menu_gamerunrespawns
+		focus_script = menu_sdl_generic_focus
+		unfocus_script = menu_sdl_generic_unfocus
+	}
+	// CHAT MESSAGE SIZE
+	theme_menu_add_item { text = "Chat text size:" 
+		id = menu_chatsize
+		focus_script = menu_sdl_generic_focus
+		unfocus_script = menu_sdl_generic_unfocus
+	}
+	// PLAYER NAME SIZE
+	theme_menu_add_item { text = "Player name size:" 
+		id = menu_playernamesize
+		focus_script = menu_sdl_generic_focus
+		unfocus_script = menu_sdl_generic_unfocus
+		last_menu_item = 1
+	}
+	// Actually show the values of our entries
+	gamerunrespawns_show_value	
+	chatsize_show_value
+	playername_size_show_value
+	finish_themed_sub_menu 
+ENDSCRIPT
+
+SCRIPT create_mod_display_options_menu
+	FormatText ChecksumName = title_icon "%i_special" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
+	make_new_themed_sub_menu title = "DISPLAY OPTIONS" title_icon = <title_icon> 
+	create_helper_text { helper_text_elements = [ { text = "\\b7/\\b4 = Select" } 
+			{ text = "\\bn = Back" } 
+			{ text = "\\b6/\\b5 = Change Item" } 
+		] 
+	} 
+	SetScreenElementProps { id = sub_menu 
+		event_handlers = [ 
+			{ pad_back generic_menu_pad_back params = { callback = launch_mod_menu } } 
+		] 
+	}
 	// FOV
 	theme_menu_add_item { text = "Field Of View:" 
 		id = menu_fov
@@ -177,6 +273,33 @@ SCRIPT launch_mod_menu
 		id = menu_screenmode
 		focus_script = menu_sdl_generic_focus
 		unfocus_script = menu_sdl_generic_unfocus
+	}
+	// BUTTSLAP COUNTER
+	theme_menu_add_item { text = "Buttslap Counter:" 
+		id = menu_bscounter
+		focus_script = menu_sdl_generic_focus
+		unfocus_script = menu_sdl_generic_unfocus
+		last_menu_item = 1
+	}
+	// Actually show the values of our entries
+	fov_show_value
+	screenmode_show_value
+	bscounter_show_value
+	finish_themed_sub_menu 
+ENDSCRIPT
+
+SCRIPT create_mod_control_options_menu
+	FormatText ChecksumName = title_icon "%i_special" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
+	make_new_themed_sub_menu title = "CONTROL OPTIONS" title_icon = <title_icon> 
+	create_helper_text { helper_text_elements = [ { text = "\\b7/\\b4 = Select" } 
+			{ text = "\\bn = Back" } 
+			{ text = "\\b6/\\b5 = Change Item" } 
+		] 
+	} 
+	SetScreenElementProps { id = sub_menu 
+		event_handlers = [ 
+			{ pad_back generic_menu_pad_back params = { callback = launch_mod_menu } } 
+		] 
 	}
 	// TH4 BOOSTPLANT INPUT
 	theme_menu_add_item { text = "Wallieplant Controls:" 
@@ -190,83 +313,57 @@ SCRIPT launch_mod_menu
 		focus_script = menu_sdl_generic_focus 
 		unfocus_script = menu_sdl_generic_unfocus
 	}
+	// FREE CAM SELECT
+	theme_menu_add_item { text = "Select Button:" 
+		id = menu_selectbutton
+		focus_script = menu_sdl_generic_focus
+		unfocus_script = menu_sdl_generic_unfocus
+		last_menu_item = 1
+	}
+	// Actually show the values of our entries
+	singletapbp_show_value
+	wpinput_show_value
+	freecamselect_show_value
+	finish_themed_sub_menu
+ENDSCRIPT
+
+SCRIPT create_mod_gameplay_options_menu
+	FormatText ChecksumName = title_icon "%i_special" i = ( THEME_PREFIXES [ current_theme_prefix ] ) 
+	make_new_themed_sub_menu title = "GAMEPLAY OPTIONS" title_icon = <title_icon> 
+	create_helper_text { helper_text_elements = [ { text = "\\b7/\\b4 = Select" } 
+			{ text = "\\bn = Back" } 
+			{ text = "\\b6/\\b5 = Change Item" } 
+		] 
+	} 
+	SetScreenElementProps { id = sub_menu 
+		event_handlers = [ 
+			{ pad_back generic_menu_pad_back params = { callback = launch_mod_menu } } 
+		] 
+	}
+	// BHRA
+	theme_menu_add_item { text = "Land Pivots:" 
+		id = menu_bhra
+		focus_script = menu_sdl_generic_focus
+		unfocus_script = menu_sdl_generic_unfocus
+	}
 	// BOARDSCUFFS
 	theme_menu_add_item { text = "Boardscuffs:" 
 		id = menu_boardscuffs
 		focus_script = menu_sdl_generic_focus 
 		unfocus_script = menu_sdl_generic_unfocus
 	}
+	// SKATER VOICE
 	theme_menu_add_item { text = "Skater Voice:" 
 		id = menu_skatervoice
 		focus_script = menu_sdl_generic_focus 
 		unfocus_script = menu_sdl_generic_unfocus
+		last_menu_item = 1
 	}
-	IF GotParam NetGame
-		// RESPAWN ON NEW RUN
-		theme_menu_add_item { text = "Respawn on new run:" 
-			id = menu_gamerunrespawns
-			focus_script = menu_sdl_generic_focus
-			unfocus_script = menu_sdl_generic_unfocus
-		}
-		// CHAT MESSAGE SIZE
-		theme_menu_add_item { text = "Chat text size:" 
-			id = menu_chatsize
-			focus_script = menu_sdl_generic_focus
-			unfocus_script = menu_sdl_generic_unfocus
-		}
-		// PLAYER NAME SIZE
-		theme_menu_add_item { text = "Player name size:" 
-			id = menu_playernamesize
-			focus_script = menu_sdl_generic_focus
-			unfocus_script = menu_sdl_generic_unfocus
-		}
-	ELSE 
-		// SINGLEPLAYER OPTIONS
-		printf "Mod menu: No Single player options"
-	ENDIF 
-    // BUTTSLAP COUNTER
-    theme_menu_add_item { text = "Buttslap Counter:" 
-        id = menu_bscounter
-        focus_script = menu_sdl_generic_focus
-		unfocus_script = menu_sdl_generic_unfocus
-    }
-    // BHRA
-    theme_menu_add_item { text = "Land Pivots:" 
-        id = menu_bhra
-        focus_script = menu_sdl_generic_focus
-		unfocus_script = menu_sdl_generic_unfocus
-    }
-	// FREE CAM SELECT
-	theme_menu_add_item { text = "Select Button:" 
-		id = menu_selectbutton
-		focus_script = menu_sdl_generic_focus
-		unfocus_script = menu_sdl_generic_unfocus
-	}
-	// SET AND GOTO RESTART
-	IF ( restart_exists = 0 ) 
-		theme_menu_add_item text = "Set Restart" id = set_restart_custom pad_choose_script = m_set_custom_restart last_menu_item = 1
-	ELSE 
-		theme_menu_add_item text = "Set Restart" id = set_restart_custom pad_choose_script = m_set_custom_restart
-		theme_menu_add_item text = "Go to Restart" id = goto_restart_custom pad_choose_script = m_skip_to_custom_restart last_menu_item = 1
-	ENDIF
-	
 	// Actually show the values of our entries
-	fov_show_value
-	screenmode_show_value
-	singletapbp_show_value
-	wpinput_show_value
+	bhra_show_value
 	boardscuffs_show_value
 	skatervoice_show_value
-	bscounter_show_value
-	bhra_show_value
-	freecamselect_show_value
-	IF GotParam NetGame
-		gamerunrespawns_show_value
-		chatsize_show_value
-		playername_size_show_value
-	ELSE
-	ENDIF
-	finish_themed_sub_menu 
+	finish_themed_sub_menu
 ENDSCRIPT
 
 // -----------------------------------------
@@ -493,6 +590,7 @@ SCRIPT change_chatsize
 	SetScreenElementProps { id = { menu_chatsize child = 4 } text = <text> }
 	M_SetINIValue section = "Chat" key = "ChatSize" value = (m_chat_scale)
 	PlaySound MenuUp
+	console_destroy
 ENDSCRIPT
 
 SCRIPT set_chatsize

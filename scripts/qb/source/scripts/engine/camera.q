@@ -14,6 +14,9 @@ SCRIPT screen_setup_standard
 			make_mainmenu_3d_plane 
 		ENDIF 
 	ENDIF 
+	IF NOT IsTrue ( camera_fov = camera_fov_value )
+		M_SetFOV fov_value = camera_fov_value
+	ENDIF
 ENDSCRIPT
 
 SCRIPT screen_setup_widescreen 
