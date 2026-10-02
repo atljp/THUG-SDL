@@ -288,18 +288,32 @@ SCRIPT scalingmenu_increment
 	ENDIF 
 	IF gotParam affectY 
 		IF ( <affectY> = 1 ) 
-			<y> = ( <y> + scalingmenu_scale_increment ) 
-			IF ( <y> > <max> ) 
-				<y> = <max> 
-			ENDIF 
+			IF <part>
+				<z> = ( <z> + scalingmenu_scale_increment ) 
+				IF ( <z> > <max> ) 
+					<z> = <max> 
+				ENDIF 
+			ELSE
+				<y> = ( <y> + scalingmenu_scale_increment ) 
+				IF ( <y> > <max> ) 
+					<y> = <max> 
+				ENDIF 
+			ENDIF
 		ENDIF 
 	ENDIF 
 	IF gotParam affectZ 
 		IF ( <affectZ> = 1 ) 
-			<z> = ( <z> + scalingmenu_scale_increment ) 
-			IF ( <z> > <max> ) 
-				<z> = <max> 
-			ENDIF 
+			IF <part>
+				<y> = ( <y> + scalingmenu_scale_increment ) 
+				IF ( <y> > <max> ) 
+					<y> = <max> 
+				ENDIF 
+			ELSE
+				<z> = ( <z> + scalingmenu_scale_increment ) 
+				IF ( <z> > <max> ) 
+					<z> = <max> 
+				ENDIF 
+			ENDIF
 		ENDIF 
 	ENDIF 
 	scalingmenu_set_xyz part = <part> x = <x> y = <y> z = <z> 
@@ -321,18 +335,32 @@ SCRIPT scalingmenu_decrement
 	ENDIF 
 	IF gotParam affectY 
 		IF ( <affectY> = 1 ) 
-			<y> = ( <y> - scalingmenu_scale_increment ) 
-			IF ( <y> < <min> ) 
-				<y> = <min> 
-			ENDIF 
+			IF <part>
+				<z> = ( <z> - scalingmenu_scale_increment ) 
+				IF ( <z> < <min> ) 
+					<z> = <min> 
+				ENDIF 
+			ELSE
+				<y> = ( <y> - scalingmenu_scale_increment ) 
+				IF ( <y> < <min> ) 
+					<y> = <min> 
+				ENDIF 
+			ENDIF
 		ENDIF 
 	ENDIF 
 	IF gotParam affectZ 
 		IF ( <affectZ> = 1 ) 
-			<z> = ( <z> - scalingmenu_scale_increment ) 
-			IF ( <z> < <min> ) 
-				<z> = <min> 
-			ENDIF 
+			IF <part>
+				<y> = ( <y> - scalingmenu_scale_increment ) 
+				IF ( <y> < <min> ) 
+					<y> = <min> 
+				ENDIF 
+			ELSE
+				<z> = ( <z> - scalingmenu_scale_increment ) 
+				IF ( <z> < <min> ) 
+					<z> = <min> 
+				ENDIF 
+			ENDIF
 		ENDIF 
 	ENDIF 
 	scalingmenu_set_xyz part = <part> x = <x> y = <y> z = <z> 

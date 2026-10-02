@@ -257,7 +257,7 @@ void InitPatch() {
 	patchBytesM((void*)0x007D1520, (BYTE*)"\x6F\x70\x65\x6E\x73\x70\x79\x00", 8);
 
 	/*Totaled score display*/
-	if (basescoredisplay) {
+	if (!(noadditionalscriptmods)) {
 		patchCall((void*)0x004F69D0, (void*)DispatchScore_Hook);
 		patchCall((void*)0x004F7223, (void*)DispatchScore_Hook);
 		patchCall((void*)0x004F7412, (void*)DispatchScore_Hook);

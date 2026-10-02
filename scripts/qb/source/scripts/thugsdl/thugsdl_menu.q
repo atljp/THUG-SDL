@@ -24,6 +24,7 @@ m_dd_sping_lag = 0
 m_directional_dd = 0
 m_boardscuffs = 0
 m_screenmode = 0
+m_basescoredisplay = 0
 m_restore_original_double_taps = 0
 m_skatervoice = 0
 
@@ -106,6 +107,12 @@ SCRIPT M_InitializeMod
 	IF IsTrue <value> 
 		change m_enable_bscounter = 1
 	ENDIF
+	// BASESCORE DISPLAY
+	M_GetINIValue section = "Miscellaneous" key = "BaseScoreDisplay" default = 0
+	IF IsTrue <value> 
+		change m_basescoredisplay = 1
+	ENDIF
+	set_basescoredisplay
 	// BHRA
 	M_GetINIValue section = "Miscellaneous" key = "BHRA" default = 0
 	IF IsTrue <value> 
@@ -279,12 +286,19 @@ SCRIPT create_mod_display_options_menu
 		id = menu_bscounter
 		focus_script = menu_sdl_generic_focus
 		unfocus_script = menu_sdl_generic_unfocus
+	}
+	// BASE SCORE DISPLAY
+	theme_menu_add_item { text = "Base Score:" 
+		id = menu_basescoredisplay
+		focus_script = menu_sdl_generic_focus
+		unfocus_script = menu_sdl_generic_unfocus
 		last_menu_item = 1
 	}
 	// Actually show the values of our entries
 	fov_show_value
 	screenmode_show_value
 	bscounter_show_value
+	basescoredisplay_show_value
 	finish_themed_sub_menu 
 ENDSCRIPT
 
@@ -432,6 +446,17 @@ SCRIPT toggle_gameitem
 		bscounter_get_string
         SetScreenElementProps { id = { menu_bscounter child = 4 } text = <text> }
 		M_SetINIValue section = "Miscellaneous" key = "BSCounter" value = (m_enable_bscounter)
+    ENDIF
+	IF GotParam basescoredisplay
+		IF IsTrue m_basescoredisplay
+			Change m_basescoredisplay = 0
+		ELSE
+			Change m_basescoredisplay = 1
+		ENDIF
+		basescoredisplay_get_string
+        SetScreenElementProps { id = { menu_basescoredisplay child = 4 } text = <text> }
+		M_SetINIValue section = "Miscellaneous" key = "BaseScoreDisplay" value = (m_basescoredisplay)
+		set_basescoredisplay
     ENDIF
     IF GotParam bhra
 		IF IsTrue m_enable_landpivots
@@ -1390,6 +1415,69 @@ SCRIPT bscounter_show_value
 		] 
 		replace_handlers 
 	} 
+ENDSCRIPT
+
+// -----------------------------------------
+// Base Score Display
+// -----------------------------------------
+
+SCRIPT basescoredisplay_get_string
+	IF IsTrue m_basescoredisplay
+		FormatText TextName = basescoredisplay_text "Multiplied"
+	ELSE
+		FormatText TextName = basescoredisplay_text "Normal"
+	ENDIF
+	RETURN text = <basescoredisplay_text> 
+ENDSCRIPT
+
+SCRIPT basescoredisplay_show_value
+	basescoredisplay_get_string
+	FormatText ChecksumName = text_color "%i_unhighlighted_text_color" i = ( THEME_COLOR_PREFIXES [ current_theme_prefix ] )
+	FormatText textName = basescoredisplay_text "%v" v = <text>
+	
+	CreateScreenElement { 
+		type = textElement 
+		parent = menu_basescoredisplay
+		font = small 
+		just = [ center top ] 
+		pos = PAIR(182.50000000000, -17.00000000000) 
+		text = <basescoredisplay_text> 
+		rgba = <text_color> 
+	} 
+	CreateScreenElement { 
+		type = SpriteElement 
+		parent = menu_basescoredisplay 
+		texture = left_arrow 
+		rgba = [ 128 128 128 0 ] 
+		pos = PAIR(115.00000000000, -17.00000000000) 
+		just = [ right top ] 
+		scale = 0.75000000000 
+	} 
+	CreateScreenElement { 
+		type = SpriteElement 
+		parent = menu_basescoredisplay 
+		texture = right_arrow 
+		rgba = [ 128 128 128 0 ] 
+		pos = PAIR(250.00000000000, -17.00000000000) 
+		just = [ left top ] 
+		scale = 0.75000000000 
+	} 
+	SetScreenElementProps { 
+		id = menu_basescoredisplay 
+		event_handlers = [ 
+			{ pad_left toggle_gameitem params = { basescoredisplay left } } 
+			{ pad_right toggle_gameitem params = { basescoredisplay right } } 
+		] 
+		replace_handlers 
+	} 
+ENDSCRIPT
+
+SCRIPT set_basescoredisplay
+	IF IsTrue m_basescoredisplay
+		M_SetFinalScoreDisplay On
+	ELSE
+		M_SetFinalScoreDisplay Off
+	ENDIF
 ENDSCRIPT
 
 // -----------------------------------------
